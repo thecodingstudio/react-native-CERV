@@ -4,8 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import MainTabScreen from '../screens/customer/MainTabScreen';
 import RootStackScreen from '../screens/auth/RootStackScreen';
-const AppStack = createStackNavigator();
 
+const AppStack = createStackNavigator();
 const AppNavigator = props => {
     return (
             <NavigationContainer>

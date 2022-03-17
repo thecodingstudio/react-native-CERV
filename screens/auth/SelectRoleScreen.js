@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 
 import Button from '../../components/Button';
 import Roles from '../../components/Roles';
@@ -45,7 +46,9 @@ const SelectRoleScreen = props => {
                     {showButton && <Button 
                     style={styles.button}
                     title={customerActive ? 'I\'m a Customer' : 'I\'m a Caterer'}
-                    onPress={()=>{}}
+                    onPress={()=>{
+                        props.navigation.navigate('SignInScreen');
+                    }}
                     />}
                 </View>
 

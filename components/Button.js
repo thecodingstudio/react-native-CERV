@@ -1,13 +1,14 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import Colors from '../constants/Colors';
 
 const CustomButton = props => {
     return(
         <TouchableOpacity onPress={props.onPress} >
-            <View style={{...props.style,...styles.container}}>
+            <Animatable.View animation="fadeInUpBig" duration={500} style={{...props.style,...styles.container}}>
                 <Text style={styles.title} >{props.title}</Text>
-            </View>
+            </Animatable.View>
         </TouchableOpacity>
     )
 };
