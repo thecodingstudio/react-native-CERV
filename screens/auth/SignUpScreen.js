@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, Image, Dimensions, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import { useHeaderHeight } from '@react-navigation/stack';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import * as ImagePicker from 'expo-image-picker';
 
 import Colors from '../../constants/Colors';
 
@@ -17,8 +20,13 @@ const SignUpScreen = props => {
         check_textInputChange: false,
         check_usernameChange: false,
         secureTextEntry: true,
-        confirm_secureTextEntry: true
+        confirm_secureTextEntry: true,
+        profile_picture:''
     });
+
+    const [ selectedImage, setSelectedImage ] = useState(null)
+
+    const [tnc , setTnc] = useState(false);
 
     const textInputChange = (val) => {
         if(val.length!== 0){
@@ -80,7 +88,37 @@ const SignUpScreen = props => {
         })
     }
 
+    const tncHandler = () => {
+        setTnc(state => !state);
+    };
+
+    let openImagePickerAsync = async() => {
+        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permissionResult.granted === false) {
+            alert("Permission to access camera roll is required!");
+            return;
+          }
+      
+            let pickerResult = await ImagePicker.launchImageLibraryAsync();
+            
+            if (pickerResult.cancelled === true) {
+                return;
+              }
+              
+              console.log(pickerResult)
+
+              setSelectedImage({ localUri: pickerResult.uri });
+              setData({
+                  ...data,
+                  profile_picture: pickerResult
+              })
+        }
+
     return(
+        <>
+        <SafeAreaView style={{flex:0,backgroundColor:Colors.orange}}/>
+        <SafeAreaView style={{flex:1,backgroundColor:"white"}}>
+        <KeyboardAwareScrollView>
         <View style={styles.container} >
             <StatusBar backgroundColor='#009387' barStyle='light-content'/>
             <View style={styles.header} >
@@ -92,17 +130,23 @@ const SignUpScreen = props => {
                 <Text style={styles.text_header} >Let's Start!</Text>
                 <Text style={styles.headerText}>Tell us more about you</Text>
             </View>
+            
             <Animatable.View style={styles.footer} animation="fadeInUpBig">
 
                 {/* PROFILE PICTURE */}
                 <View style={styles.ppContainer}>
                     <View style={styles.profile_picture}>
-                        <Image source={require('../../assets/Icons/icons8-person-100.png')} style={{height:100,width:100}} />
+                        {selectedImage ? <Image source={{ uri: selectedImage.localUri }} style={{height:100,width:100}}/> :  <Image source={require('../../assets/Icons/icons8-person-100.png')} style={{height:100,width:100}} />}
                     </View>
-                    <View style={styles.add_icon}>
-                        <Ionicon name="add-outline" color={Colors.orange} size={30}/>
-                    </View>
+
+                    {selectedImage ? null : <View style={styles.add_icon}>
+                        <TouchableOpacity onPress={openImagePickerAsync} >
+                            <Ionicon name="add-outline" color={Colors.orange} size={30}/>
+                        </TouchableOpacity>
+                    </View>}
                 </View>
+
+                <KeyboardAvoidingView keyboardVerticalOffset={ useHeaderHeight() } style = {{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : null} enabled>
 
                 <Text style={styles.text_footer} >User Name</Text>
                 <View style={styles.action} >
@@ -144,7 +188,7 @@ const SignUpScreen = props => {
                 </View>
 
                 <Text style={[styles.text_footer,{marginTop:20}]} >Confirm Password</Text>
-                <View style={styles.action} >
+                <View  style={styles.action} >
                     <FontAwesome name="lock" color={Colors.orange} size={20}/>
                     <TextInput 
                         placeholder='Confirm Your Password'
@@ -158,20 +202,32 @@ const SignUpScreen = props => {
                     </TouchableOpacity>
                 </View>
 
+                </KeyboardAvoidingView>
+
                 <View style={{flexDirection:'row', marginTop:10}} >
-                    <Ionicon name="square-outline" color={Colors.grey} size={20}/>
+                    <TouchableOpacity onPress={tncHandler} >
+                        { tnc ? <Ionicon name="checkbox-outline" color="green" size={20}/> : <Ionicon name="square-outline" color={Colors.grey} size={20}/>}
+                    </TouchableOpacity>
                     <Text style={styles.tandc} >I Agree to the <Text style={styles.sp_tandc} >Terms {'&'} Conditions</Text> and <Text style={styles.sp_tandc}>Privacy Policy</Text></Text>
                 </View>
 
 
                 {/* LOGIN */}
+                <TouchableOpacity onPress={() => {
+                    props.navigation.navigate('NumberVerificationScreen');                   
+                }}>
                 <View style={styles.button}>
                     <View style={styles.signIn}>
                         <Text style={[styles.textSign,{color:'#fff'}]} >Next</Text>
                     </View>
                 </View>
+                </TouchableOpacity>
+                
             </Animatable.View>
         </View>
+        </KeyboardAwareScrollView>
+        </SafeAreaView>
+        </>
     );
 };
 
@@ -276,7 +332,8 @@ const styles = StyleSheet.create({
     profile_picture:{
         borderRadius:50,
         borderColor:Colors.grey,
-        borderWidth:1
+        borderWidth:1,
+        overflow:'hidden'
     },
     add_icon:{
         borderTopRightRadius:15,

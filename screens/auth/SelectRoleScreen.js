@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
         flex:1,
         justifyContent:'flex-end',
         width:'80%',
+        paddingBottom:10
     },
     title:{
         fontWeight:'bold',

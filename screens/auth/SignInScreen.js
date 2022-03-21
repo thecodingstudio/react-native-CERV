@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, ScrollView, SafeAreaView } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Colors from '../../constants/Colors';
 
@@ -47,6 +48,10 @@ const SignInScreen = props => {
     }
 
     return(
+        <>
+        <SafeAreaView style={{flex:0,backgroundColor:Colors.orange}}/>
+        <SafeAreaView style={{flex:1,backgroundColor:"white"}}>
+        <KeyboardAwareScrollView>
         <View style={styles.container} >
             <StatusBar backgroundColor='#009387' barStyle='light-content'/>
             <View style={styles.header} >
@@ -119,6 +124,9 @@ const SignInScreen = props => {
 
             </Animatable.View>
         </View>
+        </KeyboardAwareScrollView>
+        </SafeAreaView>
+        </>
     );
 };
 
