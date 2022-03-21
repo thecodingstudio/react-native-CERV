@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, SafeAreaView } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Ionicon from 'react-native-vector-icons/Ionicons';
@@ -12,6 +12,11 @@ const VerifyScreen = props => {
     const code = props.route.params.code
     
     const maskedPhone = phone.slice(0, 2) + phone.slice(2).replace(/.(?=...)/g, '*');
+
+    const pin1ref = useRef(null);
+    const pin2ref = useRef(null);
+    const pin3ref = useRef(null);
+    const pin4ref = useRef(null);
 
     return (
         <>
@@ -34,11 +39,68 @@ const VerifyScreen = props => {
             </View>
             <Animatable.View style={styles.footer} animation="fadeInUpBig">
                 
+                {/* OTP Entering */}
+                <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+                    <TextInput 
+                        autoFocus={true}
+                        ref={pin1ref}
+                        style={styles.cell}
+                        maxLength={1}
+                        keyboardType='numeric'
+                        placeholder="-"
+                        placeholderTextColor="white"
+                        onKeyPress={({nativeEvent}) => {
+                            nativeEvent.key === 'Backspace' ? null : pin2ref.current.focus();
+                        }}
+                    />
+                    <TextInput 
+                        ref={pin2ref}
+                        style={styles.cell}
+                        maxLength={1}
+                        keyboardType='numeric'
+                        placeholder="-"
+                        placeholderTextColor="white"
+                        onKeyPress={({nativeEvent}) => {
+                            nativeEvent.key === 'Backspace' ? pin1ref.current.focus() : pin3ref.current.focus();
+                        }}
+                    />
+                    <TextInput 
+                        ref={pin3ref}
+                        style={styles.cell}
+                        maxLength={1}
+                        keyboardType='numeric'
+                        placeholder="-"
+                        placeholderTextColor="white"
+                        onKeyPress={({nativeEvent}) => {
+                            nativeEvent.key === 'Backspace' ? pin2ref.current.focus() : pin4ref.current.focus();
+                        }}
+                    />
+                    <TextInput 
+                        ref={pin4ref}
+                        style={styles.cell}
+                        maxLength={1}
+                        keyboardType='numeric'
+                        placeholder="-"
+                        placeholderTextColor="white"
+                        onKeyPress={({nativeEvent}) => {
+                            nativeEvent.key === 'Backspace' ? pin3ref.current.focus() : pin4ref.current.blur();
+                        }}
+                    />
+                </View>
                 
+                {/* Resend Code */}
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center', marginVertical:30}} >
+                <Text style={styles.resend_code}>Didn't Get the Code? </Text>
+                <TouchableOpacity onPress={() => {
+                    props.navigation.navigate('NumberVerificationScreen')
+                }} >
+                    <Text style={styles.resend} >Resend Code</Text>
+                </TouchableOpacity>
+                </View>
 
                 {/* LOGIN */}
                 <TouchableOpacity onPress={() => {
-                    props.navigation.navigate('NumberVerificationScreen');
+                    props.navigation.navigate('SignInScreen');
                 }} >
                     <View style={styles.button}>
                         <View style={styles.signIn}>
@@ -138,6 +200,26 @@ const styles = StyleSheet.create({
         borderRightWidth: 1,
         width:'15%',
         height:35
+    },
+    cell:{
+        borderRadius:10,
+        textAlign:'center',
+        backgroundColor: Colors.orange,
+        width:'15%',
+        height:55,
+        color:'white',
+        fontWeight:'bold',
+        fontSize:30
+    },
+    resend:{
+        color:Colors.orange,
+        fontWeight:'bold',
+        fontSize: 18
+    },
+    resend_code:{
+        fontWeight:'bold',
+        color:Colors.grey,
+        fontSize:18
     }
 });
 
