@@ -12,82 +12,19 @@ import Colors from '../../constants/Colors';
 
 const SignUpScreen = props => {
 
-    const [data, setData] = useState({
-        username:'',
-        email:'',
-        password:'',
-        confirm_password:'',
-        check_textInputChange: false,
-        check_usernameChange: false,
-        secureTextEntry: true,
-        confirm_secureTextEntry: true,
-        profile_picture:''
-    });
-
     const [ selectedImage, setSelectedImage ] = useState(null)
 
+    const [pTouched, setPTouched] = useState(false)
+    const passwordViewHandler = () => {
+        setPTouched(state => !state);
+    }
+
+    const [cpTouched, setCPTouched] = useState(false)
+    const confirmPasswordViewHandler = () => {
+        setCPTouched(state => !state);
+    }
+
     const [tnc , setTnc] = useState(false);
-
-    const textInputChange = (val) => {
-        if(val.length!== 0){
-            setData({
-                ...data,
-                email:val,
-                check_textInputChange:true
-            })
-        } else {
-            setData({
-                ...data,
-                email:val,
-                check_textInputChange: false
-            })
-        }
-    };
-
-    const usernameChange = (val) => {
-        if(val.length!== 0){
-            setData({
-                ...data,
-                username:val,
-                check_usernameChange:true
-            })
-        } else {
-            setData({
-                ...data,
-                username:val,
-                check_usernameChange: false
-            })
-        }
-    };
-
-    const passwordChangeHandle = (val) => {
-        setData({
-            ...data,
-            password:val
-        })
-    };
-
-    const passwordConfirmHandle = (val) => {
-        setData({
-            ...data,
-            confirm_password:val
-        })
-    };
-
-    const updateSecureTextEntry = () => {
-        setData({
-            ...data,
-            secureTextEntry: !data.secureTextEntry
-        })
-    }
-
-    const updateConfirmSecureTextEntry = () => {
-        setData({
-            ...data,
-            confirm_secureTextEntry: !data.confirm_secureTextEntry
-        })
-    }
-
     const tncHandler = () => {
         setTnc(state => !state);
     };
@@ -155,9 +92,9 @@ const SignUpScreen = props => {
                         placeholder='Your Username' 
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={(val) => usernameChange(val)}
+                        onChangeText={() => {}}
                         />
-                    {data.check_usernameChange ? <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View> : null }
+                   <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View>
                 </View>
 
                 <Text style={[styles.text_footer,{marginTop:20}]} >Email</Text>
@@ -167,9 +104,9 @@ const SignUpScreen = props => {
                         placeholder='Your E-mail' 
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={(val) => textInputChange(val)}
+                        onChangeText={() => {}}
                         />
-                    {data.check_textInputChange ? <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View> : null }
+                    <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View>
                 </View>
                 
                 <Text style={[styles.text_footer,{marginTop:20}]} >Password</Text>
@@ -177,13 +114,13 @@ const SignUpScreen = props => {
                     <FontAwesome name="lock" color={Colors.orange} size={20}/>
                     <TextInput 
                         placeholder='Your Password'
-                        secureTextEntry={data.secureTextEntry ? true : false}
+                        secureTextEntry={pTouched ? false : true}
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={(val) => passwordChangeHandle(val) }
+                        onChangeText={() => {}}
                         />
-                    <TouchableOpacity onPress={ updateSecureTextEntry }>
-                        {data.secureTextEntry ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
+                    <TouchableOpacity onPress={passwordViewHandler}>
+                        {!pTouched ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
                     </TouchableOpacity>
                 </View>
 
@@ -195,10 +132,10 @@ const SignUpScreen = props => {
                         secureTextEntry={data.confirm_secureTextEntry ? true : false}
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={(val) => passwordConfirmHandle(val) }
+                        onChangeText={() => {}}
                         />
-                    <TouchableOpacity onPress={ updateConfirmSecureTextEntry }>
-                        {data.confirm_secureTextEntry ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
+                    <TouchableOpacity onPress={ confirmPasswordViewHandler }>
+                        {!cpTouched ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
                     </TouchableOpacity>
                 </View>
 

@@ -1,51 +1,20 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, ScrollView, SafeAreaView } from 'react-native';
+import React, { useContext, useState } from 'react'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, ScrollView, SafeAreaView, Alert } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import Users from '../../model/users';
 import Colors from '../../constants/Colors';
 
 const SignInScreen = props => {
 
-    const [data, setData] = useState({
-        email:'',
-        password:'',
-        check_textInputChange: false,
-        secureTextEntry: true
-    });
-
-    const textInputChange = (val) => {
-        if(val.length!== 0){
-            setData({
-                ...data,
-                email:val,
-                check_textInputChange:true
-            })
-        } else {
-            setData({
-                ...data,
-                email:val,
-                check_textInputChange: false
-            })
-        }
+    const [touched, setTouched] = useState(false)
+    const passwordViewHandler = () => {
+        setTouched(state => !state);
     };
-
-    const passwordChangeHandle = (val) => {
-        setData({
-            ...data,
-            password:val
-        })
-    };
-
-    const updateSecureTextEntry = () => {
-        setData({
-            ...data,
-            secureTextEntry: !data.secureTextEntry
-        })
-    }
 
     return(
         <>
@@ -76,9 +45,9 @@ const SignInScreen = props => {
                         placeholder='Your E-mail' 
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={(val) => textInputChange(val)}
+                        onChangeText={() => {}}
                         />
-                    {data.check_textInputChange ? <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View> : null }
+                    <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View>
                 </View>
                 
                 <Text style={[styles.text_footer,{marginTop:35}]} >Password</Text>
@@ -86,25 +55,32 @@ const SignInScreen = props => {
                     <FontAwesome name="lock" color={Colors.orange} size={20}/>
                     <TextInput 
                         placeholder='Your Password'
-                        secureTextEntry={data.secureTextEntry ? true : false}
+                        secureTextEntry={touched ? false : true}
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={(val) => passwordChangeHandle(val) }
+                        onChangeText={() => {}}
                         />
-                    <TouchableOpacity onPress={ updateSecureTextEntry }>
-                        {data.secureTextEntry ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
+                    <TouchableOpacity onPress={passwordViewHandler}>
+                        {touched ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={()=>{}}>
+
+                <TouchableOpacity onPress={()=>{
+                    props.navigation.navigate('ForgotPassword')
+                }}>
                     <Text style={styles.forgotPassword} > Forgot Password ? </Text>
                 </TouchableOpacity>
 
                 {/* LOGIN */}
-                <View style={styles.button}>
-                    <View style={styles.signIn}>
-                        <Text style={[styles.textSign,{color:'#fff'}]} >Login</Text>
+                <TouchableOpacity onPress={() => {
+                    props.navigation.navigate('Home')
+                }} >
+                    <View style={styles.button}>
+                        <View style={styles.signIn}>
+                            <Text style={[styles.textSign,{color:'#fff'}]} >Login</Text>
+                        </View>
                     </View>
-                </View>
+                </TouchableOpacity>
 
                 <View style={{alignItems:'center'}} >
                     <View style={{flexDirection: 'row', alignItems: 'center',marginVertical:25,width:'65%'}}>
@@ -214,6 +190,9 @@ const styles = StyleSheet.create({
     },
     register:{
         fontWeight:'bold'
+    },
+    errorMsg:{
+        color:'red'
     }
 });
 

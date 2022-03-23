@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, SafeAreaView } from 'react-native';
-import SelectDropdown from 'react-native-select-dropdown';
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, SafeAreaView, Alert } from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Colors from '../../constants/Colors';
-import { interpolate } from 'react-native-reanimated';
 
-const NumberVerificationScreen = props => {
+const ForgotPasswordScreen = props => {
 
-    const dummy_codes = ["+44","+78","+91","+53"]
-
-    return (
+    return(
         <>
         <SafeAreaView style={{flex:0,backgroundColor:Colors.orange}}/>
         <SafeAreaView style={{flex:1,backgroundColor:"white"}}>
@@ -25,53 +23,37 @@ const NumberVerificationScreen = props => {
                         <Ionicon name="arrow-back-outline" size={35} color="white"/>
                     </View>
                 </TouchableOpacity>
-                <Text style={styles.text_header} >Phone Number</Text>
-                <Text style={styles.headerText}>Verify your phone number</Text>
-                <Text style={styles.headerText}>for extra security</Text>
-
+                <Text style={styles.text_header} >Forgot Password</Text>
+                <Text style={styles.headerText}>Reset your password</Text>
+                <Text style={styles.headerText}>immediately</Text>
             </View>
             <Animatable.View style={styles.footer} animation="fadeInUpBig">
-                <Text style={styles.footerText}>we'll send you a verification code.</Text>
-                <Text style={styles.footerText}>Just enter your phone number below</Text>
-                
-                <Text style={styles.text_footer} >Phone Number</Text>
+                <Text style={styles.footerText}>Please enter the email address below, you</Text>
+                <Text style={styles.footerText}>will receive a link to create a new password</Text>
+                <Text style={styles.footerText}>via email.</Text>
+
+                <Text style={styles.text_footer} >Email</Text>
                 <View style={styles.action} >
-                    <Ionicon name="call-outline" color={Colors.orange} size={20}/>
-                    <SelectDropdown 
-                        data={ dummy_codes } 
-                        onSelect={() => {}} 
-                        buttonTextAfterSelection={(selectedItem, index) => { return selectedItem }} 
-                        rowTextForSelection={(item, index) => {return item}} 
-                        buttonStyle={{
-                            backgroundColor:'white', 
-                            width:'25%', 
-                            height:25, 
-                            borderRightColor: Colors.grey, 
-                            borderRightWidth:1
-                        }} 
-                        defaultButtonText='   ▼'/>
+                    <FontAwesome name="envelope" color={Colors.orange} size={20}/>
                     <TextInput 
-                        placeholder='Your Phone Number' 
+                        value={forgotPasswordEmail}
+                        placeholder='Your E-mail' 
                         style={styles.textInput}
                         autoCapitalize="none"
-                        keyboardType='phone-pad'
                         onChangeText={() => {}}
-                        maxLength={10}
                         />
                 </View>
-
+                
                 {/* LOGIN */}
                 <TouchableOpacity onPress={() => {
-                    
-                    props.navigation.navigate('VerifyScreen');
-                }} >
+                    props.navigation.navigate('SignInScreen')
+                }}>
                     <View style={styles.button}>
                         <View style={styles.signIn}>
-                            <Text style={[styles.textSign,{color:'#fff'}]} >Send Code</Text>
+                            <Text style={[styles.textSign,{color:'#fff'}]} >Send Now</Text>
                         </View>
                     </View>
                 </TouchableOpacity>
-
             </Animatable.View>
         </View>
         </KeyboardAwareScrollView>
@@ -102,17 +84,18 @@ const styles = StyleSheet.create({
     text_header:{
         color:'#fff',
         fontWeight:'bold',
-        fontSize:30
+        fontSize:30,
+        marginBottom: 20
     },
     text_footer:{
         color:'#05375a',
         fontSize:18,
         fontWeight:'bold',
-        marginTop:50
+        marginTop:35
     },
     action:{
         flexDirection:'row',
-        marginTop:15,
+        marginTop:10,
         borderBottomWidth:1,
         borderBottomColor:Colors.grey,
         paddingBottom: 10
@@ -156,14 +139,16 @@ const styles = StyleSheet.create({
     footerText:{
         fontSize:18,
         marginTop:5,
+        marginBottom:5,
         color: Colors.grey
     },
-    list:{
-        borderRightColor: Colors.grey,
-        borderRightWidth: 1,
-        width:'15%',
-        height:35
+    signUp:{
+        fontSize:18,
+        color:'#131211'
+    },
+    register:{
+        fontWeight:'bold'
     }
 });
 
-export default NumberVerificationScreen;
+export default ForgotPasswordScreen;

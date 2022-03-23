@@ -7,12 +7,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import Colors from '../../constants/Colors';
 
 const VerifyScreen = props => {
-
-    const phone = props.route.params.phoneNumber
-    const code = props.route.params.code
     
-    const maskedPhone = phone.slice(0, 2) + phone.slice(2).replace(/.(?=...)/g, '*');
-
     const pin1ref = useRef(null);
     const pin2ref = useRef(null);
     const pin3ref = useRef(null);
@@ -33,7 +28,7 @@ const VerifyScreen = props => {
                 </TouchableOpacity>
                 <Text style={styles.text_header} >Verification Code</Text>
                 <Text style={styles.headerText}>We have sent an SMS to</Text>
-                <Text style={styles.headerText}>+{code}-{maskedPhone}. Please enter the</Text>
+                <Text style={styles.headerText}>+91-972*****89. Please enter the</Text>
                 <Text style={styles.headerText}>code you receive below.</Text>
 
             </View>
