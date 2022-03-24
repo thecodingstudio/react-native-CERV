@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Colors from "../../../constants/Colors";
 
 import CardDisplay from "../../../components/CardDisplay";
+import OtherPaymentDisplay from "../../../components/OtherPaymentDisplay";
 
 import cards from "../../../model/cards";
 import otherPayment from "../../../model/otherPayment";
@@ -15,7 +16,9 @@ const SavedCards = props => {
             <View style={styles.savedCards}>
                 <View style={styles.textRow} >
                     <Text style={styles.title} >Saved Cards</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={ () => {
+                        props.navigation.navigate('AddCard')
+                    }} >
                         <Text style={styles.button}>ADD CARD</Text>
                     </TouchableOpacity>
                 </View>
@@ -38,6 +41,19 @@ const SavedCards = props => {
 
             {/* OTHER PAYMENT MODES */}
             <View style={{flex:1}}>
+
+                {/* CARDS */}
+                <OtherPaymentDisplay 
+                    image = { otherPayment.ApplePay.logo }
+                    type = { otherPayment.ApplePay.type }
+                    id = { otherPayment.ApplePay.id }
+                />
+
+                <OtherPaymentDisplay 
+                    image = { otherPayment.GooglePay.logo }
+                    type = { otherPayment.GooglePay.type }
+                    id = { otherPayment.GooglePay.id }
+                />
 
             </View>
         </View>

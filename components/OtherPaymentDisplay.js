@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 
-const CardDisplay = props => {
+const OtherPaymentDisplay = props => {
 
     const [selected, setSelected] = useState(false)
 
@@ -16,17 +16,17 @@ const CardDisplay = props => {
 
                 {/* Details */}
                 <View style={{flex:3}}>
-                    {/* Number & Edit */}
+                    {/* Type & Edit */}
                     <View style={{flex:2, flexDirection:'row', justifyContent:'space-between'}} >
-                        <Text style={{fontSize:15, fontWeight:'700'}} >{props.cardNumber}</Text>
+                        <Text style={{fontSize:15, fontWeight:'700'}} >{props.type}</Text>
                         <TouchableOpacity>
                             <Ionicon name="create-outline" size={20} color="#5DCCE0"/>
                         </TouchableOpacity>
                     </View>
 
-                    {/* Expiry */}
+                    {/* ID */}
                     <View style={{flex:1}}>
-                        <Text>Expires {props.expiry}</Text>
+                        <Text>{props.id}</Text>
                     </View>
                 </View>
 
@@ -61,4 +61,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default CardDisplay;
+export default OtherPaymentDisplay;
