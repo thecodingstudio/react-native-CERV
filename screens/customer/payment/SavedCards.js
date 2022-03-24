@@ -28,11 +28,13 @@ const SavedCards = props => {
                     image = { cards.MasterCard.logo }
                     cardNumber = {cards.MasterCard.cardNumber}
                     expiry = { cards.MasterCard.expiryDate }
+                    selectable={false}
                 />
                 <CardDisplay 
                     image = { cards.Visa.logo }
                     cardNumber = {cards.Visa.cardNumber}
                     expiry = { cards.Visa.expiryDate }
+                    selectable={false}
                 />
                 
             </View>
@@ -49,22 +51,16 @@ const SavedCards = props => {
                     image = { otherPayment.ApplePay.logo }
                     type = { otherPayment.ApplePay.type }
                     id = { otherPayment.ApplePay.id }
+                    selectable={false}
                 />
 
                 <OtherPaymentDisplay 
                     image = { otherPayment.GooglePay.logo }
                     type = { otherPayment.GooglePay.type }
                     id = { otherPayment.GooglePay.id }
+                    selectable={false}
                 />
-
-                    <TouchableOpacity >
-                        <View style={styles.bottomButton} >
-                            <Text style={styles.makePayment}>Make Payment</Text>
-                        </View>
-                    </TouchableOpacity>
-
             </View>
-            
         </View>
     )
 };

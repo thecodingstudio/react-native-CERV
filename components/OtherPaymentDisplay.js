@@ -31,11 +31,11 @@ const OtherPaymentDisplay = props => {
                 </View>
 
                 {/* Checkmark */}
-                <View style={{flex:0.7, alignItems:'center', justifyContent:'center'}}>
+                {props.selectable ? <View style={{flex:0.7, alignItems:'center', justifyContent:'center'}}>
                     <TouchableOpacity onPress={() => setSelected(!selected)} >
                         <Ionicon name="checkmark-circle" size={32} color={selected ? "#33E376": "#ccc" }/>
                     </TouchableOpacity>
-                </View>
+                </View> : null }
 
             </View>
         </View>

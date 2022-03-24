@@ -45,10 +45,6 @@ const SignUpScreen = props => {
               console.log(pickerResult)
 
               setSelectedImage({ localUri: pickerResult.uri });
-              setData({
-                  ...data,
-                  profile_picture: pickerResult
-              })
         }
 
     return(
@@ -129,7 +125,7 @@ const SignUpScreen = props => {
                     <FontAwesome name="lock" color={Colors.orange} size={20}/>
                     <TextInput 
                         placeholder='Confirm Your Password'
-                        secureTextEntry={data.confirm_secureTextEntry ? true : false}
+                        secureTextEntry={cpTouched ? false : true}
                         style={styles.textInput}
                         autoCapitalize="none"
                         onChangeText={() => {}}

@@ -16,6 +16,34 @@ const SignInScreen = props => {
         setTouched(state => !state);
     };
 
+    const [validEmail, setValidEmail] = useState(false)
+    const emailHandler = (val) => {
+        var re = /\S+@\S+\.\S+/;
+        setValidEmail(re.test(val));
+    }
+
+    const [validPassword, setValidPassword] = useState(false);
+    const [password, setPassword] = useState('');
+    const passwordHandler = (val) => {
+        setPassword(val);
+    }
+
+    const navigateHandler = () => {
+        if(password.length>4){
+            setValidPassword(true);
+        } else {
+            Alert.alert("Password too short!","Password should be atleast 5 characters long.",[{text:"Okay"}]);
+            return;
+        }
+        if( validEmail && validPassword ) {
+            props.navigation.navigate('Home');
+        } else {
+            Alert.alert("Invalid Credentials","Please check the entered details before logging in.",[{text:"Okay"}]);
+        }
+    }
+
+
+
     return(
         <>
         <SafeAreaView style={{flex:0,backgroundColor:Colors.orange}}/>
@@ -45,9 +73,9 @@ const SignInScreen = props => {
                         placeholder='Your E-mail' 
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={() => {}}
+                        onChangeText={(val) => {emailHandler(val)}}
                         />
-                    <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View>
+                    {validEmail ? <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View> : null}
                 </View>
                 
                 <Text style={[styles.text_footer,{marginTop:35}]} >Password</Text>
@@ -58,7 +86,7 @@ const SignInScreen = props => {
                         secureTextEntry={touched ? false : true}
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={() => {}}
+                        onChangeText={(val) => {passwordHandler(val)}}
                         />
                     <TouchableOpacity onPress={passwordViewHandler}>
                         {touched ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
@@ -72,9 +100,7 @@ const SignInScreen = props => {
                 </TouchableOpacity>
 
                 {/* LOGIN */}
-                <TouchableOpacity onPress={() => {
-                    props.navigation.navigate('Home')
-                }} >
+                <TouchableOpacity onPress={navigateHandler} >
                     <View style={styles.button}>
                         <View style={styles.signIn}>
                             <Text style={[styles.textSign,{color:'#fff'}]} >Login</Text>

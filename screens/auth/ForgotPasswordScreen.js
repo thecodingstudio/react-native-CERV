@@ -36,7 +36,6 @@ const ForgotPasswordScreen = props => {
                 <View style={styles.action} >
                     <FontAwesome name="envelope" color={Colors.orange} size={20}/>
                     <TextInput 
-                        value={forgotPasswordEmail}
                         placeholder='Your E-mail' 
                         style={styles.textInput}
                         autoCapitalize="none"

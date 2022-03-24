@@ -2,60 +2,43 @@ import React, { useState } from "react";
 import { View, StyleSheet, Image, Text, Modal, TextInput } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import * as ImagePicker from 'expo-image-picker';
 
 import Colors from "../../../constants/Colors";
 import Users from "../../../model/users";
 
 const EditDetailScreen = props => {
 
-    const [modalVisible, setModalVisible] = useState(false)
+    const [ selectedImage, setSelectedImage ] = useState(null)
+    let openImagePickerAsync = async() => {
+        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (permissionResult.granted === false) {
+            alert("Permission to access camera roll is required!");
+            return;
+          }
+      
+            let pickerResult = await ImagePicker.launchImageLibraryAsync();
+            
+            if (pickerResult.cancelled === true) {
+                return;
+              }
+              
+              console.log(pickerResult)
 
-    const [ppImage, setPPImage] = useState(Users.profile_picture);
-
-    const ppChangeHandler = (val) => {
-        setPPImage(val);
-    }
+              setSelectedImage({ localUri: pickerResult.uri });
+        }
 
     return (
+        <KeyboardAwareScrollView>
         <View style={styles.screen}>
             
-            {/* <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-            >
-                <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        <Text style={{fontSize:18, marginBottom:25}} >Enter Image URL</Text>
-                        <View style={{borderBottomColor:'#ccc', borderBottomWidth:0.5, width:'80%',alignItems:'center'}}>
-                            <TextInput 
-                                placeholder="Enter Image URL"
-                                autoCapitalize="none"
-                                onChangeText={(val) => {
-                                    ppChangeHandler(val)
-                                }}
-                            />
-                        </View>
-                        <View style={{width:'80%'}} >
-                            <TouchableOpacity onPress={() => {
-                                    console.log(ppImage)
-                                    setModalVisible(!modalVisible)
-                                }} >
-                                <View style={styles.button}>
-                                    <Text style={styles.editText}>Save</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal> */}
-
             {/* PROFILE PICTURE */}
             <View style={styles.ppContainer}>
-                <Image source={{uri: Users.profile_picture }} style={styles.ppImage}/>
+                {selectedImage ? <Image source={{ uri: selectedImage.localUri }} style={{height:180,width:180}}/> : <Image source={{uri: Users.profile_picture}} style={styles.ppImage}/>}
             </View>
             <View style={{height:50, width:'100%',alignItems:'center'}}>
-                <TouchableOpacity onPress={() => {setModalVisible(true)}} hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }}>
+                <TouchableOpacity  onPress={() => {openImagePickerAsync}} hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }}>
                     <View style={styles.ppEdit}>
                         <FontAwesome name="camera" color='white' size={25}/>
                         <Text style={styles.changePP} >Change Profile Picture</Text>
@@ -72,7 +55,7 @@ const EditDetailScreen = props => {
                     <FontAwesome name="user" color={Colors.orange} size={20}/>
                     <View style={styles.input}>
                     <TextInput 
-                            value={Users.username}
+                            placeholder={Users.username}
                             style={styles.input}
                         />
                     </View>
@@ -86,7 +69,8 @@ const EditDetailScreen = props => {
                     <FontAwesome name="envelope" color={Colors.orange} size={20}/>
                     <View style={styles.input}>
                     <TextInput 
-                            value={Users.email}
+                            keyboardType="email-address"
+                            placeholder={Users.email}
                             style={styles.input}
                         />
                     </View>
@@ -100,7 +84,8 @@ const EditDetailScreen = props => {
                     <FontAwesome name="phone" color={Colors.orange} size={20}/>
                     <View style={styles.input}>
                     <TextInput 
-                            value={Users.phone_number}
+                            keyboardType="phone-pad"
+                            placeholder={Users.phone_number}
                             style={styles.input}
                         />
                     </View>
@@ -114,12 +99,15 @@ const EditDetailScreen = props => {
                     <FontAwesome name="home" color={Colors.orange} size={20}/>
                     <View style={styles.input}>
                         <TextInput 
-                            value={Users.post_code}
+                            keyboardType="numeric"
+                            placeholder={Users.post_code}
                             style={styles.input}
                         />
                     </View>
                 </View>
             </View>
+
+            
 
             {/* Save Button */}
             <View style={{width:'100%', justifyContent:'center'}}>
@@ -132,6 +120,7 @@ const EditDetailScreen = props => {
                 </TouchableOpacity>
             </View>
         </View>
+        </KeyboardAwareScrollView>
     )
 };
 
@@ -221,10 +210,6 @@ const styles = StyleSheet.create({
         borderRadius:25,
         alignItems:'center',
         justifyContent:'center',
-        // position:'absolute',
-        // zIndex:10,
-        // left: 0,
-        // bottom: 0
     },
     changePP:{
         textAlign:'center',
