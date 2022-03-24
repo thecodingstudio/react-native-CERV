@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Image, Text, TouchableOpacity, Modal, TextInput } from "react-native";
+import { View, StyleSheet, Image, Text, Modal, TextInput } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 import Colors from "../../../constants/Colors";
 import Users from "../../../model/users";
@@ -18,7 +19,7 @@ const EditDetailScreen = props => {
     return (
         <View style={styles.screen}>
             
-            <Modal
+            {/* <Modal
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
@@ -47,16 +48,17 @@ const EditDetailScreen = props => {
                         </View>
                     </View>
                 </View>
-            </Modal>
+            </Modal> */}
 
             {/* PROFILE PICTURE */}
             <View style={styles.ppContainer}>
                 <Image source={{uri: Users.profile_picture }} style={styles.ppImage}/>
             </View>
-            <View style={{height:50, width:50}}>
-                <TouchableOpacity onPress={() => {setModalVisible(true)}} >
+            <View style={{height:50, width:'100%',alignItems:'center'}}>
+                <TouchableOpacity onPress={() => {setModalVisible(true)}} hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }}>
                     <View style={styles.ppEdit}>
                         <FontAwesome name="camera" color='white' size={25}/>
+                        <Text style={styles.changePP} >Change Profile Picture</Text>
                     </View>
                 </TouchableOpacity>
             </View>
@@ -180,7 +182,7 @@ const styles = StyleSheet.create({
         height:50,
         justifyContent:'center',
         borderRadius:10,
-        marginTop: 50,
+        marginTop: 5,
         marginHorizontal:'5%'
     },
     editText:{
@@ -213,16 +215,24 @@ const styles = StyleSheet.create({
     },
     ppEdit:{
         backgroundColor: Colors.orange,
+        flexDirection:'row',
         height:50,
-        width:50,
+        width:200,
         borderRadius:25,
         alignItems:'center',
         justifyContent:'center',
-        position:'absolute',
-        zIndex:10,
-        left: 75,
-        bottom: 30
-    }
+        // position:'absolute',
+        // zIndex:10,
+        // left: 0,
+        // bottom: 0
+    },
+    changePP:{
+        textAlign:'center',
+        color:'white',
+        fontSize:15,
+        fontWeight:'700',
+        marginHorizontal:5
+    },
 });
 
 export default EditDetailScreen;

@@ -28,7 +28,8 @@ const MainTabScreen = () => {
             initialRouteName='Home'
             tabBarOptions={{
                 activeTintColor: Colors.orange,
-            }}>
+            }}
+            >
                 
             <Tab.Screen 
                 name="Home" 
@@ -84,7 +85,11 @@ export default MainTabScreen;
 
 const HomeStack = createStackNavigator();
 const HomeStackScreen = ({ navigation }) => {
-    return(<HomeStack.Navigator>
+    return(<HomeStack.Navigator
+        screenOptions={{
+            headerTitleAlign:'center'
+        }}
+    >
         <HomeStack.Screen 
             name="Home" 
             component={HomeScreen}
@@ -98,7 +103,11 @@ const HomeStackScreen = ({ navigation }) => {
 
 const SearchStack = createStackNavigator();
 const SearchStackScreen = ({ navigation }) => {
-    return(<SearchStack.Navigator>
+    return(<SearchStack.Navigator
+            screenOptions={{
+                headerTitleAlign:'center'
+            }}
+        >
         <SearchStack.Screen 
             name="Search" 
             component={SearchScreen}
@@ -112,7 +121,11 @@ const SearchStackScreen = ({ navigation }) => {
 
 const OrdersStack = createStackNavigator();
 const OrdersStackScreen = ({ navigation }) => {
-    return(<OrdersStack.Navigator>
+    return(<OrdersStack.Navigator
+        screenOptions={{
+            headerTitleAlign:'center'
+        }}
+    >
         <OrdersStack.Screen 
             name="Orders" 
             component={OrdersScreen}
@@ -126,7 +139,11 @@ const OrdersStackScreen = ({ navigation }) => {
 
 const ChatStack = createStackNavigator();
 const ChatStackScreen = ({ navigation }) => {
-    return(<ChatStack.Navigator>
+    return(<ChatStack.Navigator
+        screenOptions={{
+            headerTitleAlign:'center'
+        }}
+    >
         <ChatStack.Screen 
             name="Chat" 
             component={ChatScreen}
@@ -156,7 +173,8 @@ const ProfileStackScreen = ({ navigation }) => {
             headerTitleStyle:{
                 color:'black',
                 fontSize:22,
-            }
+            },
+            headerTitleAlign:'center'
           }}
         >
         <ProfileStack.Screen 
@@ -222,7 +240,7 @@ const ProfileStackScreen = ({ navigation }) => {
             component={AddCard}
             options={{
                 headerBackTitleVisible: false,
-                headerTitle:"Add Card"
+                headerTitle:"Add New Card"
             }}
         />
     </ProfileStack.Navigator>)

@@ -13,7 +13,7 @@ const SavedCards = props => {
         <View style={styles.screen} > 
             
             {/* SAVED CARDS */}
-            <View style={styles.savedCards}>
+            <View style={[styles.savedCards,{borderBottomColor:'#ccc', borderBottomWidth:2}]}>
                 <View style={styles.textRow} >
                     <Text style={styles.title} >Saved Cards</Text>
                     <TouchableOpacity onPress={ () => {
@@ -37,10 +37,12 @@ const SavedCards = props => {
                 
             </View>
 
-            <View style={{width:'100%',height:0,borderBottomColor:'#ccc',borderBottomWidth:10}} ></View>
-
             {/* OTHER PAYMENT MODES */}
-            <View style={{flex:1}}>
+            <View style={styles.savedCards}>
+            
+                <View style={styles.textRow} >
+                    <Text style={styles.title} >Other Payment Methods</Text>
+                </View>
 
                 {/* CARDS */}
                 <OtherPaymentDisplay 
@@ -55,7 +57,14 @@ const SavedCards = props => {
                     id = { otherPayment.GooglePay.id }
                 />
 
+                    <TouchableOpacity >
+                        <View style={styles.bottomButton} >
+                            <Text style={styles.makePayment}>Make Payment</Text>
+                        </View>
+                    </TouchableOpacity>
+
             </View>
+            
         </View>
     )
 };
@@ -85,6 +94,20 @@ const styles = StyleSheet.create({
         color: Colors.orange,
         fontWeight:'600'
     },
+    bottomButton:{
+        justifyContent:'center',
+        alignItems:'center',
+        width:'100%',
+        height:40,
+        marginTop:15,
+        backgroundColor:Colors.orange,
+        borderRadius:5
+    },
+    makePayment:{
+        color:'white',
+        fontSize:20,
+        fontWeight:'700'
+    }
 });
 
 export default SavedCards;
