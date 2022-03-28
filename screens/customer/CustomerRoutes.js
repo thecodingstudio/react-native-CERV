@@ -9,7 +9,9 @@ import Colors from '../../constants/Colors';
 import HomeScreen from'./HomeScreen';
 import SearchScreen from'./SearchScreen';
 import OrdersScreen from'./OrdersScreen';
-import ChatScreen from'./ChatScreen';
+
+import ChatScreen from'./chat/ChatScreen';
+import MessagesScreen from './chat/MessagesScreen';
 
 import ProfileScreen from'./profile/ProfileScreen';
 import SavedAddresses from './profile/SavedAddresses';
@@ -24,6 +26,15 @@ import AddCard from './profile/payment/AddCard';
 
 const Tab = createBottomTabNavigator()
 const CustomerRoutes = () => {
+    const getTabBarVisibility = (route) => {
+        const routeName = route.state ? route.state.routes[route.state.index].name : '' ;
+
+        if(routeName === 'Chat') {
+            return false;
+        }
+        return true;
+    }
+
     return(
         <Tab.Navigator 
             initialRouteName='Home'
@@ -60,14 +71,15 @@ const CustomerRoutes = () => {
                     )
                 }}/>
             <Tab.Screen 
-                name="Chat" 
+                name="ChatScreen" 
                 component={ChatStackScreen}
-                options={{
+                options={ ({route}) => ({ 
+                    tabBarVisible: getTabBarVisibility(route),
                     tabBarLabel:'Chat',
                     tabBarIcon: ({color}) => (
                         <Icon name="chatbubble-ellipses-outline" type='ionicon' color={color} size={25}/>
                     )
-                }}/>
+                })}/>
             <Tab.Screen 
                 name="Profile" 
                 component={ProfileStackScreen}
@@ -141,16 +153,33 @@ const OrdersStackScreen = ({ navigation }) => {
 const ChatStack = createStackNavigator();
 const ChatStackScreen = ({ navigation }) => {
     return(<ChatStack.Navigator
+        initialRouteName='Messages'
         screenOptions={{
+            headerStyle: {
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 3.84,
+                elevation: 5,
+            },
             headerTitleAlign:'center'
         }}
     >
         <ChatStack.Screen 
+            name="Messages"
+            component={MessagesScreen}
+            options={{
+                headerTitle:'Chat',
+                headerLeft: () => null
+            }}
+        />
+        <ChatStack.Screen 
             name="Chat" 
             component={ChatScreen}
-            options={{
-                headerLeft: () => null,
-            }}
+            options={ ({route}) => ({ title: route.params.userName }) }
         />
     </ChatStack.Navigator>)
 };
