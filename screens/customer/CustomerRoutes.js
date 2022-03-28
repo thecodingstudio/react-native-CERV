@@ -10,19 +10,20 @@ import HomeScreen from'./HomeScreen';
 import SearchScreen from'./SearchScreen';
 import OrdersScreen from'./OrdersScreen';
 import ChatScreen from'./ChatScreen';
-import ProfileScreen from'./ProfileScreen';
+
+import ProfileScreen from'./profile/ProfileScreen';
 import SavedAddresses from './profile/SavedAddresses';
-import PersonalInformationScreen from './profile/PersonalInformationScreen';
+import PersonalInformationScreen from './profile/personal_information/PersonalInformationScreen';
+import EditDetailScreen from './profile/personal_information/EditDetailsScreen';
 import MyFavourites from './profile/MyFavourites';
 import ChangePassword from './profile/ChangePassword';
-import EditDetailScreen from './profile/EditDetailsScreen';
-import SavedCards from './payment/SavedCards';
-import AddCard from './payment/AddCard';
+import SavedCards from './profile/payment/SavedCards';
+import AddCard from './profile/payment/AddCard';
 
 
 
 const Tab = createBottomTabNavigator()
-const MainTabScreen = () => {
+const CustomerRoutes = () => {
     return(
         <Tab.Navigator 
             initialRouteName='Home'
@@ -80,7 +81,7 @@ const MainTabScreen = () => {
     );
 };
 
-export default MainTabScreen;
+export default CustomerRoutes;
 
 
 const HomeStack = createStackNavigator();

@@ -5,8 +5,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as ImagePicker from 'expo-image-picker';
 
-import Colors from "../../../constants/Colors";
-import Users from "../../../model/users";
+import Colors from "../../../../constants/Colors";
+import Users from "../../../../model/users";
 
 const EditDetailScreen = props => {
 

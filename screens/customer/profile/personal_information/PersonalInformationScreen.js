@@ -2,8 +2,8 @@ import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import Colors from "../../../constants/Colors";
-import Users from "../../../model/users";
+import Colors from "../../../../constants/Colors";
+import Users from "../../../../model/users";
 
 const PersonalInformationScreen = props => {
     return (

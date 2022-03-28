@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
-import Users from '../../model/users';
-import ProfileOption from '../../components/profileOption';
+import Users from '../../../model/users';
+import ProfileOption from '../../../components/profileOption';
 
 const ProfileScreen = props => {
     

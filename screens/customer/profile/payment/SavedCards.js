@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import Colors from "../../../constants/Colors";
+import Colors from "../../../../constants/Colors";
 
-import CardDisplay from "../../../components/CardDisplay";
-import OtherPaymentDisplay from "../../../components/OtherPaymentDisplay";
+import CardDisplay from "../../../../components/CardDisplay";
+import OtherPaymentDisplay from "../../../../components/OtherPaymentDisplay";
 
-import cards from "../../../model/cards";
-import otherPayment from "../../../model/otherPayment";
+import cards from "../../../../model/cards";
+import otherPayment from "../../../../model/otherPayment";
 
 const SavedCards = props => {
     return(

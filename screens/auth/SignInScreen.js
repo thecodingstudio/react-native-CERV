@@ -6,10 +6,12 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import Users from '../../model/users';
+
 import Colors from '../../constants/Colors';
 
 const SignInScreen = props => {
+
+    const [inputTouched, setInputTouched] = useState(false);
 
     const [touched, setTouched] = useState(false)
     const passwordViewHandler = () => {
@@ -26,15 +28,12 @@ const SignInScreen = props => {
     const [password, setPassword] = useState('');
     const passwordHandler = (val) => {
         setPassword(val);
+        if(password.length>4){
+            setValidPassword(true);
+        }
     }
 
     const navigateHandler = () => {
-        if(password.length>4){
-            setValidPassword(true);
-        } else {
-            Alert.alert("Password too short!","Password should be atleast 5 characters long.",[{text:"Okay"}]);
-            return;
-        }
         if( validEmail && validPassword ) {
             props.navigation.navigate('Home');
         } else {
@@ -74,6 +73,7 @@ const SignInScreen = props => {
                         style={styles.textInput}
                         autoCapitalize="none"
                         onChangeText={(val) => {emailHandler(val)}}
+                        keyboardType="email-address"
                         />
                     {validEmail ? <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View> : null}
                 </View>
@@ -87,11 +87,13 @@ const SignInScreen = props => {
                         style={styles.textInput}
                         autoCapitalize="none"
                         onChangeText={(val) => {passwordHandler(val)}}
+                        onFocus = { () => setInputTouched(true) }
                         />
                     <TouchableOpacity onPress={passwordViewHandler}>
                         {touched ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
                     </TouchableOpacity>
                 </View>
+                { inputTouched ? (validPassword ? null : <Text style={{color:'red'}} >Password Invalid.</Text>) : null}
 
                 <TouchableOpacity onPress={()=>{
                     props.navigation.navigate('ForgotPassword')
@@ -166,7 +168,8 @@ const styles = StyleSheet.create({
         marginTop:10,
         borderBottomWidth:1,
         borderBottomColor:Colors.grey,
-        paddingBottom: 10
+        paddingBottom: 10,
+        marginBottom:5
     },
     textInput:{
        flex:1,
