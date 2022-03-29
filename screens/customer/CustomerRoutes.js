@@ -3,16 +3,28 @@ import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
 import { Icon } from 'react-native-elements';
+import Feather from 'react-native-vector-icons/Feather';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import Colors from '../../constants/Colors';
 
-import HomeScreen from'./HomeScreen';
+// Home Screens
+import HomeScreen from'./home/HomeScreen';
+import NotificationScreen from './home/NotificationScreen';
+import FAQScreen from './home/FAQScreen';
+import FilterScreen from './home/FilterScreen';
+
+// Search Screens
 import SearchScreen from'./SearchScreen';
+
+//Orders Screens
 import OrdersScreen from'./OrdersScreen';
 
+//Chat Screens
 import ChatScreen from'./chat/ChatScreen';
 import MessagesScreen from './chat/MessagesScreen';
 
+//Profile Screens
 import ProfileScreen from'./profile/ProfileScreen';
 import SavedAddresses from './profile/SavedAddresses';
 import PersonalInformationScreen from './profile/personal_information/PersonalInformationScreen';
@@ -29,7 +41,7 @@ const CustomerRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = route.state ? route.state.routes[route.state.index].name : '' ;
 
-        if(routeName === 'Chat') {
+        if(routeName === 'Chat' || routeName === 'FAQ') {
             return false;
         }
         return true;
@@ -46,12 +58,13 @@ const CustomerRoutes = () => {
             <Tab.Screen 
                 name="Home" 
                 component={HomeStackScreen}
-                options={{
+                options={ ({route}) => ({ 
+                    tabBarVisible: getTabBarVisibility(route),
                     tabBarLabel:'Home',
                     tabBarIcon: ({color}) => (
                         <Icon name="home" type='simple-line-icon' color={color} size={25}/>
                     ),
-                }}/>
+                })}/>
             <Tab.Screen 
                 name="Search" 
                 component={SearchStackScreen}
@@ -108,9 +121,43 @@ const HomeStackScreen = ({ navigation }) => {
             component={HomeScreen}
             options={{ 
                 headerTitle: props => <Image source={require('../../assets/Icons/icons8-pie-100.png')} style={{height:35, width:35}}/>,
-                headerLeft: () => null,
+                headerLeft: () => 
+                <TouchableOpacity style={{marginLeft:15, alignItems:'center'}} onPress={ () => {navigation.navigate('FAQ')} } >
+                    <Feather name="help-circle" size={25} color={Colors.grey}/>
+                </TouchableOpacity>,
+                headerRight: () => (
+                    <TouchableOpacity style={{marginRight:15, alignItems:'center'}} onPress={ () => {navigation.navigate('Notification')} } >
+                        <Feather name="bell" size={25} color={Colors.grey}/>
+                    </TouchableOpacity>
+                )
          }}
         />
+        <HomeStack.Screen name="Notification" component={NotificationScreen} options={{
+            headerStyle: {
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 3.84,
+                elevation: 5,
+            },
+        }}/>
+
+        <HomeStack.Screen name="FAQ" component={FAQScreen} />
+
+        <HomeStack.Screen 
+            name="SavedAddresses"
+            component={SavedAddresses}
+            options={{
+                headerBackTitleVisible: false,
+                headerTitle:"Saved Addresses",
+            }}
+        />
+
+        <HomeStack.Screen name="Filter" component={FilterScreen} options={{headerShown:false}}/>
+
     </HomeStack.Navigator>)
 };
 
@@ -235,7 +282,7 @@ const ProfileStackScreen = ({ navigation }) => {
             component={SavedAddresses}
             options={{
                 headerBackTitleVisible: false,
-                headerTitle:"Saved Addresses"
+                headerTitle:"Saved Addresses",
             }}
         />
         <ProfileStack.Screen 

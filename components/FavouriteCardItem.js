@@ -32,6 +32,7 @@ const FavouriteCardItem = props => {
                     <View>
                         <Text style={{ fontWeight: 'bold' }}>{props.name}</Text>
                         <Text style={{ fontWeight: '800', marginTop: 3 }} >{props.address}</Text>
+                        <Text style={{fontWeight: '800', marginTop: 3 }}>{props.price}</Text>
                         <View style={{ marginTop: 3 }} >
                             <Stars rating={props.rating} />
                         </View>
