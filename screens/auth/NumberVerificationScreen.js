@@ -6,7 +6,6 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import Colors from '../../constants/Colors';
-import { interpolate } from 'react-native-reanimated';
 
 const NumberVerificationScreen = props => {
 

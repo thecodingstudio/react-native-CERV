@@ -1,4 +1,4 @@
-export default Caterer = [
+let Caterer = [
     {
         id:1,
         name:"St. John & St. Thomas Catering",
@@ -6,7 +6,7 @@ export default Caterer = [
         address:"3200 Williams Street, Nathan Road, MA",
         rating: 4 ,
         food_category:"Chinese Food",
-        price:"$80/Per Dish",
+        price:80,
         image:"https://theclubmumbai.com/wp-content/uploads/2019/09/j009-2.jpg",
         bio:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     },
@@ -17,8 +17,10 @@ export default Caterer = [
         address:"250, Johnson Street, Washington DC, USA",
         rating: 4,
         food_category:"Continental Food",
-        price:"$75/Per Dish",
+        price:75,
         image:"https://5.imimg.com/data5/DU/RH/JA/ANDROID-24797380/product-jpeg-500x500.jpg",
         bio:"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
     }
 ]
+
+export default Caterer;

@@ -1,10 +1,8 @@
-import React, { useState } from "react";
-import { View, FlatList, StyleSheet, Text, ImageBackground, Image, Dimensions } from "react-native";
+import React from "react";
+import { View, FlatList, StyleSheet } from "react-native";
 import FavouriteCardItem from "../../../components/FavouriteCardItem";
-import Ionicon from 'react-native-vector-icons/Ionicons';
 
 import Caterer from '../../../model/caterer';
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 const MyFavourites = props => {
 

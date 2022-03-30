@@ -5,6 +5,7 @@ import { Image } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Feather from 'react-native-vector-icons/Feather';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 import Colors from '../../constants/Colors';
 
@@ -12,7 +13,8 @@ import Colors from '../../constants/Colors';
 import HomeScreen from'./home/HomeScreen';
 import NotificationScreen from './home/NotificationScreen';
 import FAQScreen from './home/FAQScreen';
-import FilterScreen from './home/FilterScreen';
+import SortScreen from './home/SortScreen';
+import DetailScreen from './home/DetailScreen';
 
 // Search Screens
 import SearchScreen from'./SearchScreen';
@@ -39,11 +41,10 @@ import AddCard from './profile/payment/AddCard';
 const Tab = createBottomTabNavigator()
 const CustomerRoutes = () => {
     const getTabBarVisibility = (route) => {
-        const routeName = route.state ? route.state.routes[route.state.index].name : '' ;
+        const routeName = getFocusedRouteNameFromRoute(route);
+        const hideOnScreens = ['Chat','FAQ','Details','AddCard','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
 
-        if(routeName === 'Chat' || routeName === 'FAQ') {
-            return false;
-        }
+        if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
     }
 
@@ -96,12 +97,13 @@ const CustomerRoutes = () => {
             <Tab.Screen 
                 name="Profile" 
                 component={ProfileStackScreen}
-                options={{
+                options={ ({route}) => ({
+                    tabBarVisible: getTabBarVisibility(route),
                     tabBarLabel:'Profile',
                     tabBarIcon: ({color}) => (
                         <Icon name="user" type='simple-line-icon' color={color} size={25}/>
                     )
-                }}/>
+                    })}/>
         </Tab.Navigator>
     );
 };
@@ -112,6 +114,7 @@ export default CustomerRoutes;
 const HomeStack = createStackNavigator();
 const HomeStackScreen = ({ navigation }) => {
     return(<HomeStack.Navigator
+        initialRouteName='Home'
         screenOptions={{
             headerTitleAlign:'center'
         }}
@@ -156,7 +159,9 @@ const HomeStackScreen = ({ navigation }) => {
             }}
         />
 
-        <HomeStack.Screen name="Filter" component={FilterScreen} options={{headerShown:false}}/>
+        <HomeStack.Screen name="Sort" component={SortScreen} options={{headerShown:false}}/>
+
+        <HomeStack.Screen name="Details" component={DetailScreen}/>
 
     </HomeStack.Navigator>)
 };
@@ -322,3 +327,4 @@ const ProfileStackScreen = ({ navigation }) => {
         />
     </ProfileStack.Navigator>)
 };
+
