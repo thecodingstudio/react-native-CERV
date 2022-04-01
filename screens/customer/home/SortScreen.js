@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from 'react-native';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicon from 'react-native-vector-icons/Ionicons';
@@ -14,7 +14,7 @@ const SortScreen = props => {
 
     const [activeFilter, setActiveFilter] = useState('')
 
-    const ratingFilter = () => {
+    const ratingFilter = (val) => {
         setRatings(!ratings);
         setPriceHL(false);
         setPriceLH(false);
@@ -54,8 +54,10 @@ const SortScreen = props => {
         } else {
             setActiveFilter('')
         }
-        props.navigation.goBack()
+        props.navigation.navigate('Home');
     };
+
+    
 
 
     return(

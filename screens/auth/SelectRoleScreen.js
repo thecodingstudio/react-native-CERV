@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 import Button from '../../components/Button';
@@ -26,71 +26,52 @@ const SelectRoleScreen = props => {
 
 
     return(
-        <SafeAreaView>
-            <View style={styles.screen} >
-
-                {/* Title Text ----> */}
-                <View style={styles.header} >
-                    <Text style={styles.title} >Select your Role</Text>
-                    <Text style={styles.text} >How do you want to use <Text style={styles.CERV} >CERV ?</Text></Text>
-                </View>
-
-                {/* Roles Section ----> */}
-                <View style={styles.body}>
-                    <Roles style={styles.roles} title="Customer" image={ customerActive ? require('../../assets/Icons/icons8-user-100-active.png') : require('../../assets/Icons/icons8-user-100-inactive.png')} onClick={customerActiveHandler} />
-                    <Roles style={styles.roles} title="Caterer" image={ catererActive ? require('../../assets/Icons/icons8-restuarant-100-active.png') : require('../../assets/Icons/icons8-restuarant-100-inactive.png')} onClick={catererActiveHandler} />
-                </View>
-
-                {/* Button ---->*/}
-                <View style={styles.footer} >
-                    {showButton && <Button 
-                    style={styles.button}
-                    title={customerActive ? 'I\'m a Customer' : 'I\'m a Caterer'}
-                    onPress={()=>{
-                        props.navigation.navigate('SignInScreen');
-                    }}
-                    />}
-                </View>
-
+        <View style={styles.screen}>
+            
+            {/* Header (Title) */}
+            <View style={{flex:1,width:'100%', padding:10}}>
+                <Text style={{fontWeight:'bold',fontSize:40}}>Select your Role</Text>
+                <Text style={{color:Colors.grey,marginVertical:7,fontWeight:'bold', fontSize:25}}>How do you want to use <Text style={{color:Colors.orange}}>CERV ?</Text></Text>
             </View>
-        </SafeAreaView>
+
+            {/* Body (Options) */}
+            <View style={{flex:8}}>
+                <View style={{flex:4, justifyContent:'center', alignItems:'center'}}>
+                    <TouchableOpacity onPress={customerActiveHandler}>
+                        <View style={{alignItems:'center', justifyContent:'center', borderRadius:125, height:250, width:250, borderColor:customerActive? Colors.orange : '#ccc', borderWidth:1.5}}>
+                            <Image source={require('../../assets/Icons/002-man.png')} style={{height:150, width:150, opacity: customerActive ? 1:0.3}}/>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={{flex:4, justifyContent:'center', alignItems:'center'}}>
+                    <TouchableOpacity onPress={catererActiveHandler}>
+                        <View style={{alignItems:'center', justifyContent:'center', borderRadius:125, height:250, width:250, borderColor:catererActive ? Colors.orange :'#ccc', borderWidth:1.5}}>
+                            <Image source={require('../../assets/Icons/001-cafe.png')} style={{height:150, width:150,opacity: catererActive ? 1:0.3}}/>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            {/* Footer (Button) */}
+            <View style={{flex:1 ,width:'100%', paddingHorizontal:15, paddingBottom:10,justifyContent:'center'}}>
+                {showButton ? <Button 
+                    onPress={ () => {
+                        props.navigation.navigate('SignInScreen')
+                    }}
+                    title = { customerActive ? " I'm Customer" : "I'm Caterer" }
+                /> : null }
+            </View>
+
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     screen:{
-        justifyContent:'center',
+        flex:1,
         alignItems:'center',
-        height:'100%',
-        width:'100%'
-    },
-    header:{
-        flex:1,
-        width:'100%',
-        padding:20
-    },
-    body:{
-        flex:3,
-        justifyContent:'space-between',
-        alignItems:'center'
-    },
-    footer:{
-        flex:1,
-        justifyContent:'flex-end',
-        width:'80%',
-        paddingBottom:10
-    },
-    title:{
-        fontWeight:'bold',
-        fontSize: 35
-    },
-    text:{
-        fontWeight:'bold',
-        fontSize:20,
-        color:Colors.grey
-    },
-    CERV:{
-        color:Colors.orange
+        justifyContent:'center',
+        backgroundColor:'#fff'
     }
 });
 

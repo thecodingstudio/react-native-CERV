@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
 import Feather from 'react-native-vector-icons/Feather';
 
-import Users from '../../../model/users';
 import Colors from "../../../constants/Colors";
 
 const ChangePassword = props => {
@@ -43,10 +42,9 @@ const ChangePassword = props => {
                 <View style={styles.action} >
                     <TextInput 
                         editable={false}
-                        value={Users.password}
-                        placeholder={Users.password}
+                        placeholder="Please enter current password"
                         secureTextEntry={ptouched ? false : true}
-                        style={{paddingHorizontal:10, color:'black'}}
+                        style={{paddingHorizontal:10, color:'black', width:250}}
                     />
                     <TouchableOpacity onPress={ () => setPTouched(!ptouched)}>
                         {ptouched ? <Feather name="eye" color={Colors.orange} size={20}/> : <Feather name="eye" color="grey" size={20}/>}
@@ -101,7 +99,7 @@ const styles = StyleSheet.create({
     label:{
         fontSize:20,
         fontWeight:'800',
-        color:Colors.grey,
+        color:'#444',
         marginTop:10
     },
     action:{
@@ -118,19 +116,3 @@ const styles = StyleSheet.create({
 });
 
 export default ChangePassword;
-
-//<Text style={[styles.text_footer,{marginTop:35}]} >Password</Text>
-//<View style={styles.action} >
-//    <FontAwesome name="lock" color={Colors.orange} size={20}/>
-//   <TextInput 
-//        placeholder='Your Password'
-//        secureTextEntry={touched ? false : true}
-//        style={styles.textInput}
-//        autoCapitalize="none"
-//        onChangeText={(val) => {passwordHandler(val)}}
-//        onFocus = { () => setInputTouched(true) }
-//        />
-//   <TouchableOpacity onPress={passwordViewHandler}>
-//        {touched ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
-//    </TouchableOpacity>
-//</View> 

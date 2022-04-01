@@ -2,17 +2,16 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, ScrollView } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
-import { SliderBox } from "react-native-image-slider-box";
-import FastImage from 'react-native-fast-image';
+import Carousel, { ParallaxImage } from 'react-native-snap-carousel';
 
 import Caterer from '../../../model/caterer';
 import discountCouponsBanners from '../../../model/discountCouponBanners';
 import Addresses from '../../../model/addresses';
 import HeartIconHome from '../../../components/HeartIconHome';
 
-const HomeScreen = props => {
+const windowWidth = Dimensions.get("window").width;
 
-    const windowWidth = Dimensions.get("window").width;
+const HomeScreen = props => {
 
     const activeAddress = Addresses.find(item => {return(item.isActive===true)})
 
@@ -32,6 +31,20 @@ const HomeScreen = props => {
 
     }
 
+    const renderCarouselItem = ({item,index}, parallaxProps) => {
+        return (
+            <View style={styles.item}>
+                <ParallaxImage
+                    source={item}
+                    containerStyle={styles.imageContainer}
+                    style={styles.imageCarousel}
+                    parallaxFactor={0.4}
+                    {...parallaxProps}
+                />
+            </View>
+        );
+    }
+
     return (
         <>
             {/* Address Bar */}
@@ -48,39 +61,15 @@ const HomeScreen = props => {
             </View>
 
             <ScrollView>
-                <SliderBox
-                    ImageComponent={FastImage}
-                    images={discountCouponsBanners}
-                    sliderBoxHeight={200}
-                    onCurrentImagePressed={index => console.warn(`image ${index} pressed`)}
-                    dotColor="#FFEE58"
-                    inactiveDotColor="#90A4AE"
-                    paginationBoxVerticalPadding={20}
-                    autoplay
-                    circleLoop
-                    resizeMethod={'resize'}
-                    resizeMode={'cover'}
-                    paginationBoxStyle={{
-                        position: "absolute",
-                        bottom: 0,
-                        padding: 0,
-                        alignItems: "center",
-                        alignSelf: "center",
-                        justifyContent: "center",
-                        paddingVertical: 10
-                    }}
-                    dotStyle={{
-                        width: 10,
-                        height: 10,
-                        borderRadius: 5,
-                        marginHorizontal: 0,
-                        padding: 0,
-                        margin: 0,
-                        backgroundColor: "rgba(0, 255, 255, 0.92)"
-                    }}
-                    ImageComponentStyle={{borderRadius: 15, width: '90%', marginTop: 15}}
-                    imageLoadingColor="#2196F3"
+                <Carousel
+                    sliderWidth={windowWidth}
+                    sliderHeight={windowWidth}
+                    itemWidth={windowWidth - 60}
+                    data={discountCouponsBanners}
+                    renderItem={renderCarouselItem}
+                    hasParallaxImages={true}
                 />
+
                 
                 <View style={{alignItems:'center'}}>
                     <View style={{marginVertical:15,flexDirection:'row',width:'90%',alignItems:'center',justifyContent:'space-between'}}>
@@ -130,7 +119,23 @@ const styles = StyleSheet.create({
         width: '100%', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
-        padding: 20 }
+        padding: 20 
+    },
+    item: {
+        width: windowWidth - 60,
+        height: 200,
+        marginTop:10
+    },
+    imageContainer: {
+        flex: 1,
+        marginBottom: Platform.select({ ios: 0, android: 1 }), // Prevent a random Android rendering issue
+        backgroundColor: 'white',
+        borderRadius: 8,
+    },
+    imageCarousel: {
+        ...StyleSheet.absoluteFillObject,
+        resizeMode: 'contain',
+    },
 });
 
 export default HomeScreen;

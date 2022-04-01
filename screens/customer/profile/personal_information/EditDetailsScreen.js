@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Image, Text, Modal, TextInput } from "react-native";
+import { View, StyleSheet, Image, Text, Modal, TextInput, TouchableOpacity } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import * as ImagePicker from 'expo-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 
 import Colors from "../../../../constants/Colors";
 import Users from "../../../../model/users";
@@ -11,23 +10,29 @@ import Users from "../../../../model/users";
 const EditDetailScreen = props => {
 
     const [ selectedImage, setSelectedImage ] = useState(null)
-    let openImagePickerAsync = async() => {
-        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (permissionResult.granted === false) {
-            alert("Permission to access camera roll is required!");
-            return;
-          }
-      
-            let pickerResult = await ImagePicker.launchImageLibraryAsync();
-            
-            if (pickerResult.cancelled === true) {
-                return;
-              }
-              
-              console.log(pickerResult)
+    const [modalVisible, setModalVisible] = useState(false);
+    const takeFromCamera = () => {
+        ImagePicker.openCamera({
+            width: 100,
+            height: 100,
+            cropping: true,
+          }).then(image => {
+            setSelectedImage(image.path)
+            setModalVisible(!modalVisible)
+          });
+    }
 
-              setSelectedImage({ localUri: pickerResult.uri });
-        }
+    const pickFromGallery = () => {
+        ImagePicker.openPicker({
+            width: 300,
+            height: 400,
+            cropping: true
+          }).then(image => {
+            setSelectedImage(image.path)
+            setModalVisible(!modalVisible)
+          });
+    }
+    
 
     return (
         <KeyboardAwareScrollView>
@@ -35,16 +40,38 @@ const EditDetailScreen = props => {
             
             {/* PROFILE PICTURE */}
             <View style={styles.ppContainer}>
-                {selectedImage ? <Image source={{ uri: selectedImage.localUri }} style={{height:180,width:180}}/> : <Image source={{uri: Users.profile_picture}} style={styles.ppImage}/>}
+                {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:180,width:180}}/> : <Image source={{uri: Users.profile_picture}} style={styles.ppImage}/>}
             </View>
-            <View style={{height:50, width:'100%',alignItems:'center'}}>
-                <TouchableOpacity  onPress={() => {openImagePickerAsync}} hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }}>
-                    <View style={styles.ppEdit}>
-                        <FontAwesome name="camera" color='white' size={25}/>
-                        <Text style={styles.changePP} >Change Profile Picture</Text>
-                    </View>
+            <View style={{height:50,alignItems:'center'}}>
+                <TouchableOpacity  onPress={() => {setModalVisible(true)}} style={styles.ppEdit}>
+                    <FontAwesome name="camera" color='white' size={25}/>
                 </TouchableOpacity>
             </View>
+            <View style={styles.centeredView}>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            setModalVisible(!modalVisible);
+                        }}
+                    >
+                        <View style={styles.centeredView}>
+                            <View style={styles.modalView}>
+                                <Text style={styles.modalText}>Choose option: </Text>
+                                <TouchableOpacity style={[styles.buttonModal, styles.buttonClose]} onPress={pickFromGallery}>   
+                                    <Text style={styles.textStyle}>Choose from gallery</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.buttonModal, styles.buttonClose]} onPress={takeFromCamera}>
+                                    <Text style={styles.textStyle}>Use Camera</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.buttonModal, styles.buttonClose]} onPress={() => {setModalVisible(false)}}>
+                                    <Text style={styles.textStyle}>Close</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+                </View>
 
             {/* DETAILS */}
 
@@ -110,7 +137,7 @@ const EditDetailScreen = props => {
             
 
             {/* Save Button */}
-            <View style={{width:'100%', justifyContent:'center'}}>
+            <View style={{width:'100%', justifyContent:'center', marginTop:25}}>
                 <TouchableOpacity onPress={() => {
                     props.navigation.goBack()
                 }} >
@@ -132,7 +159,7 @@ const styles = StyleSheet.create({
     },
     detailItem:{
         width:'85%',
-        marginTop: 15
+        marginTop: 10
     },
     ppContainer:{
         borderRadius:90,
@@ -206,10 +233,13 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.orange,
         flexDirection:'row',
         height:50,
-        width:200,
+        width:50,
         borderRadius:25,
         alignItems:'center',
         justifyContent:'center',
+        position:'absolute',
+        bottom:75,
+        left:35
     },
     changePP:{
         textAlign:'center',
@@ -218,6 +248,48 @@ const styles = StyleSheet.create({
         fontWeight:'700',
         marginHorizontal:5
     },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    buttonModal: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        marginVertical:5,
+        width:200
+    },
+    buttonClose: {
+        backgroundColor: Colors.orange,
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center",
+        fontWeight:'bold',
+        fontSize:20
+    }
 });
 
 export default EditDetailScreen;

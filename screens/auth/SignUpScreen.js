@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, Image, Dimensions, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity,Modal, StatusBar, Image,Alert, Dimensions, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import * as ImagePicker from 'expo-image-picker';
+import ImagePicker from 'react-native-image-crop-picker'
 
 import Colors from '../../constants/Colors';
 
@@ -29,23 +29,95 @@ const SignUpScreen = props => {
         setTnc(state => !state);
     };
 
-    let openImagePickerAsync = async() => {
-        let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (permissionResult.granted === false) {
-            alert("Permission to access camera roll is required!");
-            return;
-          }
-      
-            let pickerResult = await ImagePicker.launchImageLibraryAsync();
-            
-            if (pickerResult.cancelled === true) {
-                return;
-              }
-              
-              console.log(pickerResult)
+    const [validEmail, setValidEmail] = useState(false)
+    const emailHandler = (val) => {
+        var re = /\S+@\S+\.\S+/;
+        setValidEmail(re.test(val));
+    }
 
-              setSelectedImage({ localUri: pickerResult.uri });
+    const [validUsername, setValidUserName] = useState(false)
+    const userNameHandler = (val) => {
+        if(val.length >= 5){
+            setValidUserName(true);
+        } else {
+            setValidUserName(false);
         }
+    }
+
+    const [password, setPassword] = useState('')
+    const [passwordTouched, setPasswordTouched] = useState(false);
+    const [validPassword, setValidPassword] = useState(false);
+    const passwordHandler = (val) => {
+        setPassword(val)
+        if(password.length >=5) {
+            setValidPassword(true);
+        } else {
+            setValidPassword(false);
+        }
+    };
+
+    const [cPassword, setCPassword] = useState('');
+    const [validCPassword, setValidCPassword] = useState(false);
+    const [cPasswordTouched, setCPasswordTouched] = useState(false);
+    const cPasswordHandler = (val) => {
+        setCPassword(val)
+    }
+    const cPasswordValidator = () => {
+        if(cPassword === password) {
+            setValidCPassword(true)
+        } else {
+            setValidCPassword(false);
+        }
+    }
+
+    const navigateHandler = () => {
+        if(validEmail && validPassword && validCPassword && validUsername && tnc) {
+            props.navigation.navigate('NumberVerificationScreen');
+        } else {
+            Alert.alert("Invalid Credentials","Please check the entered details before logging in.",[{text:"Okay"}]);
+        }
+    };
+
+    // let openImagePickerAsync = async() => {
+    //     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    //     if (permissionResult.granted === false) {
+    //         alert("Permission to access camera roll is required!");
+    //         return;
+    //       }
+      
+    //         let pickerResult = await ImagePicker.launchImageLibraryAsync();
+            
+    //         if (pickerResult.cancelled === true) {
+    //             return;
+    //           }
+              
+    //           console.log(pickerResult)
+
+    //           setSelectedImage({ localUri: pickerResult.uri });
+    //     }
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const takeFromCamera = () => {
+        ImagePicker.openCamera({
+            width: 100,
+            height: 100,
+            cropping: true,
+          }).then(image => {
+            setSelectedImage(image.path)
+            setModalVisible(!modalVisible)
+          });
+    }
+
+    const pickFromGallery = () => {
+        ImagePicker.openPicker({
+            width: 300,
+            height: 400,
+            cropping: true
+          }).then(image => {
+            setSelectedImage(image.path)
+            setModalVisible(!modalVisible)
+          });
+    }
 
     return(
         <>
@@ -69,14 +141,49 @@ const SignUpScreen = props => {
                 {/* PROFILE PICTURE */}
                 <View style={styles.ppContainer}>
                     <View style={styles.profile_picture}>
-                        {selectedImage ? <Image source={{ uri: selectedImage.localUri }} style={{height:100,width:100}}/> :  <Image source={require('../../assets/Icons/icons8-person-100.png')} style={{height:100,width:100}} />}
+                        {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:100,width:100}}/> :  <Image source={require('../../assets/Icons/icons8-person-100.png')} style={{height:100,width:100}} />}
                     </View>
 
-                    {selectedImage ? null : <View style={styles.add_icon}>
-                        <TouchableOpacity onPress={openImagePickerAsync} >
+                    <View style={styles.add_icon}>
+                        <TouchableOpacity onPress={() => {setModalVisible(true)}} >
                             <Ionicon name="add-outline" color={Colors.orange} size={30}/>
                         </TouchableOpacity>
-                    </View>}
+                    </View>
+                </View>
+
+                <View style={styles.centeredView}>
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                            setModalVisible(!modalVisible);
+                        }}
+                    >
+                        <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalText}>Choose option: </Text>
+                            <TouchableOpacity
+                                style={[styles.buttonModal, styles.buttonClose]}
+                                onPress={pickFromGallery}
+                            >
+                            <Text style={styles.textStyle}>Choose from gallery</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.buttonModal, styles.buttonClose]}
+                                onPress={takeFromCamera}
+                            >
+                            <Text style={styles.textStyle}>Use Camera</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.buttonModal, styles.buttonClose]}
+                                onPress={() => {setModalVisible(false)}}
+                            >
+                            <Text style={styles.textStyle}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                        </View>
+                    </Modal>
                 </View>
 
                 <KeyboardAvoidingView keyboardVerticalOffset={ useHeaderHeight() } style = {{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : null} enabled>
@@ -88,9 +195,9 @@ const SignUpScreen = props => {
                         placeholder='Your Username' 
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={() => {}}
+                        onChangeText={(val) => {userNameHandler(val)}}
                         />
-                   <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View>
+                    { validUsername ? <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View>: null}
                 </View>
 
                 <Text style={[styles.text_footer,{marginTop:20}]} >Email</Text>
@@ -100,9 +207,9 @@ const SignUpScreen = props => {
                         placeholder='Your E-mail' 
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={() => {}}
+                        onChangeText={(val) => {emailHandler(val)}}
                         />
-                    <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View>
+                    {validEmail ? <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View> : null }
                 </View>
                 
                 <Text style={[styles.text_footer,{marginTop:20}]} >Password</Text>
@@ -113,12 +220,14 @@ const SignUpScreen = props => {
                         secureTextEntry={pTouched ? false : true}
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={() => {}}
+                        onChangeText={(val) => {passwordHandler(val)}}
+                        onFocus = {() => {setPasswordTouched(true)}}
                         />
                     <TouchableOpacity onPress={passwordViewHandler}>
                         {!pTouched ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
                     </TouchableOpacity>
                 </View>
+                { passwordTouched ? (validPassword ? null : <Text style={styles.error}>Invalid Password</Text>) : null}
 
                 <Text style={[styles.text_footer,{marginTop:20}]} >Confirm Password</Text>
                 <View  style={styles.action} >
@@ -128,12 +237,15 @@ const SignUpScreen = props => {
                         secureTextEntry={cpTouched ? false : true}
                         style={styles.textInput}
                         autoCapitalize="none"
-                        onChangeText={() => {}}
+                        onChangeText={(val) => {cPasswordHandler(val)}}
+                        onFocus = {() => {setCPasswordTouched(true)}}
+                        onBlur = {cPasswordValidator}
                         />
                     <TouchableOpacity onPress={ confirmPasswordViewHandler }>
                         {!cpTouched ? <Feather name="eye-off" color="grey" size={20}/> : <Feather name="eye" color="grey" size={20}/>}
                     </TouchableOpacity>
                 </View>
+                { cPasswordTouched ? (validCPassword ? null : <Text style={styles.error}>Passwords do not match.</Text>) : null}
 
                 </KeyboardAvoidingView>
 
@@ -146,15 +258,13 @@ const SignUpScreen = props => {
 
 
                 {/* LOGIN */}
-                <TouchableOpacity onPress={() => {
-                    props.navigation.navigate('NumberVerificationScreen');                   
-                }}>
+                <TouchableOpacity onPress={navigateHandler}>
                 <View style={styles.button}>
                     <View style={styles.signIn}>
                         <Text style={[styles.textSign,{color:'#fff'}]} >Next</Text>
                     </View>
                 </View>
-                </TouchableOpacity>
+                </TouchableOpacity> 
                 
             </Animatable.View>
         </View>
@@ -282,6 +392,54 @@ const styles = StyleSheet.create({
         position:'absolute',
         bottom:Dimensions.get('window').height * 0.002,
         right: Dimensions.get('window').width * 0.315
+    },
+    error:{
+        color:'red'
+    },
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+    },
+    modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    buttonModal: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        marginVertical:5,
+        width:200
+    },
+    buttonOpen: {
+        backgroundColor: "#F194FF",
+    },
+    buttonClose: {
+        backgroundColor: Colors.orange,
+    },
+    textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: "center",
+        fontWeight:'bold',
+        fontSize:20
     }
 });
 
