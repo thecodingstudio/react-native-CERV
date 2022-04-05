@@ -78,24 +78,6 @@ const SignUpScreen = props => {
         }
     };
 
-    // let openImagePickerAsync = async() => {
-    //     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    //     if (permissionResult.granted === false) {
-    //         alert("Permission to access camera roll is required!");
-    //         return;
-    //       }
-      
-    //         let pickerResult = await ImagePicker.launchImageLibraryAsync();
-            
-    //         if (pickerResult.cancelled === true) {
-    //             return;
-    //           }
-              
-    //           console.log(pickerResult)
-
-    //           setSelectedImage({ localUri: pickerResult.uri });
-    //     }
-
     const [modalVisible, setModalVisible] = useState(false);
     const takeFromCamera = () => {
         ImagePicker.openCamera({
@@ -110,8 +92,8 @@ const SignUpScreen = props => {
 
     const pickFromGallery = () => {
         ImagePicker.openPicker({
-            width: 300,
-            height: 400,
+            width: 100,
+            height: 100,
             cropping: true
           }).then(image => {
             setSelectedImage(image.path)
@@ -120,12 +102,11 @@ const SignUpScreen = props => {
     }
 
     return(
-        <>
-        <SafeAreaView style={{flex:0,backgroundColor:Colors.ORANGE}}/>
-        <SafeAreaView style={{flex:1,backgroundColor:Colors.WHITE}}>
+        <View>
+            
         <KeyboardAwareScrollView>
         <View style={styles.container} >
-            <StatusBar backgroundColor='#009387' barStyle='light-content'/>
+            <StatusBar backgroundColor={Colors.ORANGE} barStyle='light-content'/>
             <View style={styles.header} >
                 <TouchableOpacity onPress={() => props.navigation.goBack()} >
                     <View style={{marginTop:10, marginBottom:50}} >
@@ -269,8 +250,7 @@ const SignUpScreen = props => {
             </Animatable.View>
         </View>
         </KeyboardAwareScrollView>
-        </SafeAreaView>
-        </>
+        </View>
     );
 };
 
@@ -379,16 +359,13 @@ const styles = StyleSheet.create({
         overflow:'hidden'
     },
     add_icon:{
-        borderTopRightRadius:15,
-        borderBottomRightRadius:15,
-        borderTopLeftRadius:15,
-        borderBottomLeftRadius:15,
+        borderRadius:15,
         backgroundColor:Colors.WHITE,
         shadowColor:'#171717',
         shadowOffset:{width:-2,height:4},
         shadowOpacity:0.2,
         shadowRadius:3,
-        elevation:20,
+        elevation:10,
         position:'absolute',
         bottom:Dimensions.get('window').height * 0.002,
         right: Dimensions.get('window').width * 0.315

@@ -15,6 +15,7 @@ import NotificationScreen from './home/NotificationScreen';
 import FAQScreen from './home/FAQScreen';
 import SortScreen from './home/SortScreen';
 import DetailScreen from './home/DetailScreen';
+import OrderReceiptScreen from './home/OrderReceiptScreen';
 
 // Search Screens
 import SearchScreen from'./SearchScreen';
@@ -42,7 +43,7 @@ const Tab = createBottomTabNavigator()
 const CustomerRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['Chat','FAQ','Details','AddCard','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
+        const hideOnScreens = ['Chat','FAQ','Details','AddCard','OrderReceipt','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
 
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
@@ -126,11 +127,11 @@ const HomeStackScreen = ({ navigation }) => {
                 headerTitle: props => <Image source={require('../../assets/Icons/icons8-pie-100.png')} style={{height:35, width:35}}/>,
                 headerLeft: () => 
                 <TouchableOpacity style={{marginLeft:15, alignItems:'center'}} onPress={ () => {navigation.navigate('FAQ')} } >
-                    <Feather name="help-circle" size={25} color={Colors.GREY}/>
+                    <Feather name="help-circle" size={25} color="grey"/>
                 </TouchableOpacity>,
                 headerRight: () => (
                     <TouchableOpacity style={{marginRight:15, alignItems:'center'}} onPress={ () => {navigation.navigate('Notification')} } >
-                        <Feather name="bell" size={25} color={Colors.GREY}/>
+                        <Feather name="bell" size={25} color="grey"/>
                     </TouchableOpacity>
                 )
          }}
@@ -162,6 +163,19 @@ const HomeStackScreen = ({ navigation }) => {
         <HomeStack.Screen name="Sort" component={SortScreen} options={{headerShown:false}}/>
 
         <HomeStack.Screen name="Details" component={DetailScreen}/>
+        <HomeStack.Screen name="OrderReceipt" component={OrderReceiptScreen} options={{
+            headerTitle:'Order Receipt',
+            headerStyle: {
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 3.84,
+                elevation: 5,
+            },
+        }}/>
 
     </HomeStack.Navigator>)
 };

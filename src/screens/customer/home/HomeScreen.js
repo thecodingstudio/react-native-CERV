@@ -73,6 +73,12 @@ const HomeScreen = props => {
                     data={discountCouponsBanners}
                     renderItem={renderCarouselItem}
                     hasParallaxImages={true}
+                    loop={true}
+                    autoplay={true}
+                    enableSnap={true}
+                    lockScrollWhileSnapping={true}
+                    autoplayInterval={3000}
+                    loopClonesPerSide={10}
                 />
 
                 
