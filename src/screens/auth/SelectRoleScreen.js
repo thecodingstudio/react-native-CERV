@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, StatusBar } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 import Button from '../../components/Button';
@@ -27,7 +27,7 @@ const SelectRoleScreen = props => {
 
     return(
         <View style={styles.screen}>
-            
+            <StatusBar backgroundColor={Colors.WHITE} barStyle='dark-content'/>
             {/* Header (Title) */}
             <View style={{flex:1,width:'100%', padding:10}}>
                 <Text style={{fontWeight:'bold',fontSize:40}}>Select your Role</Text>

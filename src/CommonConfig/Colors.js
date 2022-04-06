@@ -5,5 +5,6 @@ export default {
     STAR_YELLOW: '#F0E010',
     BLACK:'#000000',
     ERROR_RED: '#FF0000',
-    LIGHTER_GREY: '#CCCCCC'
+    LIGHTER_GREY: '#CCCCCC',
+    GREEN: 'green'
 }

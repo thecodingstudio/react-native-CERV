@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native'; 
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useDispatch, useSelector } from 'react-redux';
 
+import * as cartActions from '../../../store/actions/cart';
 import Caterer from '../../../model/caterer';
 import Colors from '../../../CommonConfig/Colors';
 
@@ -11,6 +13,7 @@ const DetailScreen = props => {
     const catererId = props.route.params.catererId;
     const selectedCaterer = Caterer.find(caterer => { return(caterer.id === catererId) });
 
+    const dispatch = useDispatch();
     // Caterer Rating Logic
     const Stars = props => {
         let rating = props.rating;
@@ -94,36 +97,17 @@ const DetailScreen = props => {
 
     const dishes = activeMenuItem ? selectedCaterer.categories[activeMenuItem] : selectedCaterer.categories[menuArray[0]]
 
-    // Cart Logic
-    const [ cartItems, setCartItems ] = useState([]);
-    
-    const sortedCartItems = cartItems.sort( (a,b) =>  (a.id) - (b.id) );
-    let qtyArray = sortedCartItems.map( item => {return {qty: item.qty, id: item.id}} );
-
-    const addItemHandler = (dish) => {
-        const exist = cartItems.find(x => x.id === dish.id);
-        if(exist) {
-            setCartItems( cartItems.map(x => x.id === dish.id ? {...exist, qty: exist.qty +1 } : x ) )
-        } else {
-            setCartItems( [...cartItems, {...dish, qty:1 }] )
+    const cartItems = useSelector( state => {
+        const updatedCartItems = [];
+        for ( const key in state.Cart.items ) {
+            updatedCartItems.push({
+                ...state.Cart.items[key]
+            });
         }
-    }
-
-    const removeItemHandler = (dish) => {
-        const exist = cartItems.find(x => x.id === dish.id);
-        if(exist.qty === 1) {
-            setCartItems( cartItems.filter( x => x.id !== dish.id));
-        } else {
-            setCartItems( cartItems.map(x => x.id === dish.id ? {...exist, qty: exist.qty -1 } : x ) )
-        }
-    }
-
-    const itemsPrice = cartItems.reduce((a, c) => a + c.price * c.qty, 0);
-    const serviceCharge = 1
-    const taxPrice = 5.1;
-    const deliveryFee = 2.5
-    const totalAmount = cartItems.length === 0 ? 0 : itemsPrice + taxPrice + deliveryFee + serviceCharge;
-
+        return updatedCartItems.sort( (a,b) => a.id > b.id ? 1 : -1);
+    })
+    const subTotal = cartItems.length ? cartItems.reduce( (a,c) => a + c.qty*c.price, 3.5 ) : 0;
+    const total = cartItems.length ? subTotal + 5.10 : 0;
 
     return (
         <View style={{flex:1}}>
@@ -226,7 +210,7 @@ const DetailScreen = props => {
                     {/* Dishes in selected category */}
                     <Text style={styles.menuTitle}>Dishes</Text>
                     {dishes.map( dish => {
-                        const dishObj = qtyArray?.find( item => item.id === dish.id)
+                        const dishObj = cartItems?.find( item => item.id === dish.id)
                         return(
                             <View style={styles.dishItemContainer} key={dish.id}>
                                 <Image source={{uri: dish.image}} style={styles.dishImage}/>
@@ -235,20 +219,19 @@ const DetailScreen = props => {
                                     <Text style={styles.dishDesc} numberOfLines={2} ellipsizeMode='tail'>{dish.description}</Text> 
                                     <View style={{flexDirection:'row', justifyContent:'space-between',margin:2, marginTop:10}}>
                                         <Text>${dish.price}</Text>
-                                       {dishObj?.qty?
+                                       { dishObj ?
                                         <View style={styles.dishCartButton}>
-                                            <TouchableOpacity onPress={() =>{removeItemHandler(dish)}} ><Ionicon name="remove-outline" size={20} color={Colors.ERROR_RED}/></TouchableOpacity>
-                                            <Text>{dishObj.qty}</Text>
-                                            <TouchableOpacity onPress={() =>{addItemHandler(dish)}}><Ionicon name="add-outline" size={20} color="green"/></TouchableOpacity>
+                                            <TouchableOpacity onPress={() =>{ dispatch(cartActions.removeFromCart(dishObj)) }} ><Ionicon name="remove-outline" size={20} color={Colors.ERROR_RED}/></TouchableOpacity>
+                                            <Text>{dishObj?.qty}</Text>
+                                            <TouchableOpacity onPress={() =>{ dispatch(cartActions.addToCart(dish)) }}><Ionicon name="add-outline" size={20} color={ Colors.GREEN }/></TouchableOpacity>
                                         </View>
                                         :
-                                        <TouchableOpacity onPress={() => {addItemHandler(dish)}}>
+                                        <TouchableOpacity onPress={() => { dispatch(cartActions.addToCart(dish)) }}>
                                             <View style={styles.dishCartButton}>
                                                 <Ionicon name="cart-outline" size={20} color={Colors.ORANGE}/>
                                                 <Text>Add</Text>
                                             </View>
-                                        </TouchableOpacity>
-                                        }
+                                        </TouchableOpacity> }
                                     </View>
                                 </View>
                             </View>
@@ -263,11 +246,11 @@ const DetailScreen = props => {
             {/* Footer */}
             <View style={styles.footerContainer}>
                 <View style={styles.footerButton}>
-                    <Text style={styles.footerText}>Item Total: ${totalAmount.toFixed(2)}</Text>
+                    <Text style={styles.footerText}>Item Total: $ {total.toFixed(2)}</Text>
                 </View>
                 <View style={{width:0, height:'100%', borderColor:Colors.WHITE, borderWidth:1}}></View>
                 <View style={styles.footerButton}>
-                    <TouchableOpacity onPress={ () => { props.navigation.navigate('OrderReceipt', { cartItems: cartItems}) }} disabled={ qtyArray.length ? false : true } >
+                    <TouchableOpacity onPress={ () => { props.navigation.navigate('OrderReceipt')}} disabled={cartItems.length ? false : true}>
                         <Text style={styles.footerText}>MAKE PAYMENT</Text>
                     </TouchableOpacity>
                 </View>
