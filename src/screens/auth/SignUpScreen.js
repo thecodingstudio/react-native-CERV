@@ -112,8 +112,8 @@ const SignUpScreen = props => {
                         <TouchableOpacity onPress={() => props.navigation.goBack()} style={{marginVertical:10}}>
                                 <Ionicon name="arrow-back-outline" size={35} color={Colors.WHITE}/>
                         </TouchableOpacity>
-                        <Text style={styles.headerLabel}>Phone Number</Text>
-                        <Text style={styles.headerText}>Verify your phone number for extra security</Text>
+                        <Text style={styles.headerLabel}>Let's Start</Text>
+                        <Text style={styles.headerText}>Tell us more about you!</Text>
                     </View>
                     <Image source={Images.AUTH_HEADER2} style={styles.image}/>
                 </View>
