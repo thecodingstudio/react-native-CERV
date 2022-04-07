@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 
-import Colors from '../CommonConfig/Colors';
+import{ Colors }from '../commonconfig';
 
 const NotificationItem = props => {
 

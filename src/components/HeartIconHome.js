@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, TouchableOpacity } from "react-native";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 
-import Colors from "../CommonConfig/Colors";
+import { Colors } from "../commonconfig";
 
 const HeartIconHome = props => {
 

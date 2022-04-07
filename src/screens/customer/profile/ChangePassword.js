@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
 import Feather from 'react-native-vector-icons/Feather';
 
-import Colors from '../../../CommonConfig/Colors';
+import{ Colors }from '../../../commonconfig';
 
 const ChangePassword = props => {
 

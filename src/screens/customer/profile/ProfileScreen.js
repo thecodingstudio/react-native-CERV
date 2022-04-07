@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
 import Users from '../../../model/users';
 import ProfileOption from '../../../components/profileOption';
-import Colors from '../../../CommonConfig/Colors';
+import{ Colors }from '../../../commonconfig';
 const ProfileScreen = props => {
     
     return (

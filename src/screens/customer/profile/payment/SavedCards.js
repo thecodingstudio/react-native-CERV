@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-import Colors from '../../../../CommonConfig/Colors';
+import{ Colors }from '../../../../commonconfig';
 
 import CardDisplay from "../../../../components/CardDisplay";
 import OtherPaymentDisplay from "../../../../components/OtherPaymentDisplay";

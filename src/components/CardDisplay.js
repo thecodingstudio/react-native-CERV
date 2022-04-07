@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import Colors from "../CommonConfig/Colors";
+import {Colors} from "../commonconfig";
 const CardDisplay = props => {
 
     const [selected, setSelected] = useState(false)

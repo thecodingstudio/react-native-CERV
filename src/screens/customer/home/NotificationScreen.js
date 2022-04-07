@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import NotificationItem from '../../../components/NotificationItem';
-import Colors from '../../../CommonConfig/Colors';
+import{ Colors }from '../../../commonconfig';
 
 const NotificationScreen = props => {
     return (

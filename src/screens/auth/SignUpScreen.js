@@ -8,7 +8,7 @@ import { useHeaderHeight } from '@react-navigation/stack';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import ImagePicker from 'react-native-image-crop-picker';
 
-import Colors from '../../CommonConfig/Colors';
+import{ Colors, Images }from '../../commonconfig';
 
 const SignUpScreen = props => {
 
@@ -103,26 +103,26 @@ const SignUpScreen = props => {
 
     return(
         <View>
-            
-        <KeyboardAwareScrollView>
-        <View style={styles.container} >
             <StatusBar backgroundColor={Colors.ORANGE} barStyle='light-content'/>
-            <View style={styles.header} >
-                <TouchableOpacity onPress={() => props.navigation.goBack()} >
-                    <View style={{marginTop:10, marginBottom:50}} >
-                        <Ionicon name="arrow-back-outline" size={35} color={Colors.WHITE}/>
+            <KeyboardAwareScrollView>
+            <View style={styles.container} >
+            
+            <View style={styles.header}>
+                    <View style={{flex:0.8}}>
+                        <TouchableOpacity onPress={() => props.navigation.goBack()} style={{marginVertical:10}}>
+                                <Ionicon name="arrow-back-outline" size={35} color={Colors.WHITE}/>
+                        </TouchableOpacity>
+                        <Text style={styles.headerLabel}>Phone Number</Text>
+                        <Text style={styles.headerText}>Verify your phone number for extra security</Text>
                     </View>
-                </TouchableOpacity>
-                <Text style={styles.text_header} >Let's Start!</Text>
-                <Text style={styles.headerText}>Tell us more about you</Text>
-            </View>
+                    <Image source={Images.AUTH_HEADER2} style={styles.image}/>
+                </View>
             
             <Animatable.View style={styles.footer} animation="fadeInUpBig">
-
                 {/* PROFILE PICTURE */}
                 <View style={styles.ppContainer}>
                     <View style={styles.profile_picture}>
-                        {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:100,width:100}}/> :  <Image source={require('../../assets/Icons/icons8-person-100.png')} style={{height:100,width:100}} />}
+                        {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:100,width:100}}/> :  <Image source={Images.PROFILE_PLACEHOLDER} style={{height:100,width:100}} />}
                     </View>
 
                     <View style={styles.add_icon}>
@@ -166,8 +166,6 @@ const SignUpScreen = props => {
                         </View>
                     </Modal>
                 </View>
-
-                <KeyboardAvoidingView keyboardVerticalOffset={ useHeaderHeight() } style = {{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : null} enabled>
 
                 <Text style={styles.text_footer} >User Name</Text>
                 <View style={styles.action} >
@@ -228,8 +226,6 @@ const SignUpScreen = props => {
                 </View>
                 { cPasswordTouched ? (validCPassword ? null : <Text style={styles.error}>Passwords do not match.</Text>) : null}
 
-                </KeyboardAvoidingView>
-
                 <View style={{flexDirection:'row', marginTop:10}} >
                     <TouchableOpacity onPress={tncHandler} >
                         { tnc ? <Ionicon name="checkbox-outline" color="green" size={20}/> : <Ionicon name="square-outline" color={Colors.GREY} size={20}/>}
@@ -261,9 +257,21 @@ const styles = StyleSheet.create({
     },
     header:{
         flex:1,
-        justifyContent:'flex-end',
-        paddingBottom:50,
-        paddingHorizontal:20
+        justifyContent:'space-between',
+        flexDirection:'row',
+        paddingHorizontal:10
+    },
+    headerLabel:{
+        color:Colors.WHITE,
+        fontWeight:'bold',
+        fontSize:26,
+    },
+    headerText:{
+        color:Colors.WHITE,
+        fontWeight:'600',
+        fontSize:15,
+        width:'100%',
+        margin:10
     },
     footer:{
         flex:3,
@@ -299,6 +307,12 @@ const styles = StyleSheet.create({
     button:{
         alignItems:'center',
         marginTop: 30,
+    },
+    image:{
+        marginVertical:10,
+        marginRight:5,
+        height: 180,
+        width:180
     },
     signIn:{
         width:'100%',

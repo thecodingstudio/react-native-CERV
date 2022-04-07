@@ -4,7 +4,7 @@ import * as Animatable from 'react-native-animatable';
 
 import Button from '../../components/Button';
 import Roles from '../../components/Roles';
-import Colors from '../../CommonConfig/Colors';
+import{ Colors, Images }from '../../commonconfig';
 
 const SelectRoleScreen = props => {
 
@@ -39,14 +39,14 @@ const SelectRoleScreen = props => {
                 <View style={{flex:4, justifyContent:'center', alignItems:'center'}}>
                     <TouchableOpacity onPress={customerActiveHandler}>
                         <View style={ {...styles.roleButton , borderColor:customerActive? Colors.ORANGE : '#ccc'}}>
-                            <Image source={require('../../assets/Icons/002-man.png')} style={{height:150, width:150, opacity: customerActive ? 1:0.3}}/>
+                            <Image source={Images.CUSTOMER_ROLE} style={{height:150, width:150, opacity: customerActive ? 1:0.3}}/>
                         </View>
                     </TouchableOpacity>
                 </View>
                 <View style={{flex:4, justifyContent:'center', alignItems:'center'}}>
                     <TouchableOpacity onPress={catererActiveHandler}>
                         <View style={{...styles.roleButton , borderColor:catererActive ? Colors.ORANGE :'#ccc'}}>
-                            <Image source={require('../../assets/Icons/001-cafe.png')} style={{height:150, width:150,opacity: catererActive ? 1:0.3}}/>
+                            <Image source={Images.CATERER_ROLE} style={{height:150, width:150,opacity: catererActive ? 1:0.3}}/>
                         </View>
                     </TouchableOpacity>
                 </View>

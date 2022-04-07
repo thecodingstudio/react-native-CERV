@@ -7,7 +7,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
-import Colors from '../../CommonConfig/Colors';
+import{ Colors, Images }from '../../commonconfig';
 
 // Home Screens
 import HomeScreen from'./home/HomeScreen';
@@ -16,6 +16,7 @@ import FAQScreen from './home/FAQScreen';
 import SortScreen from './home/SortScreen';
 import DetailScreen from './home/DetailScreen';
 import OrderReceiptScreen from './home/OrderReceiptScreen';
+import DiscountCodeScreen from './home/DiscountCodeScreen';
 
 // Search Screens
 import SearchScreen from'./SearchScreen';
@@ -43,7 +44,7 @@ const Tab = createBottomTabNavigator()
 const CustomerRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['Chat','FAQ','Details','AddCard','OrderReceipt','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
+        const hideOnScreens = ['Chat','FAQ','Details','Notification','Discount','AddCard','OrderReceipt','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
 
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
@@ -124,7 +125,7 @@ const HomeStackScreen = ({ navigation }) => {
             name="Home" 
             component={HomeScreen}
             options={{ 
-                headerTitle: props => <Image source={require('../../assets/Icons/icons8-pie-100.png')} style={{height:35, width:35}}/>,
+                headerTitle: props => <Image source={Images.LOGO_HOME} style={{height:35, width:35}}/>,
                 headerLeft: () => 
                 <TouchableOpacity style={{marginLeft:15, alignItems:'center'}} onPress={ () => {navigation.navigate('FAQ')} } >
                     <Feather name="help-circle" size={25} color="grey"/>
@@ -163,6 +164,19 @@ const HomeStackScreen = ({ navigation }) => {
         <HomeStack.Screen name="Sort" component={SortScreen} options={{headerShown:false}}/>
 
         <HomeStack.Screen name="Details" component={DetailScreen}/>
+        <HomeStack.Screen name="Discount" component={DiscountCodeScreen} options={{
+            headerTitle:'View Discount Codes',
+            headerStyle: {
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 3.84,
+                elevation: 5,
+            },
+        }}/>
         <HomeStack.Screen name="OrderReceipt" component={OrderReceiptScreen} options={{
             headerTitle:'Order Receipt',
             headerStyle: {

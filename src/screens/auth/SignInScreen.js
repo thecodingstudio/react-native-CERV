@@ -5,11 +5,12 @@ import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
-import Colors from '../../CommonConfig/Colors';
-
 import { Formik } from 'formik';
-import * as yup from 'yup';
+
+import{ Colors, Images }from '../../commonconfig';
+import SignInScreenValidationSchema from '../../schema/SignInScreenSchema';
+
+
 
 const SignInScreen = props => {
 
@@ -30,7 +31,7 @@ const SignInScreen = props => {
                         <Text style={styles.headerText}>Are you looking for a caterer for an event?</Text>
                         <Text style={{...styles.headerText, marginBottom:10}}>Login or Register Now.</Text>
                     </View>
-                    <Image source={ require('../../assets/Icons/chef.png')} style={styles.image}/>
+                    <Image source={Images.AUTH_HEADER1} style={styles.image}/>
                 </View>
 
                 {/* BODY */}
@@ -45,10 +46,7 @@ const SignInScreen = props => {
                                 password: ''
                             }}
                             onSubmit = { () => { props.navigation.navigate('Home') } }
-                            validationSchema = { yup.object().shape({
-                                email: yup.string().email().required('Email is required.'),
-                                password: yup.string().min(6,"Password must have atleast 6 characters").required("Password cannot be empty."),
-                            })}
+                            validationSchema = { SignInScreenValidationSchema }
                         >
                              {({ values, errors, setFieldTouched, touched, handleChange, isValid, handleSubmit }) => (
                                  <View>
@@ -103,7 +101,7 @@ const SignInScreen = props => {
                                         </View>
                                     </TouchableOpacity>
 
-                                    <Image source={require('../../assets/images/or.png')} style={{width:'100%', height:30, marginTop:20}}/>
+                                    <Image source={Images.OR} style={{width:'100%', height:30, marginTop:20}}/>
 
                                     <TouchableOpacity onPress={() => props.navigation.navigate('SignUpScreen')} style={{alignItems:'center', marginTop:25}} >
                                         <Text style={styles.signUp} >Don't have an Account? <Text style={styles.register}>Register</Text></Text>

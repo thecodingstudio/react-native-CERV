@@ -1,7 +1,8 @@
-import { ADD_TO_CART, REMOVE_FROM_CART } from '../actions/cart';
+import { ADD_TO_CART, CLEAR_CART, ORDER_TYPE, REMOVE_FROM_CART, SET_CATERER } from '../actions/cart';
 
 const initialState = {
     items : [],
+    orderType: '',
 }
 
 export default ( state = initialState, action ) => {
@@ -43,7 +44,13 @@ export default ( state = initialState, action ) => {
                 ...state,
                 items: cartItems
             }
-            
+        case ORDER_TYPE:
+            // Delivery(Delivery Charge) or Pickup(No Delivery Charge)
+            const orderType = action.orderType;
+            return {
+                ...state,
+                orderType: orderType
+            }
         default:
             return state;
     }

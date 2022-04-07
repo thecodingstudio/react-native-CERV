@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
-import Colors from '../CommonConfig/Colors';
+import {Colors} from '../commonconfig';
 
 const CustomButton = props => {
     return(

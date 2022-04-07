@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import Colors from '../CommonConfig/Colors';
+import{ Colors }from '../commonconfig';
 
 const Roles = props => {
     return (

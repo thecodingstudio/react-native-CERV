@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native'; 
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native'; 
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as cartActions from '../../../store/actions/cart';
 import Caterer from '../../../model/caterer';
-import Colors from '../../../CommonConfig/Colors';
+import { Colors } from '../../../commonconfig';
 
 const DetailScreen = props => {
 
     const catererId = props.route.params.catererId;
     const selectedCaterer = Caterer.find(caterer => { return(caterer.id === catererId) });
-
     const dispatch = useDispatch();
     // Caterer Rating Logic
     const Stars = props => {
@@ -75,17 +74,25 @@ const DetailScreen = props => {
     // Delivery Type Logic
     const [deliverySelected, setDeliverySelected] = useState(false);
     const [orderSelected, setOrderSelected] = useState(false);
+    const [orderType, setOrderType] = useState();
 
     const deliverySelectHandler = () => {
-        setDeliverySelected(!deliverySelected);
+        setDeliverySelected(true);
         setOrderSelected(false);
+        setOrderType('Delivery');
+        dispatch(cartActions.setOrderType('Delivery'));
     }
 
     const orderSelectHandler = () => {
-        setOrderSelected(!orderSelected);
-        setDeliverySelected(false)
+        setOrderSelected(true);
+        setDeliverySelected(false);
+        setOrderType('PickUp');
+        dispatch(cartActions.setOrderType('PickUp'));
     }
 
+    const navigateHandler = () => {
+        props.navigation.navigate('OrderReceipt');
+    }
 
     // Rendering Menu
     const menuArray = Object.keys(selectedCaterer.categories);
@@ -97,6 +104,8 @@ const DetailScreen = props => {
 
     const dishes = activeMenuItem ? selectedCaterer.categories[activeMenuItem] : selectedCaterer.categories[menuArray[0]]
 
+
+    //Cart Logic
     const cartItems = useSelector( state => {
         const updatedCartItems = [];
         for ( const key in state.Cart.items ) {
@@ -106,7 +115,11 @@ const DetailScreen = props => {
         }
         return updatedCartItems.sort( (a,b) => a.id > b.id ? 1 : -1);
     })
-    const subTotal = cartItems.length ? cartItems.reduce( (a,c) => a + c.qty*c.price, 3.5 ) : 0;
+
+    const order = useSelector( state => state.Cart.orderType )
+    const deliveryFee = ( order === 'Delivery' ) ? 2.5 : 0
+    const serviceCharge = 1.00
+    const subTotal = (cartItems.length ? cartItems.reduce( (a,c) => a + c.qty*c.price, serviceCharge ) : 0) + deliveryFee ;
     const total = cartItems.length ? subTotal + 5.10 : 0;
 
     return (
@@ -188,6 +201,7 @@ const DetailScreen = props => {
                             <Text style={styles.orderTypeLabel}>Pick Up</Text>
                         </View>
                     </View>
+                    {orderType ? null : <Text style={{color: Colors.ERROR_RED, marginTop:10}} >Please select an order Type</Text>}
                 </View>
 
                 {/* Menu Module */}
@@ -248,9 +262,9 @@ const DetailScreen = props => {
                 <View style={styles.footerButton}>
                     <Text style={styles.footerText}>Item Total: $ {total.toFixed(2)}</Text>
                 </View>
-                <View style={{width:0, height:'100%', borderColor:Colors.WHITE, borderWidth:1}}></View>
+                <View style={styles.whiteLine}></View>
                 <View style={styles.footerButton}>
-                    <TouchableOpacity onPress={ () => { props.navigation.navigate('OrderReceipt')}} disabled={cartItems.length ? false : true}>
+                    <TouchableOpacity onPress={ navigateHandler } disabled={cartItems.length ? false : true }>
                         <Text style={styles.footerText}>MAKE PAYMENT</Text>
                     </TouchableOpacity>
                 </View>
@@ -309,6 +323,12 @@ const styles = StyleSheet.create({
         justifyContent:'space-between', 
         paddingHorizontal:10,
         borderRadius:10
+    },
+    whiteLine:{
+        width:0, 
+        height:'100%', 
+        borderColor:Colors.WHITE, 
+        borderWidth:1
     },
     food_category:{
         borderBottomColor:'#ccc',

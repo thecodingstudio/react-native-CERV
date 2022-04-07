@@ -4,7 +4,7 @@ import * as Animatable from 'react-native-animatable';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import Colors from '../../CommonConfig/Colors';
+import{ Colors }from '../../commonconfig';
 
 const VerifyScreen = props => {
     

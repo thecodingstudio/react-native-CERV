@@ -4,7 +4,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import ImagePicker from 'react-native-image-crop-picker';
 
-import Colors from '../../../../CommonConfig/Colors';
+import{ Colors }from '../../../../commonconfig';
 import Users from "../../../../model/users";
 
 const EditDetailScreen = props => {

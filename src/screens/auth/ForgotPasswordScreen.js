@@ -4,10 +4,10 @@ import * as Animatable from 'react-native-animatable';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Formik } from 'formik'
-import * as yup from 'yup'
+import { Formik } from 'formik';
 
-import Colors from '../../CommonConfig/Colors';
+import{ Colors, Images }from '../../commonconfig';
+import ForgotPasswordValidationSchema from '../../schema/ForgotPasswordValidationSchema';
 
 const ForgotPasswordScreen = props => {
 
@@ -25,7 +25,7 @@ const ForgotPasswordScreen = props => {
                         <Text style={styles.headerLabel}>Forgot Password</Text>
                         <Text style={styles.headerText}>Reset your password immediately</Text>
                     </View>
-                    <Image source={ require('../../assets/Icons/chef.png')} style={styles.image}/>
+                    <Image source={Images.AUTH_HEADER1} style={styles.image}/>
                 </View>
 
                 {/* BODY */}
@@ -39,9 +39,7 @@ const ForgotPasswordScreen = props => {
                                 email:''
                             }}
                             onSubmit={() => {props.navigation.navigate('SignInScreen')}}
-                            validationSchema = { yup.object().shape({
-                                email: yup.string().email().required('Email is required.')
-                            })}
+                            validationSchema = { ForgotPasswordValidationSchema }
                         >
                             {({ values, errors, setFieldTouched, touched, handleChange, isValid, handleSubmit }) => (
                                 <View>

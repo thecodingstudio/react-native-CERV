@@ -7,7 +7,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { Formik } from 'formik';
 import * as yup from 'yup';
 
-import Colors from '../../../../CommonConfig/Colors'
+import{ Colors, Images }from '../../../../commonconfig'
 
 const AddCard = props => {
     return(
@@ -17,9 +17,9 @@ const AddCard = props => {
                 {/* Card Logos */}
                 <View style={{flexDirection:"row", justifyContent:'space-evenly'}} >
 
-                    <Image source={require('../../../../assets/Icons/icons8-visa-100.png')} style={{height:75, width:75}} />
-                    <Image source={require('../../../../assets/Icons/icons8-mastercard-100.png')} style={{height:75, width:75}} />
-                    <Image source={require('../../../../assets/Icons/icons8-american-express-100.png')} style={{height:75, width:75}} />
+                    <Image source={Images.VISA} style={{height:75, width:75}} />
+                    <Image source={Images.MASTERCARD} style={{height:75, width:75}} />
+                    <Image source={Images.AMERICAN_EXPRESS} style={{height:75, width:75}} />
 
                 </View>
                 

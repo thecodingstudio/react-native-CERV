@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
-import Colors from '../CommonConfig/Colors'; 
+import {Colors} from '../commonconfig'; 
 
 const AddressItem = props => {
 

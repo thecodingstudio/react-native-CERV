@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, SafeAreaView, Image } from 'react-native';
-import * as Animatable from 'react-native-animatable';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import PhoneInput from 'react-native-phone-number-input';
+import PhoneInput from 'react-phone-number-input';
 
-import Colors from '../../CommonConfig/Colors';
+import{ Colors, Images }from '../../commonconfig';
 
 const NumberVerificationScreen = props => {
 
-    const [ phoneNumber, setPhoneNumber ] = useState('');
-
+    const [ value, setValue ] = useState();
+ 
     return (
         <View style={styles.screen}>
             <KeyboardAwareScrollView>
@@ -25,7 +24,7 @@ const NumberVerificationScreen = props => {
                         <Text style={styles.headerLabel}>Phone Number</Text>
                         <Text style={styles.headerText}>Verify your phone number for extra security</Text>
                     </View>
-                    <Image source={ require('../../assets/Icons/chef.png')} style={styles.image}/>
+                    <Image source={ Images.AUTH_HEADER1 } style={styles.image}/>
                 </View>
 
 
@@ -37,7 +36,11 @@ const NumberVerificationScreen = props => {
                         <Text style={styles.text_footer} >Phone Number</Text>
                         <View style={styles.action} >
                             <Ionicon name="call-outline" color={Colors.ORANGE} size={20}/>
-                            
+                            {/* <PhoneInput
+                                placeholder="Enter phone number"
+                                value={value}
+                                onChange={setValue}
+                            /> */}
                         </View>
                     </View>
                 </View>

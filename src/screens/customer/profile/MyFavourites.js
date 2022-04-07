@@ -2,7 +2,7 @@ import React from "react";
 import { View, Dimensions, Text, StyleSheet, Image } from "react-native";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 
-import Colors from "../../../CommonConfig/Colors";
+import{ Colors }from "../../../commonconfig";
 import HeartIconHome from "../../../components/HeartIconHome";
 import Caterer from '../../../model/caterer';
 

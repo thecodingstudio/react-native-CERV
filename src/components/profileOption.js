@@ -1,7 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import Colors from '../CommonConfig/Colors';
+import{ Colors }from '../commonconfig';
 
 const ProfileOption = props => {
     return (

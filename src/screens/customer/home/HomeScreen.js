@@ -10,7 +10,7 @@ import discountCouponsBanners from '../../../model/discountCouponBanners';
 import Addresses from '../../../model/addresses';
 import HeartIconHome from '../../../components/HeartIconHome';
 
-import Colors from '../../../CommonConfig/Colors';
+import{ Colors, Images } from '../../../commonconfig';
 
 const windowWidth = Dimensions.get("window").width;
 
