@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import PhoneInput from 'react-phone-number-input';
+
+import CountryPicker from 'react-native-country-codes-picker';
 
 import{ Colors, Images }from '../../commonconfig';
+import { TextInput } from 'react-native-gesture-handler';
 
 const NumberVerificationScreen = props => {
 
-    const [ value, setValue ] = useState();
+    const [show, setShow] = useState(false);
+    const [countryCode, setCountryCode] = useState('+91');
+    const [ phoneNumber, setPhoneNumber ] = useState('');
  
     return (
         <View style={styles.screen}>
@@ -35,16 +39,50 @@ const NumberVerificationScreen = props => {
                         <Text style={styles.footerText}>Please enter the email address below, you will receive a link to create a new password via email.</Text>                        
                         <Text style={styles.text_footer} >Phone Number</Text>
                         <View style={styles.action} >
-                            <Ionicon name="call-outline" color={Colors.ORANGE} size={20}/>
-                            {/* <PhoneInput
-                                placeholder="Enter phone number"
-                                value={value}
-                                onChange={setValue}
-                            /> */}
+                            <Ionicon name="call" color={Colors.ORANGE} size={20} style={{flex:0.5}}/>
+                            <Text style={{flex:0.5, fontWeight:'bold'}}>{countryCode}</Text>
+                            <TouchableOpacity onPress={() => setShow(true)} style={{flex: 0.5}}><Ionicon name="caret-down-outline" size={20} color={ Colors.BLACK } /></TouchableOpacity>
+                            <View style={{width:0, borderColor: Colors.LIGHTER_GREY, borderWidth:0.7, height:30, marginRight:10}} ></View>
+                            <TextInput 
+                                style={{flex:3.5}}
+                                keyboardType= "phone-pad"
+                                maxLength={10}
+                                onChangeText = { (val) => {setPhoneNumber(val)} }
+                            />
                         </View>
+
+                        <TouchableOpacity style={styles.sendCode} disabled={ phoneNumber.length === 10 ? false : true } onPress={() => props.navigation.navigate('VerifyScreen',{countryCode: countryCode, phoneNumber: phoneNumber})}>
+                            <Text style={styles.sendCodeText}>Send Code</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </KeyboardAwareScrollView>
+            <CountryPicker
+                show={show}
+                style={{
+                    modal:{
+                        height:500,
+                        backgroundColor:Colors.LIGHTER_GREY,
+                    },
+                    countryButtonStyles:{
+                        height:80
+                    },
+                    flag: {
+                        fontSize:30
+                    },
+                    dialCode: {
+                        fontSize:20,
+                        fontWeight:'bold'
+                    },
+                    countryName: {
+                        fontSize:20
+                    }
+                }}
+                pickerButtonOnPress={(item) => {
+                    setCountryCode(item.dial_code);
+                    setShow(false);
+                }}
+            />
         </View>
     );
 };
@@ -54,11 +92,18 @@ const styles = StyleSheet.create({
         flex:1,
         backgroundColor:Colors.WHITE
     },
-    phoneContainer:{
-        backgroundColor:Colors.WHITE
+    sendCode:{
+        backgroundColor: Colors.ORANGE, 
+        padding:15, 
+        marginTop:50, 
+        borderRadius:5,
+        alignItems:'center', 
+        justifyContent:'center'
     },
-    textInput:{
-        backgroundColor:Colors.WHITE
+    sendCodeText:{
+        fontWeight:'bold', 
+        color: Colors.WHITE, 
+        fontSize:20
     },
     header:{
         flex:1,
@@ -103,7 +148,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         marginTop:15,
         borderBottomWidth:1,
-        borderBottomColor:Colors.GREY,
+        borderBottomColor:Colors.LIGHTER_GREY,
         paddingBottom: 10,
         alignItems:'center',
     },
@@ -116,141 +161,3 @@ const styles = StyleSheet.create({
 });
 
 export default NumberVerificationScreen;
-
-//<>
-        // <SafeAreaView style={{flex:0,backgroundColor:Colors.ORANGE}}/>
-        // <SafeAreaView style={{flex:1,backgroundColor:{Colors.WHITE}}}>
-        // <KeyboardAwareScrollView>
-        // <View style={styles.container} >
-        //     <StatusBar backgroundColor={Colors.ORANGE} barStyle='light-content'/>
-        //     <View style={styles.header} >
-        //         <TouchableOpacity onPress={() => props.navigation.goBack()} >
-        //             <View style={{marginVertical:10}} >
-        //                 <Ionicon name="arrow-back-outline" size={35} color={Colors.WHITE}/>
-        //             </View>
-        //         </TouchableOpacity>
-        //         <Text style={styles.text_header} >Phone Number</Text>
-        //         <Text style={styles.headerText}>Verify your phone number</Text>
-        //         <Text style={styles.headerText}>for extra security</Text>
-
-        //     </View>
-        //     <Animatable.View style={styles.footer} animation="fadeInUpBig">
-        //         <Text style={styles.footerText}>we'll send you a verification code.</Text>
-        //         <Text style={styles.footerText}>Just enter your phone number below</Text>
-                
-        
-        //             <Ionicon name="call-outline" color={Colors.ORANGE} size={20}/>
-        //             <SelectDropdown 
-        //                 data={ dummy_codes } 
-        //                 onSelect={() => {}} 
-        //                 buttonTextAfterSelection={(selectedItem, index) => { return selectedItem }} 
-        //                 rowTextForSelection={(item, index) => {return item}} 
-        //                 buttonStyle={{
-        //                     backgroundColor:Colors.WHITE, 
-        //                     width:'25%', 
-        //                     height:25, 
-        //                     borderRightColor: Colors.GREY, 
-        //                     borderRightWidth:1
-        //                 }} 
-        //                 defaultButtonText='   ▼'/>
-        //             <TextInput 
-        //                 placeholder='Your Phone Number' 
-        //                 style={styles.textInput}
-        //                 autoCapitalize="none"
-        //                 keyboardType='phone-pad'
-        //                 onChangeText={() => {}}
-        //                 maxLength={10}
-        //                 />
-        //         </View>
-
-        //         {/* LOGIN */}
-        //         <TouchableOpacity onPress={() => {
-                    
-        //             props.navigation.navigate('VerifyScreen');
-        //         }} >
-        //             <View style={styles.button}>
-        //                 <View style={styles.signIn}>
-        //                     <Text style={[styles.textSign,{color:'#fff'}]} >Send Code</Text>
-        //                 </View>
-        //             </View>
-        //         </TouchableOpacity>
-
-        //     </Animatable.View>
-        // </View>
-        // </KeyboardAwareScrollView>
-        // </SafeAreaView>
-        // </>
-
-
-        //container:{
-            //     flex:1,
-            //     backgroundColor: Colors.ORANGE,
-            // },
-            // header:{
-            //     flex:1,
-            //     justifyContent:'flex-end',
-            //     paddingBottom:50,
-            //     paddingHorizontal:20
-            // },
-            // footer:{
-            //     flex:3,
-            //     backgroundColor:'#fff',
-            //     borderTopLeftRadius:30,
-            //     borderTopRightRadius:30,
-            //     paddingHorizontal:20,
-            //     paddingVertical:30
-            // },
-            // text_header:{
-            //     color:'#fff',
-            //     fontWeight:'bold',
-            //     fontSize:30
-            // },
-            
-            
-            // textInput:{
-            //    flex:1,
-            //    paddingLeft:10,
-            //    color:'#05375a',
-            //    marginLeft:5
-            // },
-            // button:{
-            //     alignItems:'center',
-            //     marginTop: 50,
-            // },
-            // signIn:{
-            //     width:'100%',
-            //     height:50,
-            //     justifyContent:'center',
-            //     alignItems:'center',
-            //     borderRadius:10,
-            //     backgroundColor: Colors.ORANGE
-            // },
-            // textSign:{
-            //     fontSize:18,
-            //     fontWeight:'bold'
-            // },
-            // headerText:{
-            //     color:Colors.WHITE,
-            //     fontSize:15
-            // },
-            // forgotPassword:{
-            //     textAlign:'right',
-            //     marginTop: 15,
-            //     fontSize:15
-            // },
-            // footerTitle:{
-            //     fontWeight:'bold',
-            //     fontSize:30,
-            //     marginTop:10
-            // },
-            // footerText:{
-            //     fontSize:18,
-            //     marginTop:5,
-            //     color: Colors.GREY
-            // },
-            // list:{
-            //     borderRightColor: Colors.GREY,
-            //     borderRightWidth: 1,
-            //     width:'15%',
-            //     height:35
-            // }

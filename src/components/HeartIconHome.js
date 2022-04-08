@@ -11,7 +11,7 @@ const HeartIconHome = props => {
     return (
         <View>
             <TouchableOpacity onPress={() => setIsFavourite(!isFavourite)} >
-                {isFavourite ? <Ionicon name="heart" size={25} color={Colors.ERROR_RED} /> : <Ionicon name="heart-outline" size={25} color="GREY" />}
+                {isFavourite ? <Ionicon name="heart" size={25} color={Colors.ERROR_RED} /> : <Ionicon name="heart-outline" size={25} color={Colors.GREY} />}
             </TouchableOpacity>
         </View>
     );

@@ -1,8 +1,9 @@
-import { ADD_TO_CART, CLEAR_CART, ORDER_TYPE, REMOVE_FROM_CART, SET_CATERER } from '../actions/cart';
+import { ADD_DISCOUNT, ADD_TO_CART, ORDER_TYPE, REMOVE_DISCOUNT, REMOVE_FROM_CART} from '../actions/cart';
 
 const initialState = {
     items : [],
     orderType: '',
+    discount: ''
 }
 
 export default ( state = initialState, action ) => {
@@ -51,6 +52,21 @@ export default ( state = initialState, action ) => {
                 ...state,
                 orderType: orderType
             }
+        
+        case ADD_DISCOUNT:
+            const code = action.code;
+
+            return{
+                ...state,
+                discount: code
+            }
+        
+        case REMOVE_DISCOUNT:
+            return{
+                ...state,
+                discount:''
+            }
+
         default:
             return state;
     }

@@ -4,7 +4,7 @@
     "slug": "CERV",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/pie.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/pie.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.tanish7800.CERV"

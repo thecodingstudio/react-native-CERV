@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, StatusBa
 import * as Animatable from 'react-native-animatable';
 
 import Button from '../../components/Button';
-import Roles from '../../components/Roles';
 import{ Colors, Images }from '../../commonconfig';
 
 const SelectRoleScreen = props => {

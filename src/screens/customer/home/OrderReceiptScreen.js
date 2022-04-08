@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, Image, ScrollView, TextInput } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import React from 'react';
+import React,{ useState } from 'react';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -26,7 +26,31 @@ const OrderReceiptScreen = props => {
     const deliveryFee = orderType === 'Delivery' ? 2.5 : 0
     const serviceCharge = 1.00
     const subTotal = (cartItems.length ? cartItems.reduce( (a,c) => a + c.qty*c.price, serviceCharge ) : 0) + deliveryFee ;
-    const total = subTotal + 5.10;
+    const discountApplied = useSelector(state => (state.Cart.discount ? state.Cart.discount : null ))
+    let discountAmount;
+    switch(discountApplied){
+        case 'PAYZP234':
+            discountAmount = subTotal * 0.4;
+            break;
+        case '60GUJFOOD':
+            discountAmount = 25;
+            break;
+        case '15OFF':
+            discountAmount = 15;
+            break;
+        case 'OLA25OFF':
+            discountAmount = subTotal * 0.25;
+            break;
+        case 'TK10OFF':
+            discountAmount = subTotal * 0.10;
+            break;
+        default:
+            discountAmount = 0;
+    }
+    const updatedSubTotal = subTotal - discountAmount
+    const total = updatedSubTotal + 5.10;
+    
+    
 
     return (
         <View style={styles.screen}>
@@ -76,13 +100,26 @@ const OrderReceiptScreen = props => {
                             <Text style={styles.transactionTitle}>Delivery Fee</Text>
                             <Text style={{flex:1}}>$ {deliveryFee.toFixed(2)}</Text>
                         </View>
+
+
+                        {discountApplied ? 
+                        <View style={styles.deliveryFee}>
+                            <Text style={styles.discountTitle}>Code <Text style={{fontWeight:'bold'}}>{discountApplied}</Text> applied</Text>
+                            <View style={{flex:1}}>
+                                <Text style={styles.discountAmount}>- ${discountAmount.toFixed(2)}</Text>
+                                <TouchableOpacity onPress={ () => { dispatch(cartActions.removeDiscount()) }}><Text style={styles.remove}>Remove</Text></TouchableOpacity>
+                            </View>
+                        </View>   
+                        :
                         <TouchableOpacity style={styles.couponCodeContainer} onPress={ () => { props.navigation.navigate('Discount') } } >
                             <Text style={{flex:3,fontWeight:'bold'}}>Apply Coupon Code</Text>
                             <Text style={{...styles.label, color: Colors.ORANGE, flex:1}}>CHECK</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity>}
+
+
                         <View style={styles.subTotal}>
                             <Text style={styles.transactionTitle}>Sub Total</Text>
-                            <Text style={{flex:1}}>$ {subTotal.toFixed(2)}</Text>
+                            <Text style={{flex:1}}>$ {updatedSubTotal.toFixed(2)}</Text>
                         </View>
                         <View style={styles.tax}>
                             <Text style={styles.transactionTitle}>Tax</Text>
@@ -127,12 +164,22 @@ const styles = StyleSheet.create({
         fontWeight:'bold', 
         fontSize: 18
     },
+    remove:{
+        color: Colors.ERROR_RED
+    },
     body:{
         flex:3
+    },
+    discountAmount:{
+        color: Colors.DISCOUNT_BLUE
     },
     transactionTitle:{
         flex:3, 
         marginRight:10
+    },
+    discountTitle:{
+        color: Colors.DISCOUNT_BLUE,
+        flex:3
     },
     makePayment:{
         backgroundColor:Colors.ORANGE, 

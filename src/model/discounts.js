@@ -11,8 +11,8 @@ let discounts = [
     },
     {
         id:2,
-        offer: 'First Order 10% OFF',
-        code: 'NEW10'
+        offer: '$15 OFF',
+        code: '15OFF'
     },
     {
         id:3,

@@ -4,8 +4,16 @@ import React from 'react'
 import DiscountCoupon from '../../../components/DiscountCoupon';
 import{ Colors }from '../../../commonconfig';
 import discounts from '../../../model/discounts';
+import * as cartActions from '../../../store/actions/cart';
+import { useDispatch } from 'react-redux';
 
-const DiscountCodeScreen = () => {
+const DiscountCodeScreen = props => {
+    const dispatch = useDispatch();
+
+    const pressHandler = (code) => {
+        dispatch(cartActions.applyDiscount(code));
+        props.navigation.goBack();
+    }
     return (
         <View style={styles.screen}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -15,7 +23,7 @@ const DiscountCodeScreen = () => {
                         <DiscountCoupon 
                             offer = {item.offer}
                             code = {item.code}
-                            onPress = { () => {} }
+                            onPress = { () => {pressHandler(item.code)} }
                         />
                     </View>
                 )
