@@ -4,19 +4,20 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import Carousel, { ParallaxImage } from 'react-native-snap-carousel';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useSelector } from 'react-redux';
 
 import Caterer from '../../../model/caterer';
 import discountCouponsBanners from '../../../model/discountCouponBanners';
-import Addresses from '../../../model/addresses';
 import HeartIconHome from '../../../components/HeartIconHome';
 
-import{ Colors, Images } from '../../../commonconfig';
+import{ Colors } from '../../../commonconfig';
 
 const windowWidth = Dimensions.get("window").width;
 
 const HomeScreen = props => {
 
-    const activeAddress = Addresses.find(item => {return(item.isActive===true)});
+    const activeAddress = useSelector( state => state.Address.activeAddress)
+
     const tabBartHeight = useBottomTabBarHeight();
 
     const Stars = props => {
@@ -52,12 +53,13 @@ const HomeScreen = props => {
     return (
         <View style={{paddingBottom: tabBartHeight+20}}>
             <StatusBar backgroundColor={Colors.WHITE} barStyle='dark-content'/>
+
             {/* Address Bar */}
             <View style={{backgroundColor:'#fff', height:60, flexDirection:'row'}}>
                 <View style={{flex:0.6, justifyContent:'center',paddingLeft:10}}>
-                    <TouchableOpacity onPress={ () => { props.navigation.navigate('SavedAddresses')}}>
+                    <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile',{ screen:'SavedAddresses', initial:false })}}>
                         <Text style={{fontWeight:'600', color:'#777777'}} >My Event Location</Text>
-                        <View style={{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                        <View style={{flexDirection:'row', alignItems:'center'}}>
                             <Text style={{fontSize:12, fontWeight:'bold'}}>{activeAddress.address}</Text>
                             <Ionicon name="caret-down" color="#2EE742" size={15}/>
                         </View>
@@ -90,10 +92,10 @@ const HomeScreen = props => {
                         </TouchableOpacity>
                     </View>
 
-                    {Caterer.map(function(c){
+                    {Caterer.map((c) => {
                         return ( 
                         <TouchableOpacity onPress={() => { props.navigation.navigate('Details',{catererId: c.id}) }} key={c.id} >
-                            <View style={{width: windowWidth * 0.9, height:250, backgroundColor:'#A086D5', marginVertical:5, borderRadius:15,overflow: 'hidden', alignItems:'center'}}>
+                            <View style={{width: windowWidth * 0.9, height:250, marginVertical:5, borderRadius:15,overflow: 'hidden', alignItems:'center'}}>
                                 <Image source={{ uri: c.image }} style={styles.image} />
                                 <View style={styles.detailContainer}>
                                     <View>

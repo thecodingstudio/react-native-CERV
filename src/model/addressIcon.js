@@ -1,0 +1,46 @@
+let addressIcon = [
+    {
+        name:'barbell-outline'
+    },
+    {
+        name:'beer-outline'
+    },
+    {
+        name:'book-outline'
+    },
+    {
+        name:'briefcase-outline'
+    },
+    {
+        name:'business-outline'
+    },
+    {
+        name:'cafe-outline'
+    },
+    {
+        name:'construct-outline'
+    },
+    {
+        name:'fast-food-outline'
+    },
+    {
+        name:'game-controller-outline'
+    },
+    {
+        name:'golf-outline'
+    },
+    {
+        name:'home-outline'
+    },
+    {
+        name:'paw-outline'
+    },
+    {
+        name:'rose-outline'
+    },
+    {
+        name:'wine-outline'
+    },
+]
+
+export default addressIcon

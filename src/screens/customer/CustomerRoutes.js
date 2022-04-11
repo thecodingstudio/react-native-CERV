@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
+import { createStackNavigator, Header, HeaderBackButton } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
 import { Icon } from 'react-native-elements';
@@ -30,13 +30,14 @@ import MessagesScreen from './chat/MessagesScreen';
 
 //Profile Screens
 import ProfileScreen from'./profile/ProfileScreen';
-import SavedAddresses from './profile/SavedAddresses';
+import SavedAddresses from './profile/saved_address/SavedAddresses';
 import PersonalInformationScreen from './profile/personal_information/PersonalInformationScreen';
 import EditDetailScreen from './profile/personal_information/EditDetailsScreen';
 import MyFavourites from './profile/MyFavourites';
 import ChangePassword from './profile/ChangePassword';
 import SavedCards from './profile/payment/SavedCards';
 import AddCard from './profile/payment/AddCard';
+import AddAddress from './profile/saved_address/AddAddress';
 
 
 
@@ -44,7 +45,7 @@ const Tab = createBottomTabNavigator()
 const CustomerRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['Chat','FAQ','Details','Notification','Discount','AddCard','OrderReceipt','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
+        const hideOnScreens = ['Chat','FAQ','Details','AddAddress','Notification','Discount','AddCard','OrderReceipt','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
 
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
@@ -152,15 +153,6 @@ const HomeStackScreen = ({ navigation }) => {
 
         <HomeStack.Screen name="FAQ" component={FAQScreen} />
 
-        <HomeStack.Screen 
-            name="SavedAddresses"
-            component={SavedAddresses}
-            options={{
-                headerBackTitleVisible: false,
-                headerTitle:"Saved Addresses",
-            }}
-        />
-
         <HomeStack.Screen name="Sort" component={SortScreen} options={{headerShown:false}}/>
 
         <HomeStack.Screen name="Details" component={DetailScreen}/>
@@ -198,7 +190,7 @@ const SearchStack = createStackNavigator();
 const SearchStackScreen = ({ navigation }) => {
     return(<SearchStack.Navigator
             screenOptions={{
-                headerTitleAlign:'center'
+                headerShown: false
             }}
         >
         <SearchStack.Screen 
@@ -316,6 +308,18 @@ const ProfileStackScreen = ({ navigation }) => {
             options={{
                 headerBackTitleVisible: false,
                 headerTitle:"Saved Addresses",
+                headerRight: () => (
+                    <TouchableOpacity style={{marginRight:15, alignItems:'center'}} onPress={ () => { navigation.navigate('AddAddress') } } >
+                        <Feather name="plus" size={25} color={Colors.GREY}/>
+                    </TouchableOpacity>
+                )
+            }}
+        />
+        <ProfileStack.Screen 
+            name="AddAddress"
+            component={AddAddress}
+            options={{
+                headerTitle:"Add New Address"
             }}
         />
         <ProfileStack.Screen 

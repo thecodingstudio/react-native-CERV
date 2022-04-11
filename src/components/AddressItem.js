@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import * as addressActions from '../store/actions/address';
+import { useDispatch } from 'react-redux';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
 import {Colors} from '../commonconfig'; 
 
 const AddressItem = props => {
 
-    const [isActive, setIsActive] = useState(props.isActive);
+    const dispatch = useDispatch();
 
     return (
-        <View style={styles.container} >
+        <View style={styles.container}>
             <Grid>
                 {/* Text */}
                 <Col>
@@ -19,8 +21,8 @@ const AddressItem = props => {
                 </Col>
                 {/* Radio Button */}
                 <Col style={{width:'10%',alignItems:'center',justifyContent:'center'}} >
-                    <TouchableOpacity onPress={ () => setIsActive(!isActive) } >
-                        {isActive ? <Ionicon name="radio-button-on-outline" size={25} color={Colors.ORANGE}/> : <Ionicon name="radio-button-off-outline" size={25} color={Colors.GREY}/>}
+                    <TouchableOpacity onPress={ () => { dispatch(addressActions.activateAddress(props.id)) } } >
+                        { props.isActive ? <Ionicon name="radio-button-on-outline" size={25} color={Colors.ORANGE}/> : <Ionicon name="radio-button-off-outline" size={25} color={Colors.GREY}/> }
                     </TouchableOpacity>
                 </Col>
             </Grid>

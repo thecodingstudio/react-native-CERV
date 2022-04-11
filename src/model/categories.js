@@ -1,4 +1,4 @@
-let Cuisines = [
+let Categories = [
     {
         id:1,
         name:'Chinese',
@@ -60,3 +60,5 @@ let Cuisines = [
         image:'https://3vutl53ptg882udssu1ej6pn-wpengine.netdna-ssl.com/wp-content/uploads/2016/09/cheese-plate.jpg',
     }
 ]
+
+export default Categories;

@@ -7,5 +7,6 @@ export default {
     ERROR_RED: '#FF0000',
     LIGHTER_GREY: '#CCCCCC',
     GREEN: 'green',
-    DISCOUNT_BLUE: '#7F7EE6'
+    DISCOUNT_BLUE: '#7F7EE6',
+    BACKGROUND_GREY: '#F7F7F7'
 }

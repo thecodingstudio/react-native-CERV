@@ -1,22 +1,33 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, SafeAreaView, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, Image, ActivityIndicator } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Formik } from 'formik';
+import { useDispatch } from 'react-redux';
 
 import{ Colors, Images }from '../../commonconfig';
 import SignInScreenValidationSchema from '../../schema/SignInScreenSchema';
-
+import * as authActions from '../../store/actions/auth';
 
 
 const SignInScreen = props => {
 
+    const dispatch = useDispatch();
     const [eyeTouched, setEyeTouched] = useState(false)
 
-    const [ isLoading, setIsLoading ] = useState(false);
+    const [isLoading ,setIsLoading] = useState(false);
+
+
+    const loginHandler = async (values) => {
+        setIsLoading(true);
+        await dispatch(authActions.login(values.email, values.password));
+        setIsLoading(false)
+    }
+
+
 
     return(
         <View style={styles.screen}>
@@ -47,7 +58,7 @@ const SignInScreen = props => {
                                 email: '',
                                 password: ''
                             }}
-                            onSubmit = { () => { props.navigation.navigate('Home') } }
+                            onSubmit = {values => loginHandler(values)}
                             validationSchema = { SignInScreenValidationSchema }
                         >
                              {({ values, errors, setFieldTouched, touched, handleChange, isValid, handleSubmit }) => (
@@ -98,7 +109,7 @@ const SignInScreen = props => {
                                     <TouchableOpacity onPress={handleSubmit} disabled={!isValid}>
                                         <View style={styles.button}>
                                             <View style={styles.signIn}>
-                                                <Text style={[styles.textSign,{color:'#fff'}]} >Login</Text>
+                                                {isLoading ? <ActivityIndicator size="small" color={Colors.WHITE} /> :<Text style={[styles.textSign,{color:'#fff'}]} >Login</Text>}
                                             </View>
                                         </View>
                                     </TouchableOpacity>

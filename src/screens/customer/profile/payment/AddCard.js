@@ -5,8 +5,8 @@ import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Formik } from 'formik';
-import * as yup from 'yup';
 
+import CreditCardValidationSchema from "../../../../schema/CreditCardValidationSchema";
 import{ Colors, Images }from '../../../../commonconfig'
 
 const AddCard = props => {
@@ -36,26 +36,7 @@ const AddCard = props => {
                         props.navigation.goBack();
                     }}
 
-                    validationSchema={yup.object().shape({
-                        cardNumber: yup.number()
-                        .positive("Card Number cannot be negative!")
-                        .integer("Card Number cannot have decimals or hyphens")
-                        .moreThan(999999999999999, "The card number must be 16 digits long")
-                        .required("Card Number is required!"),
-
-                        expiryDate: yup.date()
-                        .required("Expiry Date is required."),
-
-                        cvv: yup.number()
-                        .positive('CVV cannot be negative!')
-                        .integer("CVV cannot contain decimals.")
-                        .moreThan(99,"CVV must be 3 digits long")
-                        .lessThan(1000,"CVV must be 3 digit long")
-                        .required("CVV is required."),
-
-                        name: yup.string()
-                        .required("Name is required.")
-                    })}
+                    validationSchema={CreditCardValidationSchema}
                 >
                     { ({values, errors, setFieldTouched, touched, handleChange, isValid, handleSubmit}) => (
                         <View>

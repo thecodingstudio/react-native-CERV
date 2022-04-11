@@ -126,7 +126,7 @@ const OrderReceiptScreen = props => {
                             <Text style={{flex:1}}>$ 5.10</Text>
                         </View>
                         <View style={styles.total}>
-                            <Text style={{flex:3, marginRight:10, fontWeight:'bold', fontSize:18}}>Total</Text>
+                            <Text style={styles.totalTitle}>Total</Text>
                             <Text style={{flex:1, fontWeight:'bold', fontSize:18}}>$ {total.toFixed(2)}</Text>
                         </View> 
                     </View>
@@ -141,12 +141,14 @@ const OrderReceiptScreen = props => {
                 </ScrollView>
             </View>
             <View style={styles.footer}>
-                <Text style={styles.label}>Add Note</Text>
-                <View style={styles.noteContainer}>
-                    <TextInput 
-                        placeholder='Add text here...'
-                        multiline
-                    />
+                <View>
+                    <Text style={styles.label}>Add Note</Text>
+                    <View style={styles.noteContainer}>
+                        <TextInput 
+                            placeholder='Add text here...'
+                            multiline
+                        />
+                    </View>
                 </View>
                 <TouchableOpacity style={styles.makePayment}>
                     <Text style={{...styles.label, color: Colors.WHITE}}>Make Payment</Text>
@@ -163,6 +165,12 @@ const styles = StyleSheet.create({
     label:{
         fontWeight:'bold', 
         fontSize: 18
+    },
+    totalTitle:{
+        flex:3, 
+        marginRight:10, 
+        fontWeight:'bold', 
+        fontSize:18
     },
     remove:{
         color: Colors.ERROR_RED

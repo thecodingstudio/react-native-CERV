@@ -14,7 +14,7 @@ const SavedCards = props => {
         <View style={styles.screen} > 
             
             {/* SAVED CARDS */}
-            <View style={[styles.savedCards,{borderBottomColor:'#ccc', borderBottomWidth:2}]}>
+            <View style={{...styles.savedCards,borderBottomColor:'#ccc', borderBottomWidth:2}}>
                 <View style={styles.textRow} >
                     <Text style={styles.title} >Saved Cards</Text>
                     <TouchableOpacity onPress={ () => {

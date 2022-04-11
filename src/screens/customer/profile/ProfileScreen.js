@@ -1,10 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
 import Users from '../../../model/users';
+import { useDispatch } from 'react-redux';
+import * as authActions from '../../../store/actions/auth';
 import ProfileOption from '../../../components/profileOption';
 import{ Colors }from '../../../commonconfig';
 const ProfileScreen = props => {
-    
+     
+    const dispatch = useDispatch();
+
     return (
         <View style={styles.screen} >
             
@@ -70,7 +74,7 @@ const ProfileScreen = props => {
                 title = "Log Out"
                 leftIcon = "log-out-outline"
                 onPress={() => {
-                    props.navigation.navigate('SignInScreen')
+                    dispatch(authActions.logOut())
                 }}
             />
 
