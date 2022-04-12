@@ -3,7 +3,9 @@ import { Alert } from "react-native";
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
 
-export const login = (email, password) => {
+export const login = (data) => {
+    const email = data.email;
+    const password = data.password;
     return async dispatch => {
         const response = await fetch(
             'https://cerv-api.herokuapp.com/users/login',

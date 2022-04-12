@@ -1,6 +1,7 @@
-import { ADD_DISCOUNT, ADD_TO_CART, ORDER_TYPE, REMOVE_DISCOUNT, REMOVE_FROM_CART} from '../actions/cart';
+import { ADD_DISCOUNT, ADD_TO_CART, CLEAR_CART, ORDER_TYPE, REMOVE_DISCOUNT, REMOVE_FROM_CART, SET_CATERER} from '../actions/cart';
 
 const initialState = {
+    catererId: '',
     items : [],
     orderType: '',
     discount: ''
@@ -45,6 +46,10 @@ export default ( state = initialState, action ) => {
                 ...state,
                 items: cartItems
             }
+        case CLEAR_CART:
+            return {
+                ...initialState
+            }
         case ORDER_TYPE:
             // Delivery(Delivery Charge) or Pickup(No Delivery Charge)
             const orderType = action.orderType;
@@ -66,7 +71,13 @@ export default ( state = initialState, action ) => {
                 ...state,
                 discount:''
             }
-
+            
+        case SET_CATERER:
+            const catererId = action.id;
+            return {
+                ...state,
+                catererId: catererId
+            }
         default:
             return state;
     }

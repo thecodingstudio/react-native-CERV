@@ -17,13 +17,13 @@ const SignInScreen = props => {
 
     const dispatch = useDispatch();
     const [eyeTouched, setEyeTouched] = useState(false)
-
     const [isLoading ,setIsLoading] = useState(false);
 
 
     const loginHandler = async (values) => {
+        
         setIsLoading(true);
-        await dispatch(authActions.login(values.email, values.password));
+        await dispatch(authActions.login(values));
         setIsLoading(false)
     }
 

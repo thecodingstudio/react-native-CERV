@@ -15,7 +15,7 @@ const AppNavigator = props => {
             {isAuth && <CustomerRoutes />}
             {!isAuth && <RootStackScreen />}
         </NavigationContainer>
-);
+    );
 };
 
 export default AppNavigator;

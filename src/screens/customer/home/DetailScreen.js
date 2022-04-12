@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native'; 
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useDispatch, useSelector } from 'react-redux';
+import RBSheet from 'react-native-raw-bottom-sheet';
 
 import * as cartActions from '../../../store/actions/cart';
 import Caterer from '../../../model/caterer';
@@ -104,6 +105,25 @@ const DetailScreen = props => {
 
     const dishes = activeMenuItem ? selectedCaterer.categories[activeMenuItem] : selectedCaterer.categories[menuArray[0]]
 
+    //Diff Caterer Logic
+    const refRBSheet = useRef();
+    const cartCatererId = useSelector(state => state.Cart.catererId ? state.Cart.catererId : null)
+    const openHandler = (dish, cid) => {
+        if ( cartCatererId === null ){
+            dispatch(cartActions.setCaterer(cid))
+            dispatch(cartActions.addToCart(dish))
+        } else if (catererId !== cartCatererId) {
+            refRBSheet.current.open()
+        } else {
+            dispatch(cartActions.addToCart(dish))
+        }
+    }
+
+    const clearCartHandler = () => {
+        dispatch(cartActions.clearCart());
+        dispatch(cartActions.setCaterer(catererId));
+        refRBSheet.current.close();
+    }
 
     //Cart Logic
     const cartItems = useSelector( state => {
@@ -240,7 +260,7 @@ const DetailScreen = props => {
                                             <TouchableOpacity onPress={() =>{ dispatch(cartActions.addToCart(dish)) }}><Ionicon name="add-outline" size={20} color={ Colors.GREEN }/></TouchableOpacity>
                                         </View>
                                         :
-                                        <TouchableOpacity onPress={() => { dispatch(cartActions.addToCart(dish)) }}>
+                                        <TouchableOpacity onPress={() => openHandler(dish,catererId)}>
                                             <View style={styles.dishCartButton}>
                                                 <Ionicon name="cart-outline" size={20} color={Colors.ORANGE}/>
                                                 <Text>Add</Text>
@@ -269,6 +289,33 @@ const DetailScreen = props => {
                     </TouchableOpacity>
                 </View>
             </View>
+
+            <RBSheet
+                ref={refRBSheet}
+                closeOnDragDown={true}
+                closeOnPressMask={true}
+                customStyles={{
+                wrapper: {
+                    backgroundColor: "rgba(0,0,0,0.5)"
+                },
+                draggableIcon: {
+                    backgroundColor: "#ccc",
+                    width: 100
+                },
+                container:{
+                    paddingHorizontal:20,
+                    backgroundColor: Colors.WHITE,
+                    borderTopRightRadius:30,
+                    borderTopLeftRadius:30,
+                }
+                }}
+            >
+                <Text style={{marginTop:30, fontWeight:'bold'}} >You are about to add items from a caterer different from that in your cart already. Do you wish to clear earlier items?</Text>
+                <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingHorizontal:10, marginTop:15}}>
+                    <TouchableOpacity style={styles.rbButton} onPress={clearCartHandler}><Text style={styles.rbButtonText}>Yes, clear cart.</Text></TouchableOpacity>
+                    <TouchableOpacity style={styles.rbButton} onPress={ () => { refRBSheet.current.close() } }><Text style={styles.rbButtonText}>No.</Text></TouchableOpacity>
+                </View>
+            </RBSheet>
         </View>
     );
 };
@@ -279,6 +326,19 @@ const styles = StyleSheet.create({
         paddingVertical:20,
         borderBottomColor:'#ddd',
         borderBottomWidth:1
+    },
+    rbButton:{
+        padding:10,
+        backgroundColor: Colors.ORANGE,
+        flex:1,
+        alignItems:'center',
+        marginHorizontal:10,
+        borderRadius:15
+    },
+    rbButtonText:{
+        fontWeight:'bold',
+        color: Colors.WHITE,
+        fontSize:18
     },
     image:{
         height:200, 

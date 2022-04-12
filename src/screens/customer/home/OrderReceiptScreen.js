@@ -21,7 +21,7 @@ const OrderReceiptScreen = props => {
         }
         return updatedCartItems.sort( (a,b) => a.id > b.id ? 1 : -1);
     })
-    const selectedAddress = Address.find( item => { return( item.isActive === true )});
+    const selectedAddress = useSelector( state => state.Address.activeAddress? state.Address.activeAddress : null);
     const orderType = useSelector( state => state.Cart.orderType )
     const deliveryFee = orderType === 'Delivery' ? 2.5 : 0
     const serviceCharge = 1.00
@@ -60,14 +60,22 @@ const OrderReceiptScreen = props => {
                 <View style={styles.addressContainer}>
                     <View style={styles.addressTextAlign}>
                         <Text style={styles.label}>Address</Text>
-                        <TouchableOpacity><Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text></TouchableOpacity>
+                        <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile', { screen: 'SavedAddresses' }) } } >
+                            <Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text>
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.addressIconAlign}>
+                    { selectedAddress.address ? <View style={styles.addressIconAlign}>
                         <View style={styles.iconContainer}>
                             <Ionicon name={selectedAddress.icon}color={Colors.ORANGE} size={25}/>
                         </View>
                         <Text style={styles.addressText} numberOfLines={2}>{selectedAddress.address}</Text>
                     </View>
+                    :
+                    <View style={styles.backDropContainer} >
+                        <Text style={{...styles.backDropText, fontSize:25}}>NO ADDRESS FOUND</Text>
+                        <Text style={{...styles.backDropText, fontSize:15}}>Add some addresses now!</Text>
+                    </View>
+                    }
                 </View>
 
                 <View style={styles.billDetailsContainer} >
