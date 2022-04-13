@@ -6,11 +6,13 @@ import ReduxThunk from 'redux-thunk';
 import cartReducer from './src/store/reducers/cart';
 import addressReducer from './src/store/reducers/address';
 import authReducer from './src/store/reducers/auth';
+import registerReducer from './src/store/reducers/register';
 
 const rootReducer = combineReducers({
   Cart: cartReducer,
   Address: addressReducer,
   Auth: authReducer,
+  Register: registerReducer
 })
 
 const store = createStore( rootReducer, applyMiddleware(ReduxThunk) );

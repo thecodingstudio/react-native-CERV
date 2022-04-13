@@ -1,67 +1,45 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
+import PaymentOption from "../../../../components/PaymentOption";
 import{ Colors }from '../../../../commonconfig';
-
-import CardDisplay from "../../../../components/CardDisplay";
-import OtherPaymentDisplay from "../../../../components/OtherPaymentDisplay";
-
-import cards from "../../../../model/cards";
-import otherPayment from "../../../../model/otherPayment";
+import paymentOptions from "../../../../model/paymentOptions";
 
 const SavedCards = props => {
     return(
         <View style={styles.screen} > 
-            
-            {/* SAVED CARDS */}
-            <View style={{...styles.savedCards,borderBottomColor:'#ccc', borderBottomWidth:2}}>
-                <View style={styles.textRow} >
-                    <Text style={styles.title} >Saved Cards</Text>
-                    <TouchableOpacity onPress={ () => {
-                        props.navigation.navigate('AddCard')
-                    }} >
-                        <Text style={styles.button}>ADD CARD</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* CARDS */}
-                <CardDisplay 
-                    image = { cards.MasterCard.logo }
-                    cardNumber = {cards.MasterCard.cardNumber}
-                    expiry = { cards.MasterCard.expiryDate }
-                    selectable={false}
-                />
-                <CardDisplay 
-                    image = { cards.Visa.logo }
-                    cardNumber = {cards.Visa.cardNumber}
-                    expiry = { cards.Visa.expiryDate }
-                    selectable={false}
-                />
-                
+            <View style={styles.cardTextContainer}>
+                <Text style={styles.label}>Saved Payment Methods</Text>   
             </View>
 
-            {/* OTHER PAYMENT MODES */}
-            <View style={styles.savedCards}>
-            
-                <View style={styles.textRow} >
-                    <Text style={styles.title} >Other Payment Methods</Text>
-                </View>
+            {paymentOptions.map( item => {
+                return (
+                    <View key={item.pid}>
+                    { item.paymentType === 'card' ?
+                        <PaymentOption 
+                            logo={item.logo}
+                            mainText={item.cardNumber}
+                            subText={item.expiryDate}
+                            paymentType = {item.paymentType}
+                            selectable
+                            onEditPress = { () => {} }
+                            onCheckPress = { () => {} }
+                        />
+                        :
+                        <PaymentOption 
+                            logo={item.logo}
+                            mainText={item.type}
+                            subText={item.id}
+                            paymentType = {item.paymentType}
+                            selectable
+                            onEditPress = { () => {} }
+                            onCheckPress = { () => {} }
+                        />
+                    }
+                    </View>
+                )
+            })}
 
-                {/* CARDS */}
-                <OtherPaymentDisplay 
-                    image = { otherPayment.ApplePay.logo }
-                    type = { otherPayment.ApplePay.type }
-                    id = { otherPayment.ApplePay.id }
-                    selectable={false}
-                />
-
-                <OtherPaymentDisplay 
-                    image = { otherPayment.GooglePay.logo }
-                    type = { otherPayment.GooglePay.type }
-                    id = { otherPayment.GooglePay.id }
-                    selectable={false}
-                />
-            </View>
         </View>
     )
 };
@@ -69,41 +47,59 @@ const SavedCards = props => {
 const styles = StyleSheet.create({
     screen:{
         flex:1,
+        padding:20
+    },
+    iconContainer:{
+        flex:0.5, 
+        alignItems:'center', 
+        justifyContent:'center'
+    },
+    logo:{
+        flex:0.9,
+        maxHeight: 80,
+        maxWidth: 80
+    },
+    cardTextContainer:{
+        flexDirection:'row',
+        justifyContent:'space-between',
         alignItems:'center',
-        justifyContent:'center',
+        marginVertical:10,
     },
-    savedCards:{
-        flex:1,
-        width:'90%',
+    label:{
+        fontWeight:'bold',
+        color: Colors.GREY,
+        fontSize: 20
     },
-    textRow:{
-        flexDirection:'row', 
-        justifyContent:'space-between', 
-        marginTop:15
-    },
-    title:{
-        fontSize:20,
-        color:'#5F5959',
-        fontWeight:'600'
-    },
-    button:{
-        fontSize:20,
+    addCard:{
+        fontWeight:'bold',
         color: Colors.ORANGE,
-        fontWeight:'600'
+        fontSize: 15
     },
-    bottomButton:{
-        justifyContent:'center',
+    cardItemContainer:{
+        flexDirection:'row',
+        paddingVertical:10,
+        paddingHorizontal:15,
+        marginVertical:5,
         alignItems:'center',
-        width:'100%',
-        height:40,
-        marginTop:15,
-        backgroundColor:Colors.ORANGE,
-        borderRadius:5
+        justifyContent:'space-between',
+        borderWidth:0.5,
+        borderRadius:5,
+        borderColor: Colors.GREY
     },
-    makePayment:{
-        color:Colors.WHITE,
-        fontSize:20,
-        fontWeight:'700'
+    cardDetailContainer:{
+        flex:2,
+        justifyContent:'space-evenly',
+        alignItems:'flex-start',
+        marginLeft:15
+    },
+    cardMain:{
+        fontSize:18,
+        fontWeight:'bold',
+        marginRight:10
+    },
+    cardText:{
+        color: Colors.GREY,
+        fontWeight:'bold'
     }
 });
 

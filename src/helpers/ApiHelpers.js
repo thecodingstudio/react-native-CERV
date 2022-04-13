@@ -7,11 +7,11 @@ export const postRequest = async( url, data ) => {
     return await axios
     .post( apiBaseUrl + url , data, {
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type':'application/json',
         }
     })
     .then( (response) => {
-        if(response.data.status === '1') {
+        if(response.data.status===1) {
             return {
               success: true,
               data: response.data,
@@ -32,5 +32,4 @@ export const postRequest = async( url, data ) => {
             statusCode: error.response.status,
         };
     });
-
 }

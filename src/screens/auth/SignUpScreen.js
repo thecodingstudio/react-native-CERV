@@ -9,6 +9,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { Formik } from 'formik';
 import{ Colors, Images }from '../../commonconfig';
 import SignUpValidationSchema from '../../schema/SignUpValidationSchema';
+import * as registerActions from '../../store/actions/register';
+import { useDispatch } from 'react-redux';
 
 const SignUpScreen = props => {
 
@@ -20,7 +22,8 @@ const SignUpScreen = props => {
             height: 100,
             cropping: true,
           }).then(image => {
-            setSelectedImage(image.path)
+              console.log(image)
+            setSelectedImage(image)
             setModalVisible(!modalVisible)
           });
     }
@@ -31,7 +34,8 @@ const SignUpScreen = props => {
             height: 100,
             cropping: true
           }).then(image => {
-            setSelectedImage(image.path)
+              console.log(image)
+            setSelectedImage(image)
             setModalVisible(!modalVisible)
           });
     }
@@ -46,6 +50,7 @@ const SignUpScreen = props => {
         setTnc(state => !state);
     };
    
+    const dispatch = useDispatch();
 
     return(
         <View>
@@ -69,7 +74,7 @@ const SignUpScreen = props => {
                 {/* PROFILE PICTURE */}
                 <View style={styles.ppContainer}>
                     <View style={styles.profile_picture}>
-                        {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:100,width:100}}/> :  <Image source={Images.PROFILE_PLACEHOLDER} style={{height:100,width:100}} />}
+                        {selectedImage.path ? <Image source={{ uri: selectedImage.path}} style={{height:100,width:100}}/> :  <Image source={Images.PROFILE_PLACEHOLDER} style={{height:100,width:100}} />}
                     </View>
 
                     <View style={styles.add_icon}>
@@ -120,7 +125,11 @@ const SignUpScreen = props => {
                         password: '',
                         confirmPassword: ''
                     }}
-                    onSubmit = { () => { props.navigation.navigate('NumberVerificationScreen')}}
+                    onSubmit = { (values) => { 
+                        const data = {image: selectedImage, username: values.username, email: values.email, password: values.password}
+                        dispatch(registerActions.addDetails(data));
+                        props.navigation.navigate('NumberVerificationScreen')
+                    }}
                     validationSchema = { SignUpValidationSchema }
                 >
                     {({ values, errors, setFieldTouched, touched, handleChange, isValid, handleSubmit }) => (

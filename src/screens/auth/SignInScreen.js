@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, Image, ActivityIndicator, Alert } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -10,8 +10,9 @@ import { useDispatch } from 'react-redux';
 
 import{ Colors, Images }from '../../commonconfig';
 import SignInScreenValidationSchema from '../../schema/SignInScreenSchema';
-import * as authActions from '../../store/actions/auth';
+import { postRequest } from "../../helpers/ApiHelpers";
 
+const LOGIN = 'LOGIN';
 
 const SignInScreen = props => {
 
@@ -19,15 +20,28 @@ const SignInScreen = props => {
     const [eyeTouched, setEyeTouched] = useState(false)
     const [isLoading ,setIsLoading] = useState(false);
 
-
-    const loginHandler = async (values) => {
-        
-        setIsLoading(true);
-        await dispatch(authActions.login(values));
-        setIsLoading(false)
+    const login = async(values) => {
+        setIsLoading(true)
+        const data = {
+            email: values.email,
+            password: values.password
+        };
+        const response = await postRequest('/users/login', data);
+        const resData = response.data;
+        let errorMsg = 'Something went wrong!';
+        if (response.success) {
+            setIsLoading(false);
+            dispatch({ type: LOGIN, token: resData.token, id: resData.user.id, refreshToken: resData.refreshToken })
+        } else {
+            if (resData.error === 'User does not exist!') {
+                errorMsg = " User does not exist! ";
+            } else if (resData.error === 'Invalid Password!') {
+                errorMsg = "Password is incorrect."
+            }
+            setIsLoading(false)
+            Alert.alert("Error!", errorMsg, [{text: "Okay"}]);
+        }
     }
-
-
 
     return(
         <View style={styles.screen}>
@@ -58,7 +72,7 @@ const SignInScreen = props => {
                                 email: '',
                                 password: ''
                             }}
-                            onSubmit = {values => loginHandler(values)}
+                            onSubmit = {values => login(values)}
                             validationSchema = { SignInScreenValidationSchema }
                         >
                              {({ values, errors, setFieldTouched, touched, handleChange, isValid, handleSubmit }) => (

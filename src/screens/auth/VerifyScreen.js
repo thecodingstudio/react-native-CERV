@@ -1,17 +1,51 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image  } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, Alert } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 
 import{ Colors, Images }from '../../commonconfig';
+import { postRequest } from '../../helpers/ApiHelpers';
+import { useSelector } from 'react-redux';
 
 const VerifyScreen = props => {
 
+    const user = useSelector(state => state.Register)
+    console.log('User:', user)
     const countryCode = props.route.params.countryCode;
     const phoneNumber = props.route.params.phoneNumber;
 
     const OTPInput = useRef(null)
     const [ otpValue, setOTPValue ] = useState('');
+
+    const pressHandler = async(otpValue) => {
+        const verifyOTP = {
+            otpValue: otpValue,
+            country_code: countryCode,
+            phone_number: phoneNumber
+        }
+        const response = await postRequest('/users/verifyOTP', verifyOTP);
+        const resData = response.data;
+        let errorMsg = 'Something went wrong!';
+        if (response.success) {
+            // CALL REGISTER API 
+            const regResponse = await postRequest('/users/register', user);
+            console.log(regResponse);
+            if (!regResponse.success) {
+                if (regResponse.data.error === 'USER ALREADY EXISTS') {
+                    errorMsg = "The credentials entered already exist. Please check the details.";
+                } 
+                Alert.alert("Error!", errorMsg, [{text: "Okay"}]);
+            } else {
+                //SUCCESS  then Route
+                props.navigation.navigate('SignInScreen')
+            }
+        } else {
+            if( resData.error ==="Invalid OTP entered!"){
+                errorMsg = "Invalid OTP entered!"
+            }
+            Alert.alert("Error",errorMsg,[{text:"Okay"}])
+        }
+    }
 
     return (
         <View style={styles.screen}>
@@ -53,7 +87,7 @@ const VerifyScreen = props => {
                     </View>
 
                     <View style={{flex:0.5}}>
-                        <TouchableOpacity activeOpacity={0.7} style={styles.verifyNow} onPress={() => {props.navigation.navigate('SignInScreen')}}>
+                        <TouchableOpacity activeOpacity={0.7} style={styles.verifyNow} onPress={() => pressHandler(otpValue)}>
                             <Text style={styles.verifyNowText}>Verify Now</Text>
                         </TouchableOpacity>
                     </View>

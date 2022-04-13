@@ -2,11 +2,11 @@ import { Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View
 import React from 'react';
 import { Colors } from '../../../../commonconfig';
 import { Formik } from 'formik';
-import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
 import * as addressActions from '../../../../store/actions/address';
 import addressIcon from '../../../../model/addressIcon';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import AddressValidationSchema from '../../../../schema/AddressValidationSchema';
 
 const AddAddress = props => {
     const dispatch = useDispatch();
@@ -23,11 +23,7 @@ const AddAddress = props => {
                     dispatch(addressActions.addAddress(values))
                     props.navigation.navigate('SavedAddresses');
                 }}
-                validationSchema={ yup.object().shape({
-                    tag: yup.string().required('Address Tag is required.').max(15,'Tag cannot be more than 15 characters long.'),
-                    address: yup.string().required('Address is required.'),
-                    icon: yup.string().required('Icon is required.'),
-                }) }
+                validationSchema={ AddressValidationSchema }
             >
                 { ({ values, errors, setFieldTouched, touched, handleChange, setFieldValue ,isValid, handleSubmit }) => (
                     <View>

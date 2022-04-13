@@ -1,19 +1,47 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image,TextInput, Alert } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useDispatch } from 'react-redux';
 
 import CountryPicker from 'react-native-country-codes-picker';
 
+import * as registerActions from '../../store/actions/register';
 import{ Colors, Images }from '../../commonconfig';
-import { TextInput } from 'react-native-gesture-handler';
+import { postRequest } from '../../helpers/ApiHelpers';
+
 
 const NumberVerificationScreen = props => {
 
     const [show, setShow] = useState(false);
     const [countryCode, setCountryCode] = useState('+91');
-    const [ phoneNumber, setPhoneNumber ] = useState('');
- 
+    const [phoneNumber, setPhoneNumber ] = useState('');
+    
+    const dispatch = useDispatch()
+
+    
+
+    const pressHandler = async(countryCode, phoneNumber) => {
+        const data = {
+            country_code: countryCode,
+            phone_number: phoneNumber
+        }
+        dispatch(registerActions.addPhone(data))
+
+        const OTPData = {
+            country_code: countryCode,
+            phone_number: phoneNumber,
+            channel: "sms"
+        }
+        const response = await postRequest('/users/generateOTP', OTPData);
+        let errorMsg = 'Something went wrong!';
+        if (response.success) {
+            props.navigation.navigate('VerifyScreen',{countryCode: countryCode, phoneNumber: phoneNumber})
+        } else {
+            Alert.alert("Error",errorMsg,[{text:"Okay"}])
+        }
+    }
+
     return (
         <View style={styles.screen}>
             <KeyboardAwareScrollView>
@@ -51,7 +79,7 @@ const NumberVerificationScreen = props => {
                             />
                         </View>
 
-                        <TouchableOpacity style={styles.sendCode} disabled={ phoneNumber.length === 10 ? false : true } onPress={() => props.navigation.navigate('VerifyScreen',{countryCode: countryCode, phoneNumber: phoneNumber})}>
+                        <TouchableOpacity style={styles.sendCode} disabled={ phoneNumber.length === 10 ? false : true } onPress={() => pressHandler(countryCode, phoneNumber)}>
                             <Text style={styles.sendCodeText}>Send Code</Text>
                         </TouchableOpacity>
                     </View>

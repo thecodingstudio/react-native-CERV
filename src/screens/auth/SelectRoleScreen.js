@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, StatusBar } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
+import * as registerActions from '../../store/actions/register';
 import Button from '../../components/Button';
 import{ Colors, Images }from '../../commonconfig';
+import { useDispatch } from 'react-redux';
 
 const SelectRoleScreen = props => {
+
+    const dispatch = useDispatch();
 
     const [customerActive, setCustomerActive] = useState(false);
     const [catererActive, setCatererActive] = useState(false);
@@ -55,6 +59,7 @@ const SelectRoleScreen = props => {
             <View style={{flex:1 ,width:'100%', paddingHorizontal:15, paddingBottom:10,justifyContent:'center'}}>
                 {showButton ? <Button 
                     onPress={ () => {
+                        dispatch(registerActions.setUserRole(customerActive? 1 : 0))
                         props.navigation.navigate('SignInScreen')
                     }}
                     title = { customerActive ? " I'm Customer" : "I'm Caterer" }

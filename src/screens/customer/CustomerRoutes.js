@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Feather from 'react-native-vector-icons/Feather';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
@@ -345,7 +346,12 @@ const ProfileStackScreen = ({ navigation }) => {
             component={SavedCards}
             options={{
                 headerBackTitleVisible: false,
-                headerTitle:"Payment Method"
+                headerTitle:"Payment Method",
+                headerRight: () => (
+                    <TouchableOpacity onPress={ () => { navigation.navigate('AddCard')}} style={{marginRight:10}}>
+                        <Ionicon name="add-outline" size={30} color={Colors.BLACK}/>
+                    </TouchableOpacity>
+                )
             }}
         />
         
