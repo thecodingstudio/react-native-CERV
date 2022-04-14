@@ -6,13 +6,41 @@ import Feather from 'react-native-vector-icons/Feather';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { Formik } from 'formik';
+import { useDispatch } from "react-redux";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
+import * as paymentActions from '../../../../store/actions/paymentMethod';
 import OtherPaymentTypeValidationSchema from '../../../../schema/OtherPaymentTypeValidationSchema';
 import CreditCardValidationSchema from "../../../../schema/CreditCardValidationSchema";
 import{ Colors, Images }from '../../../../commonconfig'
 
 const AddCard = props => {
     const [type, setType]= useState('card');
+
+    const dispatch = useDispatch();
+
+    // EXPIRY DATE MODAL LOGIC
+    const initialDate = new Date()
+    const [month, year] = [initialDate.getMonth(), initialDate.getFullYear()];
+    const mon = ((month+1) < 10 ? '0': '' ) + (month+1)
+    const dateString =  mon + "/" + (year-2000);
+    let selectedExpiryDateString; // state define karo
+    console.log(dateString)
+
+    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+    const showDatePicker = () => {
+        setIsDatePickerVisible(true);
+    };
+    const hideDatePicker = () => {
+        setIsDatePickerVisible(false);
+    };
+    const handleDateConfirm = (date) => {
+        const [month, day, year]  = [date.getMonth(), date.getFullYear()];
+        
+        setInitialDate( selectedDateStr ); // selectedexpirydatestring state
+        hideDatePicker();
+    };
+
     return(
         <KeyboardAwareScrollView>
             <View style={styles.screen} > 
@@ -53,7 +81,7 @@ const AddCard = props => {
 
                     onSubmit={values => {
                         const cardValues = {...values, paymentType:'card'}
-                        console.log(cardValues);
+                        dispatch(paymentActions.addCard(cardValues))
                         props.navigation.goBack();
                     }}
 
@@ -85,14 +113,18 @@ const AddCard = props => {
                                     {/* Expiry Date */}
                                     <Text style={styles.title}>EXPIRY DATE</Text>
                                     <View style={styles.container}>
-                                        <TextInput 
-                                            value={values.expiryDate}
-                                            onBlur={ () => setFieldTouched('expiryDate')}
-                                            onChangeText={handleChange('expiryDate')}
-                                            placeholder="Enter Expiry Date"
-                                            keyboardType="numbers-and-punctuation"
-                                        />
-                                        {touched.expiryDate ? (!errors.expiryDate ? <Animatable.View animation="bounceIn" ><Feather name="check-circle" color="green" size={20}/></Animatable.View> : null) : null}
+                                        <TouchableOpacity>
+                                            <View style={styles.dateTimeModalContainer}>
+                                                <Text style={styles.timeDate}>{initialDate}</Text>
+                                                <Ionicon name="calendar" size={30} color={Colors.ORANGE}/>
+                                            </View>
+                                            <DateTimePickerModal
+                                                isVisible={isDatePickerVisible}
+                                                mode="date"
+                                                onConfirm={handleDateConfirm}
+                                                onCancel={hideDatePicker}
+                                            />
+                                        </TouchableOpacity>
                                     </View>
                                     {touched.expiryDate && errors.expiryDate && 
                                         <Text style={{ fontSize: 11, color: Colors.ERROR_RED, margin:10 }} >{errors.expiryDate}</Text>
@@ -136,7 +168,7 @@ const AddCard = props => {
                             }
 
                             {/* CONFIRM BUTTON */}
-                            <TouchableOpacity onPress={ isValid ? handleSubmit : ()=>{} } >
+                            <TouchableOpacity onPress={ handleSubmit} disabled={!isValid}>
                                 <View style={styles.button}>
                                     <Text style={styles.buttonText}>Confirm</Text>
                                 </View>
@@ -154,7 +186,7 @@ const AddCard = props => {
 
                     onSubmit={values => {
                         const otherValues = {...values, paymentType:'other'}
-                        console.log(otherValues);
+                        dispatch(paymentActions.addOther(otherValues))
                         props.navigation.goBack();
                     }}
 
@@ -198,7 +230,7 @@ const AddCard = props => {
 
                             
                             {/* CONFIRM BUTTON */}
-                            <TouchableOpacity onPress={ isValid ? handleSubmit : ()=>{} } >
+                            <TouchableOpacity onPress={handleSubmit} disabled={!isValid}>
                                 <View style={styles.button}>
                                     <Text style={styles.buttonText}>Confirm</Text>
                                 </View>

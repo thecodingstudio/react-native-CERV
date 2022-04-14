@@ -1,14 +1,24 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import { useDispatch, useSelector } from "react-redux";
 
+import * as paymentActions from '../store/actions/paymentMethod';
 import { Colors } from "../commonconfig";
 
 const PaymentOption = (props) => {
 
-    const paymentType = props.paymentType
+    const dispatch = useDispatch();
+
+    const paymentType = props.paymentType;
+
+    let isActive = false;
+    const pid = props.id
+    const activeMethodID = useSelector( state => state.Payment.activeMethodID )
+    isActive = activeMethodID === pid ? true : false;
 
     const selectable = props.selectable ? true : false ;
+    
     return (
         <View style={styles.cardItemContainer}>
             <View style={{flex: 3, flexDirection:'row'}}>
@@ -21,7 +31,7 @@ const PaymentOption = (props) => {
                     <Text style={styles.cardText}> {paymentType === 'card' ? "Expires ": null}{props.subText}</Text>
                 </View>
             </View>
-            {selectable ? <TouchableOpacity onPress={props.onCheckPress} style={styles.iconContainer}><Ionicon name="checkmark-circle" color={Colors.GREY} size={45}/></TouchableOpacity> : null}
+            {selectable ? <TouchableOpacity onPress={ () => { dispatch(paymentActions.activatePayment(pid)) } } style={styles.iconContainer}><Ionicon name="checkmark-circle" color={ isActive ? Colors.GREEN : Colors.GREY} size={45}/></TouchableOpacity> : null}
         </View>
     )
 }

@@ -311,7 +311,7 @@ const DetailScreen = props => {
                 }}
             >
                 <Text style={{marginTop:30, fontWeight:'bold'}} >You are about to add items from a caterer different from that in your cart already. Do you wish to clear earlier items?</Text>
-                <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingHorizontal:10, marginTop:15}}>
+                <View style={styles.rbButtonContainer}>
                     <TouchableOpacity style={styles.rbButton} onPress={clearCartHandler}><Text style={styles.rbButtonText}>Yes, clear cart.</Text></TouchableOpacity>
                     <TouchableOpacity style={styles.rbButton} onPress={ () => { refRBSheet.current.close() } }><Text style={styles.rbButtonText}>No.</Text></TouchableOpacity>
                 </View>
@@ -326,6 +326,13 @@ const styles = StyleSheet.create({
         paddingVertical:20,
         borderBottomColor:'#ddd',
         borderBottomWidth:1
+    },
+    rbButtonContainer:{
+        flexDirection:'row', 
+        justifyContent:'space-between', 
+        alignItems:'center', 
+        paddingHorizontal:10,
+        marginTop:15
     },
     rbButton:{
         padding:10,

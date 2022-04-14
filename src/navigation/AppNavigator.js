@@ -12,6 +12,7 @@ const AppNavigator = props => {
     
     return (
         <NavigationContainer>
+            {/* <CustomerRoutes /> */}
             {isAuth && <CustomerRoutes />}
             {!isAuth && <RootStackScreen />}
         </NavigationContainer>

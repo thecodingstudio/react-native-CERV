@@ -16,28 +16,29 @@ const SignUpScreen = props => {
 
     const [ selectedImage, setSelectedImage ] = useState(null)
     const [modalVisible, setModalVisible] = useState(false);
+    
     const takeFromCamera = () => {
         ImagePicker.openCamera({
-            width: 100,
-            height: 100,
-            cropping: true,
-          }).then(image => {
-              console.log(image)
-            setSelectedImage(image)
-            setModalVisible(!modalVisible)
+                width: 100,
+                height: 100,
+                cropping: true,
+            }).then(image => {
+                dispatch(registerActions.addImage(image))
+                setSelectedImage(image.path)
+                setModalVisible(!modalVisible)
           });
     }
 
     const pickFromGallery = () => {
         ImagePicker.openPicker({
-            width: 100,
-            height: 100,
-            cropping: true
-          }).then(image => {
-              console.log(image)
-            setSelectedImage(image)
-            setModalVisible(!modalVisible)
-          });
+                width: 100,
+                height: 100,
+                cropping: true
+            }).then(image => {
+                dispatch(registerActions.addImage(image))
+                setSelectedImage(image.path)
+                setModalVisible(!modalVisible)
+            });
     }
 
     const [eyeTouched, setEyeTouched] = useState(true)
@@ -74,7 +75,7 @@ const SignUpScreen = props => {
                 {/* PROFILE PICTURE */}
                 <View style={styles.ppContainer}>
                     <View style={styles.profile_picture}>
-                        {selectedImage.path ? <Image source={{ uri: selectedImage.path}} style={{height:100,width:100}}/> :  <Image source={Images.PROFILE_PLACEHOLDER} style={{height:100,width:100}} />}
+                        {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:100,width:100}}/> :  <Image source={Images.PROFILE_PLACEHOLDER} style={{height:100,width:100}} />}
                     </View>
 
                     <View style={styles.add_icon}>
@@ -126,7 +127,7 @@ const SignUpScreen = props => {
                         confirmPassword: ''
                     }}
                     onSubmit = { (values) => { 
-                        const data = {image: selectedImage, username: values.username, email: values.email, password: values.password}
+                        const data = {username: values.username, email: values.email, password: values.password}
                         dispatch(registerActions.addDetails(data));
                         props.navigation.navigate('NumberVerificationScreen')
                     }}
@@ -138,7 +139,7 @@ const SignUpScreen = props => {
                                     <Text style={styles.text_footer} >User Name</Text>
                                     <View style={{...styles.action, justifyContent:'space-between'}} >
                                         <View style={{flexDirection:'row'}}>
-                                            <FontAwesome name="envelope" color={Colors.ORANGE} size={20}/>
+                                            <FontAwesome name="user" color={Colors.ORANGE} size={20}/>
                                             <TextInput
                                                 onBlur={() => setFieldTouched('username')}
                                                 onChangeText={handleChange('username')}

@@ -19,8 +19,6 @@ const NumberVerificationScreen = props => {
     
     const dispatch = useDispatch()
 
-    
-
     const pressHandler = async(countryCode, phoneNumber) => {
         const data = {
             country_code: countryCode,

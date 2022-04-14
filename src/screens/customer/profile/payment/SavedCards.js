@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
 import PaymentOption from "../../../../components/PaymentOption";
 import{ Colors }from '../../../../commonconfig';
 import paymentOptions from "../../../../model/paymentOptions";
+import { useSelector } from "react-redux";
 
 const SavedCards = props => {
+    let paymentOptions = useSelector( state => state.Payment.paymentMethods );
+
     return(
         <View style={styles.screen} > 
             <View style={styles.cardTextContainer}>
@@ -17,23 +20,23 @@ const SavedCards = props => {
                     <View key={item.pid}>
                     { item.paymentType === 'card' ?
                         <PaymentOption 
+                            id={item.pid}
                             logo={item.logo}
                             mainText={item.cardNumber}
                             subText={item.expiryDate}
                             paymentType = {item.paymentType}
                             selectable
                             onEditPress = { () => {} }
-                            onCheckPress = { () => {} }
                         />
                         :
                         <PaymentOption 
+                            id={item.pid}
                             logo={item.logo}
                             mainText={item.type}
                             subText={item.id}
                             paymentType = {item.paymentType}
                             selectable
                             onEditPress = { () => {} }
-                            onCheckPress = { () => {} }
                         />
                     }
                     </View>

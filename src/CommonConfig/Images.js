@@ -15,5 +15,6 @@ export default {
     MASTERCARD: require('../assets/images/maestro.png'),
     VISA: require('../assets/images/visa.png'),
     PAYPAL: require('../assets/images/paypal.png') ,
+    CREDIT_CARD: require('../assets/images/credit-card.png'),
     PAPER_TEAR: require('../assets/images/PaperEffectReceipt.png')
 }

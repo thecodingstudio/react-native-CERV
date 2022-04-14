@@ -4,7 +4,6 @@ export default paymentOptions = [
     {   
         pid:0,
         paymentType:'card',
-        type:'MasterCard',
         logo: Images.MASTERCARD,
         cardNumber: 1234567891234567,
         expiryDate: "07/24",
@@ -15,7 +14,6 @@ export default paymentOptions = [
     {   
         pid:1,
         paymentType:'card',
-        type:'Visa',
         logo: Images.VISA,
         cardNumber: 1200543210456789,
         expiryDate: "10/23",

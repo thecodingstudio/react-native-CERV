@@ -3,19 +3,24 @@ import AppNavigator from './src/navigation/AppNavigator';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import ReduxThunk from 'redux-thunk';
+import { composeWithDevTools } from 'redux-devtools-extension'
+
 import cartReducer from './src/store/reducers/cart';
 import addressReducer from './src/store/reducers/address';
 import authReducer from './src/store/reducers/auth';
 import registerReducer from './src/store/reducers/register';
+import paymentReducer from './src/store/reducers/paymentMethod';
+
 
 const rootReducer = combineReducers({
   Cart: cartReducer,
   Address: addressReducer,
   Auth: authReducer,
-  Register: registerReducer
+  Register: registerReducer,
+  Payment: paymentReducer
 })
 
-const store = createStore( rootReducer, applyMiddleware(ReduxThunk) );
+const store = createStore( rootReducer, applyMiddleware(ReduxThunk));
 
 export default function App() {
   return (
