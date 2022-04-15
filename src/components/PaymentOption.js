@@ -18,6 +18,7 @@ const PaymentOption = (props) => {
     isActive = activeMethodID === pid ? true : false;
 
     const selectable = props.selectable ? true : false ;
+    const editable = props.editable ? true : false ;
     
     return (
         <View style={styles.cardItemContainer}>
@@ -26,7 +27,7 @@ const PaymentOption = (props) => {
                 <View style={styles.cardDetailContainer}>
                     <View style={{flexDirection:'row', alignItems:'center'}}>
                         <Text style={styles.cardMain}>{props.mainText}</Text>
-                        <TouchableOpacity onPress={props.onEditPress}><Ionicon name="create-outline" size={20} color={Colors.CREATE_BLUE}/></TouchableOpacity>
+                        {editable ? <TouchableOpacity onPress={props.onEditPress}><Ionicon name="create-outline" size={20} color={Colors.CREATE_BLUE}/></TouchableOpacity>: null }
                     </View>
                     <Text style={styles.cardText}> {paymentType === 'card' ? "Expires ": null}{props.subText}</Text>
                 </View>

@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import * as cartActions from '../../../store/actions/cart';
 import{ Colors, Images }from '../../../commonconfig';
 import Address from '../../../model/addresses';
+import PaymentOption from '../../../components/PaymentOption';
 
 const OrderReceiptScreen = props => {
 
@@ -51,6 +52,23 @@ const OrderReceiptScreen = props => {
     const total = updatedSubTotal + 5.10;
     
     //Payment Logic
+    const activePID = useSelector(state => state.Payment.activeMethodID)
+    
+    const allPaymentMethods = useSelector( state => state.Payment.paymentMethods ? state.Payment.paymentMethods : null);
+    const activePaymentObj = allPaymentMethods? allPaymentMethods.find( item => item.pid === activePID) : null;
+
+    function cardHide(card) {
+        let hideNum = [];
+          for(let i = 0; i < card.length; i++){
+          if(i < card.length-4){
+            hideNum.push("*");
+          }else{
+            hideNum.push(card[i]);
+          }
+        }
+        return hideNum.join("");
+    }
+
 
     return (
         <View style={styles.screen}>
@@ -149,6 +167,39 @@ const OrderReceiptScreen = props => {
                 
             </View>
             <View style={styles.footer}>
+                <View style={styles.addressTextAlign}>
+                    <Text style={styles.label}>Payment with</Text>
+                    <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile', { screen: 'SavedCards' }) } } >
+                        <Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{paddingVertical:10}}>
+                { activePID >= 0 ? 
+                    (
+                        activePaymentObj.paymentType === 'card' ? 
+                        <PaymentOption 
+                            id={activePaymentObj.pid}
+                            logo={activePaymentObj.logo}
+                            mainText={cardHide(activePaymentObj.cardNumber)}
+                            subText={activePaymentObj.expiryDate}
+                            paymentType = {activePaymentObj.paymentType}
+                        />
+                        :
+                        <PaymentOption 
+                            id={activePaymentObj.pid}
+                            logo={activePaymentObj.logo}
+                            mainText={activePaymentObj.type}
+                            subText={activePaymentObj.id}
+                            paymentType = {activePaymentObj.paymentType}
+                        />
+                    )
+                    : 
+                    <View style={styles.backDropContainer}>
+                        <Text style={{...styles.backDropText, fontSize:25}}>No Payment Method Found</Text>
+                        <Text style={{...styles.backDropText, fontSize:15}}>Add some payment options now!</Text>
+                    </View>
+                }
+                </View>
                 <View>
                     <Text style={styles.label}>Add Note</Text>
                     <View style={styles.noteContainer}>
@@ -159,7 +210,7 @@ const OrderReceiptScreen = props => {
                     </View>
                 </View>
                 <TouchableOpacity style={styles.makePayment}>
-                    <Text style={{...styles.label, color: Colors.WHITE}}>Make Payment</Text>
+                    <Text style={{...styles.label, color: Colors.WHITE}}>{activePID >=0 ? "Confirm Order" : "Make Payment"}</Text>
                 </TouchableOpacity>
             </View>
             </ScrollView>

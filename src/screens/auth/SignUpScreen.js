@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux';
 
 const SignUpScreen = props => {
 
-    const [ selectedImage, setSelectedImage ] = useState(null)
+    const [selectedImage, setSelectedImage] = useState(null)
     const [modalVisible, setModalVisible] = useState(false);
     
     const takeFromCamera = () => {

@@ -21,6 +21,7 @@
       "bundleIdentifier": "com.tanish7800.CERV"
     },
     "android": {
+      "useNextNotificationsApi": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/pie.png",
         "backgroundColor": "#FFFFFF"

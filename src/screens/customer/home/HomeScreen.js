@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, ScrollView, StatusBar } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import Carousel, { ParallaxImage } from 'react-native-snap-carousel';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSelector } from 'react-redux';
+import messaging from '@react-native-firebase/messaging';
 
 import Caterer from '../../../model/caterer';
 import discountCouponsBanners from '../../../model/discountCouponBanners';
@@ -16,10 +17,13 @@ const windowWidth = Dimensions.get("window").width;
 
 const HomeScreen = props => {
 
+    useEffect( () => {
+        messaging().getToken().then(token => { console.log(token) });
+    },[])
+
+
     const activeAddress = useSelector( state => state.Address.activeAddress)
-
     const tabBartHeight = useBottomTabBarHeight();
-
     const Stars = props => {
         let rating = props.rating;
         let disp = []

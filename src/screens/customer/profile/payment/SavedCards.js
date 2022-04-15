@@ -19,7 +19,7 @@ const SavedCards = props => {
           }
         }
         return hideNum.join("");
-      }
+    }
 
     return(
         <View style={styles.screen} > 
@@ -38,6 +38,7 @@ const SavedCards = props => {
                             subText={item.expiryDate}
                             paymentType = {item.paymentType}
                             selectable
+                            editable
                             onEditPress = { () => {} }
                         />
                         :
@@ -48,6 +49,7 @@ const SavedCards = props => {
                             subText={item.id}
                             paymentType = {item.paymentType}
                             selectable
+                            editable
                             onEditPress = { () => {} }
                         />
                     }

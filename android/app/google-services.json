@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "473453370711",
+    "firebase_url": "https://pharmacy-backend-tcs-default-rtdb.firebaseio.com",
+    "project_id": "pharmacy-backend-tcs",
+    "storage_bucket": "pharmacy-backend-tcs.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:473453370711:android:d50b022374cb7227953212",
+        "android_client_info": {
+          "package_name": "com.tanish7800.CERV"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "473453370711-vmgf1h3uof3el044k2o99mobv990l0pg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3Qlhi1Oy-qSJEqulQC3oSJw6jmHM74mw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "473453370711-vmgf1h3uof3el044k2o99mobv990l0pg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "473453370711-12ruj60dfb674lhupgqs6vk7nrlfuduc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "hi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
