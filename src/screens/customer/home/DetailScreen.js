@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Modal } from 'react-native'; 
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native'; 
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,7 +31,7 @@ const DetailScreen = props => {
     }
 
     // PlaceHolder Date Time 
-    const dummyDateTimeObject = new Date("2022-01-01");
+    const dummyDateTimeObject = new Date();
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const [month, day, year] = [dummyDateTimeObject.getMonth(), dummyDateTimeObject.getDate(), dummyDateTimeObject.getFullYear()];
     const [hour, minutes] = [dummyDateTimeObject.getHours(), dummyDateTimeObject.getMinutes()];

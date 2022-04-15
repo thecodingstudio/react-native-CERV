@@ -3,11 +3,23 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
 import PaymentOption from "../../../../components/PaymentOption";
 import{ Colors }from '../../../../commonconfig';
-import paymentOptions from "../../../../model/paymentOptions";
+// import paymentOptions from "../../../../model/paymentOptions";
 import { useSelector } from "react-redux";
 
 const SavedCards = props => {
-    let paymentOptions = useSelector( state => state.Payment.paymentMethods );
+    let paymentOptionsList = useSelector( state => state.Payment.paymentMethods );
+
+    function cardHide(card) {
+        let hideNum = [];
+          for(let i = 0; i < card.length; i++){
+          if(i < card.length-4){
+            hideNum.push("*");
+          }else{
+            hideNum.push(card[i]);
+          }
+        }
+        return hideNum.join("");
+      }
 
     return(
         <View style={styles.screen} > 
@@ -15,14 +27,14 @@ const SavedCards = props => {
                 <Text style={styles.label}>Saved Payment Methods</Text>   
             </View>
 
-            {paymentOptions.map( item => {
+            {paymentOptionsList.map( item => {
                 return (
                     <View key={item.pid}>
                     { item.paymentType === 'card' ?
                         <PaymentOption 
                             id={item.pid}
                             logo={item.logo}
-                            mainText={item.cardNumber}
+                            mainText={cardHide(item.cardNumber)}
                             subText={item.expiryDate}
                             paymentType = {item.paymentType}
                             selectable

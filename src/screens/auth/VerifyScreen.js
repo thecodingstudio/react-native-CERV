@@ -10,27 +10,26 @@ import { useSelector } from 'react-redux';
 const VerifyScreen = props => {
 
     // Random Name generator
-    // const makeid = (length) => {
-    //     var result           = '';
-    //     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    //     var charactersLength = characters.length;
-    //     for ( var i = 0; i < length; i++ ) {
-    //         result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    //     }
-    //    return result;
-    // }
+    const makeid = (length) => {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+       return result;
+    }
 
     const user = useSelector(state => state.Register)
-    console.log(user)
-    // const userFormData = new FormData();
-    // userFormData.append("name",user.name)
-    // userFormData.append("email",user.email)
-    // userFormData.append("password", user.password)
-    // userFormData.append("role", user.role)
-    // userFormData.append("country_code", user.country_code)
-    // userFormData.append("phone_number", user.phone_number)
-    // userFormData.append("image", { uri: user.image.path, type: user.image.mime, name: makeid(10) })
-    //console.log(userFormData._parts)
+    const userFormData = new FormData();
+    userFormData.append("name",user.name)
+    userFormData.append("email",user.email)
+    userFormData.append("password", user.password)
+    userFormData.append("role", user.role)
+    userFormData.append("country_code", user.country_code)
+    userFormData.append("phone_number", user.phone_number)
+    userFormData.append("image", { uri: user.image.path, type: user.image.mime, name: makeid(10) })
+    console.log(userFormData)
 
     const countryCode = props.route.params.countryCode;
     const phoneNumber = props.route.params.phoneNumber;
@@ -48,7 +47,7 @@ const VerifyScreen = props => {
         let errorMsg = 'Something went wrong!';
         if (response.success) {
             // CALL REGISTER API 
-            const regResponse = await postRequest('/users/register', user );
+            const regResponse = await postFormDataRequest('/users/register', userFormData );
             console.log(regResponse);
             if (!regResponse.success) {
                 if (regResponse.data.error === 'USER ALREADY EXISTS') {

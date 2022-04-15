@@ -50,12 +50,12 @@ const OrderReceiptScreen = props => {
     const updatedSubTotal = subTotal - discountAmount
     const total = updatedSubTotal + 5.10;
     
-    
+    //Payment Logic
 
     return (
         <View style={styles.screen}>
-            <View style={styles.body}>
-                <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.body}>    
                 {/* Address Container */}
                 <View style={styles.addressContainer}>
                     <View style={styles.addressTextAlign}>
@@ -146,7 +146,7 @@ const OrderReceiptScreen = props => {
 
                 </View>
                 <Image source={Images.PAPER_TEAR} style={{width:'100%', marginBottom:25, height:25, transform:[{rotate:'180deg'}]}}/>
-                </ScrollView>
+                
             </View>
             <View style={styles.footer}>
                 <View>
@@ -162,6 +162,7 @@ const OrderReceiptScreen = props => {
                     <Text style={{...styles.label, color: Colors.WHITE}}>Make Payment</Text>
                 </TouchableOpacity>
             </View>
+            </ScrollView>
         </View>
     )
 }

@@ -15,7 +15,7 @@ export default (state = initialState, action ) => {
                 activeMethodID: pid
             }
         case ADD_CARD:
-            const cardData = action.data
+            const data = action.data
 
             const cardNumber = data.cardNumber
             const expiryDate = data.expiryDate
@@ -60,7 +60,6 @@ export default (state = initialState, action ) => {
 
             const tempArrayO = state.paymentMethods
             tempArrayO.push(otherObj)
-            console.log(tempArrayO)
 
             return {
                 ...state,

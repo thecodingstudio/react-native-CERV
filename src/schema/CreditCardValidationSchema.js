@@ -7,7 +7,7 @@ const CreditCardValidationSchema = yup.object().shape({
     .moreThan(999999999999999, "The card number must be 16 digits long")
     .required("Card Number is required!"),
 
-    expiryDate: yup.date()
+    expiryDate: yup.string()
     .required("Expiry Date is required."),
 
     cvv: yup.number()

@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Text, View, TextInput, StyleSheet, Image } from 'react-native';
+import React, { useState, useCallback } from "react";
+import { Text, View, TextInput, StyleSheet, Image, Modal, Alert,TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
-import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { Formik } from 'formik';
 import { useDispatch } from "react-redux";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import moment from "moment";
+import MonthPicker from 'react-native-month-picker';
 
 import * as paymentActions from '../../../../store/actions/paymentMethod';
 import OtherPaymentTypeValidationSchema from '../../../../schema/OtherPaymentTypeValidationSchema';
@@ -20,27 +20,10 @@ const AddCard = props => {
     const dispatch = useDispatch();
 
     // EXPIRY DATE MODAL LOGIC
-    const initialDate = new Date()
-    const [month, year] = [initialDate.getMonth(), initialDate.getFullYear()];
-    const mon = ((month+1) < 10 ? '0': '' ) + (month+1)
-    const dateString =  mon + "/" + (year-2000);
-    let selectedExpiryDateString; // state define karo
-    console.log(dateString)
-
-    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-    const showDatePicker = () => {
-        setIsDatePickerVisible(true);
-    };
-    const hideDatePicker = () => {
-        setIsDatePickerVisible(false);
-    };
-    const handleDateConfirm = (date) => {
-        const [month, day, year]  = [date.getMonth(), date.getFullYear()];
-        
-        setInitialDate( selectedDateStr ); // selectedexpirydatestring state
-        hideDatePicker();
-    };
-
+    const placeholder = "Select expiry date"
+    const [isOpen, toggleOpen] = useState(false);
+    const [value, onChange] = useState(null);
+    
     return(
         <KeyboardAwareScrollView>
             <View style={styles.screen} > 
@@ -87,7 +70,7 @@ const AddCard = props => {
 
                     validationSchema={CreditCardValidationSchema}
                 >
-                    { ({values, errors, setFieldTouched, touched, handleChange, isValid, handleSubmit}) => (
+                    { ({values, errors, setFieldTouched, touched, handleChange,setFieldValue, isValid, handleSubmit}) => (
                         <View style={{marginTop:30}}>
 
                             {/* Card Number */}
@@ -110,22 +93,41 @@ const AddCard = props => {
                             {/* EXPIRY & CVV */}
                             <View style={{flexDirection:'row'}}>
                                 <View style={{flex:0.6,marginHorizontal:5}}>
+
                                     {/* Expiry Date */}
                                     <Text style={styles.title}>EXPIRY DATE</Text>
                                     <View style={styles.container}>
-                                        <TouchableOpacity>
-                                            <View style={styles.dateTimeModalContainer}>
-                                                <Text style={styles.timeDate}>{initialDate}</Text>
-                                                <Ionicon name="calendar" size={30} color={Colors.ORANGE}/>
-                                            </View>
-                                            <DateTimePickerModal
-                                                isVisible={isDatePickerVisible}
-                                                mode="date"
-                                                onConfirm={handleDateConfirm}
-                                                onCancel={hideDatePicker}
-                                            />
+                                        <TouchableOpacity onPress={() => toggleOpen(true)} style={{padding:5}}>
+                                            <Text>{value ? moment(value).format('MM/YYYY') : placeholder}</Text>
                                         </TouchableOpacity>
                                     </View>
+                                    <Modal
+                                        transparent
+                                        animationType="fade"
+                                        visible={isOpen}
+                                        onRequestClose={() => {
+                                            toggleOpen(false)
+                                        }}>
+                                        <View style={styles.contentContainer}>
+                                        <View style={styles.content}>
+                                            <MonthPicker
+                                                selectedDate={value || new Date()}
+                                                onMonthChange={onChange}
+                                                minDate = {moment('04-2022', 'MM-YYYY')}
+                                                maxDate = {moment('04-2030', 'MM-YYYY')}
+                                                nextIcon = {<Ionicon name="chevron-forward" size={30} color={Colors.BLACK}/>}
+                                                prevIcon = {<Ionicon name="chevron-back" size={30} color={Colors.BLACK}/>}
+                                            />
+                                            <TouchableOpacity style={styles.confirmButton} onPress={() => {
+                                                toggleOpen(false);
+                                                setFieldTouched('expiryDate');
+                                                setFieldValue('expiryDate',moment(value).format('MM/YYYY'));
+                                            }}>
+                                                <Text>Confirm</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        </View>
+                                    </Modal>
                                     {touched.expiryDate && errors.expiryDate && 
                                         <Text style={{ fontSize: 11, color: Colors.ERROR_RED, margin:10 }} >{errors.expiryDate}</Text>
                                     }
@@ -264,6 +266,41 @@ const styles = StyleSheet.create({
         borderRadius:5, 
         marginTop:10
     },
+    input: {
+        backgroundColor: 'white',
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderWidth: 0.5,
+        borderRadius: 5,
+        width: '100%',
+        marginVertical: 6,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    inputText: {
+        fontSize: 16,
+        fontWeight: '500',
+    },
+    contentContainer: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        height: '100%',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    content: {
+        backgroundColor: '#fff',
+        marginHorizontal: 20,
+        marginVertical: 70,
+    },
+    confirmButton: {
+        padding: 15,
+        margin: 10,
+        borderRadius: 5,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
     button:{
         alignItems:'center',
         justifyContent:'center',

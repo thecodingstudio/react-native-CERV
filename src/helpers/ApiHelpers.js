@@ -41,11 +41,11 @@ export const postRequest = async( url, data ) => {
 export const postFormDataRequest = async( url, data ) => {
     console.log("Data: ",data)
     return await axios
-    .post( apiBaseUrl + url, data,{
-        headers:{
-            Accept: 'application/json',            
+    .post( apiBaseUrl + url,{
+        headers:{          
             'Content-Type': 'multipart/form-data',
         },
+        body:data
     })
     .then( (response) => {
         if(response.data.status===1) {
