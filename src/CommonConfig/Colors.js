@@ -9,5 +9,6 @@ export default {
     GREEN: 'green',
     DISCOUNT_BLUE: '#7F7EE6',
     BACKGROUND_GREY: '#F7F7F7',
-    CREATE_BLUE:'#2BB1DF'
+    CREATE_BLUE:'#2BB1DF',
+    LIGHTEST_GREY : '#EFEFEF'
 }

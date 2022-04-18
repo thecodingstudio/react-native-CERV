@@ -5,6 +5,7 @@ export const ORDER_TYPE = 'ORDER_TYPE';
 export const ADD_DISCOUNT = 'ADD_DISCOUNT';
 export const REMOVE_DISCOUNT = 'REMOVE_DISCOUNT';
 export const SET_CATERER = 'SET_CATERER';
+export const SET_TOTAL_AMOUNT = 'SET_TOTAL_AMOUNT'
 
 export const addToCart = (dish) => {
   return { type: ADD_TO_CART, dish: dish};
@@ -32,4 +33,8 @@ export const removeDiscount = () => {
 
 export const setCaterer = (cid) => {
   return { type: SET_CATERER, id: cid }
+}
+
+export const setTotal = (amount) => {
+  return { type: SET_TOTAL_AMOUNT, total: amount }
 }

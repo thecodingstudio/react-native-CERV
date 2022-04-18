@@ -16,5 +16,6 @@ export default {
     VISA: require('../assets/images/visa.png'),
     PAYPAL: require('../assets/images/paypal.png') ,
     CREDIT_CARD: require('../assets/images/credit-card.png'),
-    PAPER_TEAR: require('../assets/images/PaperEffectReceipt.png')
+    PAPER_TEAR: require('../assets/images/PaperEffectReceipt.png'),
+    ORDER_SUCCESSFUL : require('../assets/images/thumbs-up.png')
 }

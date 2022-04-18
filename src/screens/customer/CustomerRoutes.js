@@ -209,7 +209,17 @@ const OrdersStack = createStackNavigator();
 const OrdersStackScreen = ({ navigation }) => {
     return(<OrdersStack.Navigator
         screenOptions={{
-            headerTitleAlign:'center'
+            headerTitleAlign:'center',
+            headerStyle: {
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 0,
+                },
+                shadowOpacity: 0,
+                shadowRadius: 0,
+                elevation: 0,
+            },
         }}
     >
         <OrdersStack.Screen 
@@ -311,7 +321,7 @@ const ProfileStackScreen = ({ navigation }) => {
                 headerTitle:"Saved Addresses",
                 headerRight: () => (
                     <TouchableOpacity style={{marginRight:15, alignItems:'center'}} onPress={ () => { navigation.navigate('AddAddress') } } >
-                        <Feather name="plus" size={25} color={Colors.GREY}/>
+                        <Feather name="plus" size={25} color={Colors.BLACK}/>
                     </TouchableOpacity>
                 )
             }}

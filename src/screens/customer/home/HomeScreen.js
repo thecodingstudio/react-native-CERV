@@ -17,10 +17,9 @@ const windowWidth = Dimensions.get("window").width;
 
 const HomeScreen = props => {
 
-    useEffect( () => {
-        messaging().getToken().then(token => { console.log(token) });
-    },[])
-
+    // useEffect( () => {
+    //     messaging().getToken().then(token => { console.log(token) });
+    // },[])
 
     const activeAddress = useSelector( state => state.Address.activeAddress)
     const tabBartHeight = useBottomTabBarHeight();

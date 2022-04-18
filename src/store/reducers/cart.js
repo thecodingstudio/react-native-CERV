@@ -1,10 +1,11 @@
-import { ADD_DISCOUNT, ADD_TO_CART, CLEAR_CART, ORDER_TYPE, REMOVE_DISCOUNT, REMOVE_FROM_CART, SET_CATERER} from '../actions/cart';
+import { ADD_DISCOUNT, ADD_TO_CART, CLEAR_CART, ORDER_TYPE, REMOVE_DISCOUNT, REMOVE_FROM_CART, SET_CATERER, SET_TOTAL_AMOUNT } from '../actions/cart';
 
 const initialState = {
     catererId: '',
     items : [],
     orderType: '',
-    discount: ''
+    discount: '',
+    totalAmount: 0
 }
 
 export default ( state = initialState, action ) => {
@@ -77,6 +78,12 @@ export default ( state = initialState, action ) => {
             return {
                 ...state,
                 catererId: catererId
+            }
+        case SET_TOTAL_AMOUNT:
+            const total = action.total;
+            return {
+                ...state,
+                totalAmount: total
             }
         default:
             return state;

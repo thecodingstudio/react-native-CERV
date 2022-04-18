@@ -3,7 +3,7 @@ import { Images } from "../../commonconfig";
 
 const initialState = {
     paymentMethods: [],
-    activeMethodID: 0
+    activeMethodID: null
 }
 
 export default (state = initialState, action ) => {
@@ -12,7 +12,7 @@ export default (state = initialState, action ) => {
             const pid = action.id
             return {
                 ...state,
-                activeMethodID: pid
+                activeMethodID: pid 
             }
         case ADD_CARD:
             const data = action.data

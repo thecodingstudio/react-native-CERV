@@ -10,6 +10,7 @@ import addressReducer from './src/store/reducers/address';
 import authReducer from './src/store/reducers/auth';
 import registerReducer from './src/store/reducers/register';
 import paymentReducer from './src/store/reducers/paymentMethod';
+import orderReducer from './src/store/reducers/order';
 
 
 const rootReducer = combineReducers({
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
   Address: addressReducer,
   Auth: authReducer,
   Register: registerReducer,
-  Payment: paymentReducer
+  Payment: paymentReducer,
+  Order: orderReducer
 })
 
 const store = createStore( rootReducer, applyMiddleware(ReduxThunk));

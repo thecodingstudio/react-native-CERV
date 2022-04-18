@@ -5,6 +5,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useDispatch, useSelector } from 'react-redux';
 import RBSheet from 'react-native-raw-bottom-sheet';
 
+import * as orderActions from '../../../store/actions/order';
 import * as cartActions from '../../../store/actions/cart';
 import Caterer from '../../../model/caterer';
 import { Colors } from '../../../commonconfig';
@@ -52,6 +53,7 @@ const DetailScreen = props => {
         const [month, day, year]  = [date.getMonth(), date.getDate(), date.getFullYear()];
         const selectedDateStr = day + " " + monthNames[month] + " " + year;
         setInitialDate( selectedDateStr );
+        dispatch(orderActions.setDate(selectedDateStr));
         hideDatePicker();
     };
 
@@ -67,8 +69,9 @@ const DetailScreen = props => {
     const handleTimeConfirm = (date) => {
         const [hour, minutes] = [date.getHours(), (date.getMinutes()<10?'0':'') + date.getMinutes()];
         const ampm = hour>=12 ? 'PM' : 'AM'
-        const selectedTimeStr = (hour%12) + ":" + minutes + " " +ampm;
+        const selectedTimeStr = (hour) + ":" + minutes + " " +ampm;
         setInitialTime(selectedTimeStr)
+        dispatch(orderActions.setTime(selectedTimeStr));
         hideTimePicker();
     };
 
@@ -92,6 +95,7 @@ const DetailScreen = props => {
     }
 
     const navigateHandler = () => {
+        dispatch(cartActions.setTotal(total));
         props.navigation.navigate('OrderReceipt');
     }
 

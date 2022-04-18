@@ -1,13 +1,13 @@
-import { Text, View, StyleSheet, Image, ScrollView, TextInput } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import React,{ useState } from 'react';
+import { Text, View, StyleSheet, Image, ScrollView, TextInput, Dimensions,TouchableOpacity } from 'react-native';
+import React,{ useRef } from 'react';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
+import RBSheet from 'react-native-raw-bottom-sheet';
 
+import * as orderActions from '../../../store/actions/order';
 import * as cartActions from '../../../store/actions/cart';
-import{ Colors, Images }from '../../../commonconfig';
-import Address from '../../../model/addresses';
+import { Colors, Images } from '../../../commonconfig';
 import PaymentOption from '../../../components/PaymentOption';
 
 const OrderReceiptScreen = props => {
@@ -69,6 +69,30 @@ const OrderReceiptScreen = props => {
         return hideNum.join("");
     }
 
+    //Order Place Handler
+
+    const catererId = useSelector(state => state.Cart.catererId)
+    const refRBSheet = useRef();
+    const orderPlaceHandler = () => {
+        const data = {
+            catererId : catererId,
+            address : selectedAddress,
+            orderType : orderType,
+            discountAmount: discountAmount,
+            totalAmount : total,
+            items: cartItems
+        }
+        dispatch(orderActions.placeOrder(data));
+        refRBSheet.current.open()
+    }
+
+    // RB 
+    const rbButtonHandler = () => {
+        props.navigation.popToTop()
+        dispatch(cartActions.clearCart())
+        refRBSheet.current.close()
+        props.navigation.navigate('Order')
+    }
 
     return (
         <View style={styles.screen}>
@@ -166,6 +190,7 @@ const OrderReceiptScreen = props => {
                 <Image source={Images.PAPER_TEAR} style={{width:'100%', marginBottom:25, height:25, transform:[{rotate:'180deg'}]}}/>
                 
             </View>
+
             <View style={styles.footer}>
                 <View style={styles.addressTextAlign}>
                     <Text style={styles.label}>Payment with</Text>
@@ -174,7 +199,7 @@ const OrderReceiptScreen = props => {
                     </TouchableOpacity>
                 </View>
                 <View style={{paddingVertical:10}}>
-                { activePID >= 0 ? 
+                { activePID !== null ? 
                     (
                         activePaymentObj.paymentType === 'card' ? 
                         <PaymentOption 
@@ -201,7 +226,7 @@ const OrderReceiptScreen = props => {
                 }
                 </View>
                 <View>
-                    <Text style={styles.label}>Add Note</Text>
+                    <Text style={styles.label}>Add Special Instructions</Text>
                     <View style={styles.noteContainer}>
                         <TextInput 
                             placeholder='Add text here...'
@@ -209,9 +234,41 @@ const OrderReceiptScreen = props => {
                         />
                     </View>
                 </View>
-                <TouchableOpacity style={styles.makePayment}>
-                    <Text style={{...styles.label, color: Colors.WHITE}}>{activePID >=0 ? "Confirm Order" : "Make Payment"}</Text>
+                <TouchableOpacity style={styles.makePayment} onPress={ orderPlaceHandler } activeOpacity={0.7} disabled={((cartItems.length===0) || (activePID === null ) || (!selectedAddress) )? true : false}>
+                    <Text style={{...styles.label, color: Colors.WHITE}}>{activePID ? "Confirm Order" : "Make Payment"}</Text>
                 </TouchableOpacity>
+
+                <RBSheet
+                    ref={refRBSheet}
+                    closeOnDragDown={false}
+                    closeOnPressMask={false}
+                    closeOnPressBack={false}
+                    dragFromTopOnly
+                    customStyles={{
+                    wrapper: {
+                        backgroundColor: "rgba(0,0,0,0.5)"
+                    },
+                    container:{
+                        height:'auto',
+                        paddingHorizontal:20,
+                        backgroundColor: Colors.WHITE,
+                        borderTopRightRadius:30,
+                        borderTopLeftRadius:30,
+                    }
+                    }}
+                >
+                    <View style={{justifyContent:'space-between'}}>
+                        <View style={styles.rbView}>
+                            <Image source={Images.ORDER_SUCCESSFUL} style={styles.rbImage}/>
+                            <Text style={styles.rbText}>Your order was placed successfully!</Text>
+                        </View>
+                        <View style={styles.rbLine} />
+                        <TouchableOpacity style={styles.rbButton} onPress={ rbButtonHandler } >
+                            <Text style={styles.rbOk}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
+                </RBSheet>
+
             </View>
             </ScrollView>
         </View>
@@ -221,6 +278,39 @@ const OrderReceiptScreen = props => {
 const styles = StyleSheet.create({
     screen:{
         flex:1,
+    },
+    rbView:{
+        alignItems:'center',
+        padding:20
+    },
+    rbImage:{
+        height:Dimensions.get("window").width * 0.4, 
+        width:Dimensions.get("window").width * 0.4, 
+        marginVertical:10
+    },
+    rbText:{
+        color: Colors.BLACK,
+        fontWeight:'bold',
+        fontSize:25,
+        textAlign:'center'
+    },
+    rbLine:{
+        height:0, 
+        width:'100%', 
+        borderColor: Colors.LIGHTER_GREY, 
+        borderWidth:0.25, 
+        marginVertical:10
+    },
+    rbButton:{
+        alignItems:'center', 
+        justifyContent:'center', 
+        height:50, 
+        marginBottom:15
+    },
+    rbOk:{
+        fontSize:25,
+        fontWeight:'bold', 
+        color: Colors.ORANGE
     },
     label:{
         fontWeight:'bold', 
