@@ -41,7 +41,6 @@ const ChangePassword = props => {
                 <Text style={styles.label} >Current Password</Text>
                 <View style={styles.action} >
                     <TextInput 
-                        editable={false}
                         placeholder="Please enter current password"
                         secureTextEntry={ptouched ? false : true}
                         style={{paddingHorizontal:10, color:Colors.BLACK, width:250}}

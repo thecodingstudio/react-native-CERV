@@ -25,10 +25,7 @@ const initialState = {
         // totalAmount 
         // address 
 
-        // 0 placed, 1 accepted, 2 preparing, 3 dispatched , 4 delivered
-        // orderStage 
-
-        // 0 pending , 1 completed, 2 rejected , 3 cancelled
+        // 0 = order_placed, 1 = caterer_accepted, 2 = preparing_food, 3= dispachted, 4 = delivered, 5 = cancelled, 6 = rejected
         // orderStatus
 }
 
@@ -59,19 +56,18 @@ export default ( state = initialState , action ) => {
                 deliveryDate: state.deliveryDate,
                 deliveryTime: state.deliveryTime,
                 orderPlaceDate: new Date().toLocaleDateString(),
-                orderPlaceTime: new Date().toLocaleTimeString( [] , { hour12: true, hour:"2-digit", minute:"2-digit" } ),
+                orderPlaceTime: new Date().toLocaleTimeString(),
                 orderType: data.orderType,
                 discountAmount: data.discountAmount,
                 totalAmount: data.totalAmount,
                 address: data.address,
-                orderStage : 0,
                 orderStatus : 0
             }
-            
-            const tempOrders = []
-            const tempCurrentOrders = []
 
+            const tempOrders = [...state.orders]
             tempOrders[oID] = orderObj
+
+            const tempCurrentOrders = [...state.currentOrders]
             tempCurrentOrders[oID] = orderObj
 
             return {
@@ -92,7 +88,7 @@ export default ( state = initialState , action ) => {
             const tempPastOrders = state.pastOrders
             cancelOrderObj = {
                 ...cancelOrderObj,
-                orderStatus: 3
+                orderStatus: 5
             }
 
             tempPastOrders[id] = cancelOrderObj

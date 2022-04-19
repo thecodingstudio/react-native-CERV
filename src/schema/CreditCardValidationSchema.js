@@ -13,7 +13,6 @@ const CreditCardValidationSchema = yup.object().shape({
     cvv: yup.number()
     .positive('CVV cannot be negative!')
     .integer("CVV cannot contain decimals.")
-    .moreThan(99,"CVV must be 3 digits long")
     .lessThan(1000,"CVV must be 3 digit long")
     .required("CVV is required."),
 

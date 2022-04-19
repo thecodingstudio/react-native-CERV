@@ -1,15 +1,38 @@
-import React from 'react'
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, SafeAreaView, Alert, Image } from 'react-native';
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, ActivityIndicator, Alert, Image } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Formik } from 'formik';
+import Toast from 'react-native-simple-toast';
 
 import{ Colors, Images }from '../../commonconfig';
 import ForgotPasswordValidationSchema from '../../schema/ForgotPasswordValidationSchema';
+import { postRequest } from '../../helpers/ApiHelpers';
 
 const ForgotPasswordScreen = props => {
+
+    const [isLoading, setIsLoading] = useState(false)
+    const onPressSubmit = async(values) => {
+        setIsLoading(true)
+        const data = {
+            email : values.email
+        }
+        const response = await postRequest('/users/reset', data);
+        if(!response.success) {
+            let errorMsg = "Something went wrong!"
+            if(response.data.error === "No account found for this email!") {
+                errorMsg = 'No account found!'
+            }
+            setIsLoading(false)
+            Alert.alert("Error", errorMsg,[{text:"Okay"}])
+        } else {
+            Toast.show('A email to change the password has been sent to the above address.',Toast.LONG);
+            setIsLoading(false)
+            props.navigation.navigate('SignInScreen')
+        }
+    }
 
     return( 
         <View style={styles.screen}>
@@ -38,7 +61,7 @@ const ForgotPasswordScreen = props => {
                             initialValues={{
                                 email:''
                             }}
-                            onSubmit={() => {props.navigation.navigate('SignInScreen')}}
+                            onSubmit={onPressSubmit}
                             validationSchema = { ForgotPasswordValidationSchema }
                         >
                             {({ values, errors, setFieldTouched, touched, handleChange, isValid, handleSubmit }) => (
@@ -58,13 +81,11 @@ const ForgotPasswordScreen = props => {
                                         <Text style={{ fontSize: 11, color: Colors.ERROR_RED }}>{errors.email}</Text>
                                     }
 
-                                    <TouchableOpacity onPress={ handleSubmit } disabled={!isValid}>
-                                        <View style={styles.button}>
-                                            <View style={styles.signIn}>
-                                                <Text style={[styles.textSign,{color:'#fff'}]} >Send Now</Text>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
+                                    <View style={{alignItems:'center', marginVertical: 50}}> 
+                                        <TouchableOpacity onPress={ handleSubmit } disabled={!isValid || isLoading} style={styles.sendNowButton}>
+                                            {isLoading ? <ActivityIndicator size='small' color={Colors.WHITE} /> : <Text style={styles.sendNowText}>Send Now</Text>}
+                                        </TouchableOpacity>
+                                    </View>
 
                                 </View>)}  
                         </Formik>
@@ -83,6 +104,18 @@ const styles = StyleSheet.create({
     screen:{
         flex:1,
         backgroundColor:Colors.WHITE
+    },
+    sendNowButton:{
+        paddingVertical:15,
+        backgroundColor: Colors.ORANGE,
+        borderRadius:10,
+        width:'80%',
+        alignItems:'center'
+    },
+    sendNowText:{
+        fontWeight:'bold',
+        fontSize:20,
+        color: Colors.WHITE
     },
     header:{
         flex:1,

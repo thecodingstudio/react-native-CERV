@@ -23,7 +23,8 @@ import DiscountCodeScreen from './home/DiscountCodeScreen';
 import SearchScreen from'./SearchScreen';
 
 //Orders Screens
-import OrdersScreen from'./OrdersScreen';
+import OrdersScreen from'./order/OrdersScreen';
+import OrderDetailScreen from './order/OrderDetailScreen';
 
 //Chat Screens
 import ChatScreen from'./chat/ChatScreen';
@@ -46,8 +47,7 @@ const Tab = createBottomTabNavigator()
 const CustomerRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['Chat','FAQ','Details','AddAddress','Notification','Discount','AddCard','OrderReceipt','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
-
+        const hideOnScreens = ['Chat','FAQ','Details','OrderDetail','AddAddress','Notification','Discount','AddCard','OrderReceipt','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
     }
@@ -82,12 +82,13 @@ const CustomerRoutes = () => {
             <Tab.Screen 
                 name="Order" 
                 component={OrdersStackScreen}
-                options={{
+                options={ ({route}) => ({
+                    tabBarVisible: getTabBarVisibility(route),
                     tabBarLabel:'Order',
                     tabBarIcon: ({color}) => (
                         <Icon name="handbag" type='simple-line-icon' color={color} size={25}/>
                     )
-                }}/>
+                })}/>
             <Tab.Screen 
                 name="ChatScreen" 
                 component={ChatStackScreen}
@@ -227,6 +228,14 @@ const OrdersStackScreen = ({ navigation }) => {
             component={OrdersScreen}
             options={{
                 headerLeft: () => null,
+            }}
+        />
+
+        <OrdersStack.Screen 
+            name="OrderDetail"
+            component={OrderDetailScreen}
+            options={{
+                headerTitle: 'Order Details' 
             }}
         />
     </OrdersStack.Navigator>)

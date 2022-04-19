@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import CurrentOrderItem from '../../components/CurrentOrderItem';
-import { Colors } from '../../commonconfig';
+import CurrentOrderItem from '../../../components/CurrentOrderItem';
+import { Colors } from '../../../commonconfig';
 
 const OrdersScreen = props => {
 
     const [state, setState] = useState('current');
 
-    const currentOrders = useSelector( state => state.Order.currentOrders )
-    //console.log(currentOrders);  
+    let currentOrders = useSelector( state => state.Order.currentOrders )
+    currentOrders = currentOrders.filter(Boolean);
+    //console.log(currentOrders)
 
-    const pastOrders = useSelector( state => state.Order.pastOrders)
+    let pastOrders = useSelector( state => state.Order.pastOrders)
+    pastOrders = pastOrders.filter(Boolean);
+    //console.log(pastOrders)
 
     return (
         <View style={styles.screen} >
@@ -32,37 +35,38 @@ const OrdersScreen = props => {
                 <ScrollView>
                     {state === 'current' ? 
                     (
-                        <View style={styles.orderItem}>
-                            {currentOrders.map( item => {
-                                return (
-                                    <View key={item.orderID}>
-                                        <CurrentOrderItem 
-                                            catererId = { item.catererId }
-                                            items = { item.items }
-                                            orderType = { item.orderType }
-                                            orderPlaceTime = { item.orderPlaceTime }
-                                            orderPlaceDate = { item.orderPlaceDate }
-                                            totalAmount = { item. totalAmount }
-                                            orderID = { item.orderID }
-                                        />
-                                    </View>
-                                )
-                            } )}
-                        </View>
+                        currentOrders.length ? 
+                        (
+                            <View style={styles.orderItem}>
+                                {currentOrders.map( item => {
+                                    return (
+                                        <View key={item.orderID} style={styles.orderCard}>
+                                            <CurrentOrderItem 
+                                               catererId = { item.catererId }
+                                                items = { item.items }
+                                                orderType = { item.orderType }
+                                                orderPlaceTime = { item.orderPlaceTime }
+                                                orderPlaceDate = { item.orderPlaceDate }
+                                                totalAmount = { item. totalAmount }
+                                                orderID = { item.orderID }
+                                                onPress = { () => { props.navigation.navigate('OrderDetail', { id: item.orderID } ) } }
+                                            />
+                                        </View>
+                                    )
+                                } )}
+                            </View> 
+                        ):( 
+                            <View style={styles.backdropContainer}>
+                                <Text style={styles.backdropTitle}>No Pending Orders</Text>
+                                <Text style={styles.backdropText}>Place some now!</Text>
+                            </View>
+                        )
                     ) : (
                         <View style={styles.orderItem}>
                         {pastOrders.map( item => {
                             return (
                                 <View key={item.orderID}>
-                                    <CurrentOrderItem 
-                                        catererId = { item.catererId }
-                                        items = { item.items }
-                                        orderType = { item.orderType }
-                                        orderPlaceTime = { item.orderPlaceTime }
-                                        orderPlaceDate = { item.orderPlaceDate }
-                                        totalAmount = { item. totalAmount }
-                                        orderID = { item.orderID }
-                                    />
+                                    <Text>{item.orderID}</Text>
                                 </View>
                             )
                         } )}
@@ -79,6 +83,34 @@ const styles = StyleSheet.create({
     screen: {
         flex: 1,
         backgroundColor: Colors.BACKGROUND_GREY
+    },
+    orderCard:{
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.20,
+        shadowRadius: 1.41,
+        elevation: 2,
+        // borderBottomColor: Colors.LIGHTEST_GREY,
+        // borderBottomWidth:5,
+        padding:10,
+        marginBottom:10
+    },
+    backdropContainer:{
+        alignItems:'center',
+        paddingVertical: 20
+    },
+    backdropTitle:{
+        fontWeight:'bold',
+        fontSize:25,
+        color: Colors.GREY
+    },
+    backdropText:{
+        fontWeight:'900',
+        fontSize:20,
+        color: Colors.LIGHTER_GREY
     },
     orderItem:{
         borderBottomColor: Colors.LIGHTEST_GREY,

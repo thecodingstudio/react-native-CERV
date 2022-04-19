@@ -31,7 +31,7 @@ const CurrentOrderItem = (props) => {
     const orderTime = hour12 + ":" + minutes + ampm 
 
     return (
-        <TouchableOpacity style={styles.orderItemContainer}>
+        <TouchableOpacity style={styles.orderItemContainer} onPress={ props.onPress }>
 
             {/* Caterer Container */}
             <View style={styles.catererContainer}>
@@ -59,7 +59,7 @@ const CurrentOrderItem = (props) => {
             <View style={styles.detailContainer}>
                 <Text style={styles.label}>ORDER TYPE</Text>
                 <Text style={styles.detail}>{props.orderType}</Text>
-                <Text style={styles.label}>ORDER ON</Text>
+                <Text style={styles.label}>ORDER PLACED ON</Text>
                 <View style={{flexDirection:'row', alignItems:'flex-start', justifyContent:'flex-start'}}>
                     <Text style={{...styles.detail, fontWeight:'bold'}}>{orderDate} </Text>
                     <Text> at  </Text>
