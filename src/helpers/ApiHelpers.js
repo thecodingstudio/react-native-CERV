@@ -1,19 +1,16 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Constants } from '../commonconfig';
 
 const apiBaseUrl = Constants.API_BASE_URL;
 
-
-
-export const postRequest = async( url, data ) => {
+export const postPreLogin = async( url, data) => {
     return await axios
     .post( apiBaseUrl + url , data,{
-            headers:
-            {   
-                'Content-Type':'application/json',
-            }
-        } 
-    )
+        headers: {
+            'Content-Type': 'application/json',
+          } 
+    })
     .then( (response) => {
         if(response.data.status===1) {
             return {
@@ -57,6 +54,69 @@ export const postFormDataRequest = async( url, data ) => {
         } else {
             return {
               success: '123',
+              data: response.data,
+              statusCode: response.status,
+            };
+        }
+    })
+    .catch((error) => {
+          return {
+            success: false,
+            data: error.response.data,
+            statusCode: error.response.status,
+        };
+    });
+}
+
+export const postPostLogin = async( url, data) => {
+    return await axios
+    .post( apiBaseUrl + url , data,{
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + ( await AsyncStorage.getItem('token') )
+          } 
+    })
+    .then( (response) => {
+        if(response.data.status===1) {
+            return {
+              success: true,
+              data: response.data,
+              statusCode: response.status,
+            };
+        } else {
+            return {
+              success: false,
+              data: response.data,
+              statusCode: response.status,
+            };
+        }
+    })
+    .catch((error) => {
+          return {
+            success: false,
+            data: error.response.data,
+            statusCode: error.response.status,
+        };
+    });
+}
+
+export const refreshToken = async(data) => {
+    return await axios
+    .post( apiBaseUrl + '/users/refresh' , data,{
+        headers: {
+            'Content-Type': 'application/json',
+          } 
+    })
+    .then( (response) => {
+        if(response.data.status===1) {
+            return {
+              success: true,
+              data: response.data,
+              statusCode: response.status,
+            };
+        } else {
+            return {
+              success: false,
               data: response.data,
               statusCode: response.status,
             };

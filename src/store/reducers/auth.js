@@ -1,9 +1,8 @@
 import { LOGIN, LOGOUT } from "../actions/auth";
 
+
 const initialState = {
     token: null,
-    id: null,
-    refreshToken: null
 }
 
 export default (state = initialState, action) => {

@@ -2,9 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
 import Users from '../../../model/users';
 import { useDispatch } from 'react-redux';
+import Toast from 'react-native-simple-toast'
+
 import * as authActions from '../../../store/actions/auth';
 import ProfileOption from '../../../components/profileOption';
 import{ Colors }from '../../../commonconfig';
+import { postPostLogin } from '../../../helpers/ApiHelpers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 const ProfileScreen = props => {
      
     const dispatch = useDispatch();
@@ -73,8 +79,41 @@ const ProfileScreen = props => {
             <ProfileOption 
                 title = "Log Out"
                 leftIcon = "log-out-outline"
-                onPress={() => {
-                    dispatch(authActions.logOut())
+                onPress={ async() => {
+                    const logOutResponse = await postPostLogin('/users/logout');
+                    //console.log(logOutResponse)
+                    if(!logOutResponse.success) {
+                        // Token Expired
+                        const refToken = await AsyncStorage.getItem('refreshToken') 
+                        const refreshData = {
+                            refreshToken: refToken
+                        }
+                        const refreshResponse = await refreshToken(refreshData)
+                        if(!refreshResponse.success) {
+                            //Refresh Fail
+                            // LOG OUT IF THIS ERROR RISES
+                            console.log("REFRESH FAIL     ",refreshResponse)
+                        } else {
+                            // Refresh Success
+                            await AsyncStorage.setItem('token', refreshResponse.data.token)
+                            const reResponse = await postPostLogin('/users/logout')
+                            if(reResponse.success){
+                                await AsyncStorage.removeItem('token')
+                                await AsyncStorage.removeItem('userID')
+                                await AsyncStorage.removeItem('refreshToken')
+                                Toast.show("Logged out successfully!")
+                                dispatch(authActions.logOut())
+                            }
+                        }
+
+
+                    } else {
+                        await AsyncStorage.removeItem('token')
+                        await AsyncStorage.removeItem('userID')
+                        await AsyncStorage.removeItem('refreshToken')
+                        Toast.show("Logged out successfully!")
+                        dispatch(authActions.logOut())
+                    }
                 }}
             />
 

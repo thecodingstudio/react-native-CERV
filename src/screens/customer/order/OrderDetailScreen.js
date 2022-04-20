@@ -59,7 +59,7 @@ const OrderDetailScreen = props => {
                     customStyles={stepIndicatorStyles}
                     renderStepIndicator={ () => { return(<View/>) }}
                     //currentPosition={selectedOrder.orderStage}
-                    currentPosition={2}
+                    currentPosition={selectedOrder.orderStatus}
                 />
             </View>
 
@@ -181,7 +181,7 @@ const OrderDetailScreen = props => {
                         <Text style={styles.addressLabel}>ADDRESS</Text>
                         <TouchableOpacity><Text style={styles.change}>CHANGE</Text></TouchableOpacity>
                     </View>
-                    <View style={{flexDirection:'row', alignItems:'center', justifyContent:'flex-start', flex:1, paddingHorizontal:10, marginTop:5}}>
+                    <View style={{flexDirection:'row', alignItems:'center', flex:1, paddingHorizontal:15, marginTop:5}}>
                         <View style={styles.iconContainer}>
                             <Ionicon name={selectedOrder.address.icon} size={30} color={Colors.ORANGE}/>
                         </View>
@@ -212,6 +212,7 @@ const styles = StyleSheet.create({
     address:{
         fontWeight:'600',
         fontSize:18,
+        maxWidth:'80%'
     },
     addressContainer:{
         backgroundColor: Colors.WHITE,  

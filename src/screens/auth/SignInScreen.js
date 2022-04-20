@@ -7,10 +7,12 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Formik } from 'formik';
 import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
 
 import{ Colors, Images }from '../../commonconfig';
 import SignInScreenValidationSchema from '../../schema/SignInScreenSchema';
-import { postRequest } from "../../helpers/ApiHelpers";
+import { postPreLogin } from "../../helpers/ApiHelpers";
 
 const LOGIN = 'LOGIN';
 
@@ -26,20 +28,25 @@ const SignInScreen = props => {
             email: values.email,
             password: values.password
         };
-        const response = await postRequest('/users/login', data);
+        const response = await postPreLogin('/users/login', data);
         const resData = response.data;
-        let errorMsg = 'Something went wrong!';
         if (response.success) {
+            try {
+                await AsyncStorage.setItem('token', resData.token)
+                await AsyncStorage.setItem('refreshToken', resData.refreshToken)
+                await AsyncStorage.setItem('userID', resData.user.id.toString())
+            } catch (error) {
+                console.log(error)
+            }
             setIsLoading(false);
-            dispatch({ type: LOGIN, token: resData.token, id: resData.user.id, refreshToken: resData.refreshToken })
+            dispatch({ type: LOGIN, token: resData.token})
         } else {
             if (resData.error === 'User does not exist!') {
-                errorMsg = " User does not exist! ";
+                Toast.show(" User does not exist! ");
             } else if (resData.error === 'Invalid Password!') {
-                errorMsg = "Password is incorrect."
+                Toast.show("Incorrect Password")
             }
             setIsLoading(false)
-            Alert.alert("Error!", errorMsg, [{text: "Okay"}]);
         }
     }
 
@@ -105,7 +112,7 @@ const SignInScreen = props => {
                                                 onChangeText={handleChange('password')}
                                                 placeholder="Password"
                                                 style={styles.textInput}
-                                                secureTextEntry = { eyeTouched ? true : false }
+                                                secureTextEntry = { eyeTouched ? false : true }
                                             />
                                         </View>
                                         <TouchableOpacity onPress={ () => setEyeTouched(!eyeTouched) } > 
