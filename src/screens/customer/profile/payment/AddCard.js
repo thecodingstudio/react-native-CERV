@@ -13,6 +13,8 @@ import * as paymentActions from '../../../../store/actions/paymentMethod';
 import OtherPaymentTypeValidationSchema from '../../../../schema/OtherPaymentTypeValidationSchema';
 import CreditCardValidationSchema from "../../../../schema/CreditCardValidationSchema";
 import{ Colors, Images }from '../../../../commonconfig'
+import { postPostLogin } from "../../../../helpers/ApiHelpers";
+import Toast from "react-native-simple-toast";
 
 const AddCard = props => {
     const [type, setType]= useState('card');
@@ -23,6 +25,24 @@ const AddCard = props => {
     const placeholder = "Select expiry date"
     const [isOpen, toggleOpen] = useState(false);
     const [value, onChange] = useState(null);
+    // console.log(moment(value).format('MM/YYYY'));
+
+    const onPressCard = async(details) => {
+        // console.log(details);
+        const data = {
+            number : details.cardNumber,
+            expire: details.expiryDate,
+            cvc: details.cvv,
+            name: details.name
+        }
+        const response = await postPostLogin('/addCard', data)
+        if(!response.success) {
+            console.log("Error in addting card!");
+        } else {
+            Toast.show('Card added successfully!')
+            props.navigation.goBack();
+        }
+    }
     
     return(
         <KeyboardAwareScrollView>
@@ -62,11 +82,7 @@ const AddCard = props => {
                         name : ''
                     }}
 
-                    onSubmit={values => {
-                        const cardValues = {...values, paymentType:'card'}
-                        dispatch(paymentActions.addCard(cardValues))
-                        props.navigation.goBack();
-                    }}
+                    onSubmit={values => { onPressCard(values) }}
 
                     validationSchema={CreditCardValidationSchema}
                 >
@@ -186,11 +202,10 @@ const AddCard = props => {
                         type:''
                     }}
 
-                    onSubmit={values => {
-                        const otherValues = {...values, paymentType:'other'}
-                        dispatch(paymentActions.addOther(otherValues))
-                        props.navigation.goBack();
-                    }}
+                    onSubmit={ () => {}}
+                        // const otherValues = {...values}
+                        // dispatch(paymentActions.addOther(otherValues))
+                        // props.navigation.goBack();
 
                     validationSchema={OtherPaymentTypeValidationSchema}
                 >

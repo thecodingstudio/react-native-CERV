@@ -25,7 +25,7 @@ const initialState = {
         // totalAmount 
         // address 
 
-        // 0 = order_placed, 1 = caterer_accepted, 2 = preparing_food, 3= dispachted, 4 = delivered, 5 = cancelled, 6 = rejected
+        // 0 = order_placed, 1 = caterer_accepted, 2 = preparing_food, 3= dispachted, 4 = completed, 5 = cancelled, 6 = rejected
         // orderStatus
 }
 
@@ -61,7 +61,7 @@ export default ( state = initialState , action ) => {
                 discountAmount: data.discountAmount,
                 totalAmount: data.totalAmount,
                 address: data.address,
-                orderStatus : 0
+                orderStatus : "0"
             }
 
             const tempOrders = [...state.orders]
@@ -88,7 +88,8 @@ export default ( state = initialState , action ) => {
             const tempPastOrders = state.pastOrders
             cancelOrderObj = {
                 ...cancelOrderObj,
-                orderStatus: 5
+                orderStatus: "5",
+                orderStatusText: 'Cancelled by User'
             }
 
             tempPastOrders[id] = cancelOrderObj

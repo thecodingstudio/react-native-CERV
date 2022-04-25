@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useSelector } from 'react-redux';
 
 import CurrentOrderItem from '../../../components/CurrentOrderItem';
+import PastOrderItem from '../../../components/PastOrderItem';
 import { Colors } from '../../../commonconfig';
 
 const OrdersScreen = props => {
@@ -42,7 +43,7 @@ const OrdersScreen = props => {
                                     return (
                                         <View key={item.orderID} style={styles.orderCard}>
                                             <CurrentOrderItem 
-                                               catererId = { item.catererId }
+                                                catererId = { item.catererId }
                                                 items = { item.items }
                                                 orderType = { item.orderType }
                                                 orderPlaceTime = { item.orderPlaceTime }
@@ -65,8 +66,17 @@ const OrdersScreen = props => {
                         <View style={styles.orderItem}>
                         {pastOrders.map( item => {
                             return (
-                                <View key={item.orderID}>
-                                    <Text>{item.orderID}</Text>
+                                <View key={item.orderID} style={styles.orderCard}>
+                                    <PastOrderItem 
+                                        catererId = { item.catererId }
+                                        items = { item.items }
+                                        orderType = { item.orderType }
+                                        orderPlaceTime = { item.orderPlaceTime }
+                                        orderPlaceDate = { item.orderPlaceDate }
+                                        totalAmount = { item. totalAmount }
+                                        orderID = { item.orderID }
+                                        orderStatusText = { item.orderStatusText }
+                                    />
                                 </View>
                             )
                         } )}

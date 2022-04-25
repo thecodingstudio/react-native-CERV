@@ -30,6 +30,7 @@ const SignInScreen = props => {
         };
         const response = await postPreLogin('/users/login', data);
         const resData = response.data;
+        console.log(response)
         if (response.success) {
             try {
                 await AsyncStorage.setItem('token', resData.token)

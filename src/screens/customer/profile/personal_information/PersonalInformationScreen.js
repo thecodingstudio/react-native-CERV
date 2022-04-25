@@ -6,12 +6,16 @@ import{ Colors }from '../../../../commonconfig';
 import Users from "../../../../model/users";
 
 const PersonalInformationScreen = props => {
+
+    const user = props.route.params.user
+    //console.log(user);
+
     return (
         <View style={styles.screen}>
             
             {/* PROFILE PICTURE */}
             <View style={styles.ppContainer}>
-                <Image source={{uri: Users.profile_picture }} style={styles.ppImage}/>
+                <Image source={{uri: user.image }} style={styles.ppImage}/>
             </View>
 
             {/* DETAILS */}
@@ -22,7 +26,7 @@ const PersonalInformationScreen = props => {
                 <View style={styles.action} >
                     <FontAwesome name="user" color={Colors.ORANGE} size={20}/>
                     <View style={styles.input}>
-                        <Text style={styles.value}>{Users.username}</Text>
+                        <Text style={styles.value}>{user.name}</Text>
                     </View>
                 </View>
             </View>
@@ -33,7 +37,7 @@ const PersonalInformationScreen = props => {
                 <View style={styles.action} >
                     <FontAwesome name="envelope" color={Colors.ORANGE} size={20}/>
                     <View style={styles.input}>
-                        <Text style={styles.value}>{Users.email}</Text>
+                        <Text style={styles.value}>{user.email}</Text>
                     </View>
                 </View>
             </View>
@@ -44,7 +48,7 @@ const PersonalInformationScreen = props => {
                 <View style={styles.action} >
                     <FontAwesome name="phone" color={Colors.ORANGE} size={20}/>
                     <View style={styles.input}>
-                        <Text style={styles.value}>{Users.phone_number}</Text>
+                        <Text style={styles.value}>{user.phoneNumber}</Text>
                     </View>
                 </View>
             </View>
@@ -55,7 +59,7 @@ const PersonalInformationScreen = props => {
                 <View style={styles.action} >
                     <FontAwesome name="home" color={Colors.ORANGE} size={20}/>
                     <View style={styles.input}>
-                        <Text style={styles.value}>{Users.post_code}</Text>
+                        <Text style={styles.value}>{user.postCode}</Text>
                     </View>
                 </View>
             </View>
@@ -63,7 +67,7 @@ const PersonalInformationScreen = props => {
             {/* Edit Info Button */}
             <View style={{width:'100%', justifyContent:'center'}}>
                 <TouchableOpacity onPress={() => {
-                    props.navigation.navigate('EditDetails')
+                    props.navigation.navigate('EditDetails', {user})
                 }}>
                     <View style={styles.button}>
                         <Text style={styles.editText}>Edit Information</Text>

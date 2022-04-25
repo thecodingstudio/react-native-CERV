@@ -1,26 +1,71 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Button, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Users from '../../../model/users';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Toast from 'react-native-simple-toast'
 
 import * as authActions from '../../../store/actions/auth';
+import * as userActions from '../../../store/actions/user';
 import ProfileOption from '../../../components/profileOption';
 import{ Colors }from '../../../commonconfig';
-import { postPostLogin } from '../../../helpers/ApiHelpers';
+import { getPostLogin, postPostLogin, refreshToken } from '../../../helpers/ApiHelpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const ProfileScreen = props => {
      
     const dispatch = useDispatch();
+    const user = useSelector( state => state.User )
+    //console.log(user);
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect( () => {
+        getProfile();
+    },[])
+    
+    const getProfile = async() => {
+        const profileResponse = await getPostLogin('/profile')
+        //console.log(profileResponse)
+        if(!profileResponse.success) {
+            const refToken = await AsyncStorage.getItem('refreshToken')
+            const refreshData = {
+                refreshToken: refToken
+            }
+            const refreshResponse = await refreshToken(refreshData)
+            if(!refreshResponse.success) {
+                console.log("refresh Fail")
+            } else {
+                await AsyncStorage.setItem('token', refreshResponse.data.token)
+                const proReResponse = await getPostLogin('/profile')
+                if(!proReResponse.success) {
+                    if(proReResponse.data.error === 'Couldn\'t Find the Profile!'){
+                        Toast.show('Could not find profile.')
+                    }                    
+                } else {
+                    dispatch(userActions.userDetails(proReResponse.data.data))
+                    setIsLoading(false)
+                }
+            }
+        } else {
+            dispatch(userActions.userDetails(profileResponse.data.data))
+            setIsLoading(false)
+        }
+    }
+
+    if( isLoading ) {
+        return(
+            <View style={{...styles.screen, justifyContent:'center'}}>
+                <ActivityIndicator size={60} color={ Colors.ORANGE } />
+            </View>
+        )
+    }
 
     return (
         <View style={styles.screen} >
             
             {/* PROFILE PICTURE */}
             <View style={styles.ppContainer}>
-                <Image source={{uri: Users.profile_picture }} style={styles.ppImage}/>
+                <Image source={{uri: user.image }} style={styles.ppImage}/>
             </View>
 
             {/* OPTIONS */}
@@ -31,7 +76,7 @@ const ProfileScreen = props => {
                 leftIcon = "person-outline"
                 rightIcon = "chevron-forward-outline"
                 onPress={() => {
-                    props.navigation.navigate('PersonalInformation')
+                    props.navigation.navigate('PersonalInformation', { user })
                 }}
             />
 

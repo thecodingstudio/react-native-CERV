@@ -1,4 +1,4 @@
-import { ACTIVATE_PAYMENT, ADD_CARD, ADD_OTHER } from "../actions/paymentMethod";
+import { ACTIVATE_PAYMENT, GET_CARDS, ADD_OTHER } from "../actions/paymentMethod";
 import { Images } from "../../commonconfig";
 
 const initialState = {
@@ -9,39 +9,46 @@ const initialState = {
 export default (state = initialState, action ) => {
     switch(action.type) {
         case ACTIVATE_PAYMENT:
-            const pid = action.id
+            const id = action.id
             return {
                 ...state,
-                activeMethodID: pid 
+                activeMethodID: id 
             }
-        case ADD_CARD:
-            const data = action.data
+        case GET_CARDS:
+            const arrayofCards = action.array
 
-            const cardNumber = data.cardNumber
-            const expiryDate = data.expiryDate
-            const cvv = data.cvv
-            const name = data.name
-            const paymentType = data.paymentType
-            const cImage = Images.CREDIT_CARD
-            const idC = state.paymentMethods.length
-
-            const cardObj = {
-                pid: idC,
-                logo: cImage,
-                cardNumber: cardNumber,
-                expiryDate: expiryDate,
-                cvv: cvv,
-                name: name,
-                paymentType: paymentType,
+            return {
+                ...state,
+                paymentMethods: arrayofCards
             }
+
+            // case ADD_CARD:
+        //     const data = action.data
+
+        //     const cardNumber = data.cardNumber
+        //     const expiryDate = data.expiryDate
+        //     const cvv = data.cvv
+        //     const name = data.name
             
-            const tempArrayC = state.paymentMethods
-            tempArrayC.push(cardObj)
+        //     const idC = state.paymentMethods.length
 
-            return {
-                ...state,
-                paymentMethods: tempArrayC
-            }
+        //     const cardObj = {
+        //         pid: idC,
+        //         logo: cImage,
+        //         cardNumber: cardNumber,
+        //         expiryDate: expiryDate,
+        //         cvv: cvv,
+        //         name: name,
+        //         paymentType: paymentType,
+        //     }
+            
+        //     const tempArrayC = state.paymentMethods
+        //     tempArrayC.push(cardObj)
+
+        //     return {
+        //         ...state,
+        //         paymentMethods: tempArrayC
+        //     }
 
         case ADD_OTHER:
             const otherData = action.data

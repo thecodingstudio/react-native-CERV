@@ -9,6 +9,8 @@ import Users from "../../../../model/users";
 
 const EditDetailScreen = props => {
 
+    const user = props.route.params.user
+
     const [ selectedImage, setSelectedImage ] = useState(null)
     const [modalVisible, setModalVisible] = useState(false);
     const takeFromCamera = () => {
@@ -40,7 +42,7 @@ const EditDetailScreen = props => {
             
             {/* PROFILE PICTURE */}
             <View style={styles.ppContainer}>
-                {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:180,width:180}}/> : <Image source={{uri: Users.profile_picture}} style={styles.ppImage}/>}
+                {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:180,width:180}}/> : <Image source={{uri: user.image}} style={styles.ppImage}/>}
             </View>
             <View style={{height:50,alignItems:'center'}}>
                 <TouchableOpacity  onPress={() => {setModalVisible(true)}} style={styles.ppEdit}>
