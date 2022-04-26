@@ -13,43 +13,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const ProfileScreen = props => {
-     
-    const dispatch = useDispatch();
-    const user = useSelector( state => state.User )
-    //console.log(user);
+
     const [isLoading, setIsLoading] = useState(true)
+    const [user, setUser] = useState({})
 
     useEffect( () => {
-        getProfile();
+        getProfile()
+        setIsLoading(false)
     },[])
     
     const getProfile = async() => {
-        const profileResponse = await getPostLogin('/profile')
-        //console.log(profileResponse)
-        if(!profileResponse.success) {
-            const refToken = await AsyncStorage.getItem('refreshToken')
-            const refreshData = {
-                refreshToken: refToken
-            }
-            const refreshResponse = await refreshToken(refreshData)
-            if(!refreshResponse.success) {
-                console.log("refresh Fail")
-            } else {
-                await AsyncStorage.setItem('token', refreshResponse.data.token)
-                const proReResponse = await getPostLogin('/profile')
-                if(!proReResponse.success) {
-                    if(proReResponse.data.error === 'Couldn\'t Find the Profile!'){
-                        Toast.show('Could not find profile.')
-                    }                    
-                } else {
-                    dispatch(userActions.userDetails(proReResponse.data.data))
-                    setIsLoading(false)
-                }
-            }
-        } else {
-            dispatch(userActions.userDetails(profileResponse.data.data))
-            setIsLoading(false)
-        }
+        setUser(JSON.parse(await AsyncStorage.getItem("userInfo")))   
     }
 
     if( isLoading ) {
@@ -124,41 +98,9 @@ const ProfileScreen = props => {
             <ProfileOption 
                 title = "Log Out"
                 leftIcon = "log-out-outline"
-                onPress={ async() => {
-                    const logOutResponse = await postPostLogin('/users/logout');
-                    //console.log(logOutResponse)
-                    if(!logOutResponse.success) {
-                        // Token Expired
-                        const refToken = await AsyncStorage.getItem('refreshToken') 
-                        const refreshData = {
-                            refreshToken: refToken
-                        }
-                        const refreshResponse = await refreshToken(refreshData)
-                        if(!refreshResponse.success) {
-                            //Refresh Fail
-                            // LOG OUT IF THIS ERROR RISES
-                            console.log("REFRESH FAIL     ",refreshResponse)
-                        } else {
-                            // Refresh Success
-                            await AsyncStorage.setItem('token', refreshResponse.data.token)
-                            const reResponse = await postPostLogin('/users/logout')
-                            if(reResponse.success){
-                                await AsyncStorage.removeItem('token')
-                                await AsyncStorage.removeItem('userID')
-                                await AsyncStorage.removeItem('refreshToken')
-                                Toast.show("Logged out successfully!")
-                                dispatch(authActions.logOut())
-                            }
-                        }
-
-
-                    } else {
-                        await AsyncStorage.removeItem('token')
-                        await AsyncStorage.removeItem('userID')
-                        await AsyncStorage.removeItem('refreshToken')
-                        Toast.show("Logged out successfully!")
-                        dispatch(authActions.logOut())
-                    }
+                onPress={ () => {
+                    AsyncStorage.clear()
+                    props.navigation.navigate('Auth')
                 }}
             />
 

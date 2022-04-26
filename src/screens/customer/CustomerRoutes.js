@@ -128,7 +128,7 @@ const HomeStackScreen = ({ navigation }) => {
             name="Home" 
             component={HomeScreen}
             options={{ 
-                headerTitle: props => <Image source={Images.LOGO_HOME} style={{height:35, width:35}}/>,
+                headerTitle: props => <Image source={Images.LOGO} style={{height:35, width:35}}/>,
                 headerLeft: () => 
                 <TouchableOpacity style={{marginLeft:15, alignItems:'center'}} onPress={ () => {navigation.navigate('FAQ')} } >
                     <Feather name="help-circle" size={25} color="grey"/>

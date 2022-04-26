@@ -19,8 +19,6 @@ import Toast from "react-native-simple-toast";
 const AddCard = props => {
     const [type, setType]= useState('card');
 
-    const dispatch = useDispatch();
-
     // EXPIRY DATE MODAL LOGIC
     const placeholder = "Select expiry date"
     const [isOpen, toggleOpen] = useState(false);
@@ -36,8 +34,9 @@ const AddCard = props => {
             name: details.name
         }
         const response = await postPostLogin('/addCard', data)
+        console.log(response);
         if(!response.success) {
-            console.log("Error in addting card!");
+            console.log("Error in adding card!");
         } else {
             Toast.show('Card added successfully!')
             props.navigation.goBack();

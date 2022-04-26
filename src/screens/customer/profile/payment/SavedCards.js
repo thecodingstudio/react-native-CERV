@@ -11,7 +11,7 @@ const SavedCards = props => {
     
     useEffect( () => {
         getCards();
-    }, [])
+    }, [cardList])
     const dispatch = useDispatch();
     
     const [isLoading, setIsLoading] = useState(true);
@@ -19,9 +19,12 @@ const SavedCards = props => {
 
     const getCards = async() => {
         const response = await getPostLogin('/getCards')
-        // console.log(response.data.message.data)
-        setCardList(response.data.message.data)
-        dispatch(paymentActions.getCards(cardList))
+        //console.log(response.data.message.data)
+        const tempArray = response.data.message.data
+        setCardList(tempArray)
+        { tempArray.map( item => {
+            return ( dispatch(paymentActions.addCard(item)) )
+        } ) }
         setIsLoading(false)
     }
 

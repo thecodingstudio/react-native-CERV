@@ -48,7 +48,7 @@ const PersonalInformationScreen = props => {
                 <View style={styles.action} >
                     <FontAwesome name="phone" color={Colors.ORANGE} size={20}/>
                     <View style={styles.input}>
-                        <Text style={styles.value}>{user.phoneNumber}</Text>
+                        <Text style={styles.value}>{user.phone_number}</Text>
                     </View>
                 </View>
             </View>
@@ -59,7 +59,7 @@ const PersonalInformationScreen = props => {
                 <View style={styles.action} >
                     <FontAwesome name="home" color={Colors.ORANGE} size={20}/>
                     <View style={styles.input}>
-                        <Text style={styles.value}>{user.postCode}</Text>
+                        <Text style={styles.value}>395006</Text>
                     </View>
                 </View>
             </View>

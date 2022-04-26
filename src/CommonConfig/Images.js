@@ -1,4 +1,7 @@
 export default {
+    //Splash Screen
+    LOGO: require('../assets/images/pie.png'),
+
     //Auth Screen Images
     CUSTOMER_ROLE: require('../assets/images/CustomerRole.png') ,
     CATERER_ROLE: require('../assets/images/CatererRole.png') ,

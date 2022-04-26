@@ -63,24 +63,31 @@ const OrdersScreen = props => {
                             </View>
                         )
                     ) : (
-                        <View style={styles.orderItem}>
-                        {pastOrders.map( item => {
-                            return (
-                                <View key={item.orderID} style={styles.orderCard}>
-                                    <PastOrderItem 
-                                        catererId = { item.catererId }
-                                        items = { item.items }
-                                        orderType = { item.orderType }
-                                        orderPlaceTime = { item.orderPlaceTime }
-                                        orderPlaceDate = { item.orderPlaceDate }
-                                        totalAmount = { item. totalAmount }
-                                        orderID = { item.orderID }
-                                        orderStatusText = { item.orderStatusText }
-                                    />
-                                </View>
-                            )
-                        } )}
-                    </View>
+                        pastOrders.length > 0 ?
+                        (<View style={styles.orderItem}>
+                            {pastOrders.map( item => {
+                                return (
+                                    <View key={item.orderID} style={styles.orderCard}>
+                                        <PastOrderItem 
+                                            catererId = { item.catererId }
+                                            items = { item.items }
+                                            orderType = { item.orderType }
+                                            orderPlaceTime = { item.orderPlaceTime }
+                                            orderPlaceDate = { item.orderPlaceDate }
+                                            totalAmount = { item. totalAmount }
+                                            orderID = { item.orderID }
+                                            orderStatusText = { item.orderStatusText }
+                                        />
+                                    </View>
+                                )
+                            } )}
+                        </View>
+                        ):(
+                            <View style={styles.backdropContainer}>
+                                <Text style={styles.backdropTitle}>No Past Orders</Text>
+                                <Text style={styles.backdropText}>Please wait for pending orders to complete.</Text>
+                            </View>
+                        )
                     )}
                 </ScrollView>
             </View>

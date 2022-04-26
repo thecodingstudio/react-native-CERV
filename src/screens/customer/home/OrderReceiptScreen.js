@@ -9,6 +9,7 @@ import * as orderActions from '../../../store/actions/order';
 import * as cartActions from '../../../store/actions/cart';
 import { Colors, Images } from '../../../commonconfig';
 import PaymentOption from '../../../components/PaymentOption';
+import CreditCardDisplay from '../../../components/CreditCardDisplay';
 
 const OrderReceiptScreen = props => {
 
@@ -53,21 +54,10 @@ const OrderReceiptScreen = props => {
     
     //Payment Logic
     const activePID = useSelector(state => state.Payment.activeMethodID)
-    
-    const allPaymentMethods = useSelector( state => state.Payment.paymentMethods ? state.Payment.paymentMethods : null);
-    const activePaymentObj = allPaymentMethods? allPaymentMethods.find( item => item.pid === activePID) : null;
-
-    function cardHide(card) {
-        let hideNum = [];
-          for(let i = 0; i < card.length; i++){
-          if(i < card.length-4){
-            hideNum.push("*");
-          }else{
-            hideNum.push(card[i]);
-          }
-        }
-        return hideNum.join("");
-    }
+    const cardList = useSelector( state => state.Payment.paymentMethods )
+    // console.log(activePID);
+    const activeCard = cardList?.find( item => item.id === activePID )
+    // console.log(activeCard);
 
     //Order Place Handler
 
@@ -198,33 +188,28 @@ const OrderReceiptScreen = props => {
                         <Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text>
                     </TouchableOpacity>
                 </View>
+
                 <View style={{paddingVertical:10}}>
-                { activePID !== null ? 
-                    (
-                        activePaymentObj.paymentType === 'card' ? 
-                        <PaymentOption 
-                            id={activePaymentObj.pid}
-                            logo={activePaymentObj.logo}
-                            mainText={cardHide(activePaymentObj.cardNumber)}
-                            subText={activePaymentObj.expiryDate}
-                            paymentType = {activePaymentObj.paymentType}
-                        />
+                    {activeCard ? 
+                        <View>
+                            <CreditCardDisplay 
+                                brand = {activeCard.brand}
+                                customer = { activeCard.customer }
+                                exp_month = { activeCard.exp_month }
+                                exp_year = { activeCard.exp_year }
+                                id = { activeCard.id }
+                                last4 = { activeCard.last4 }
+                                name = { activeCard.name }
+                            />
+                        </View> 
                         :
-                        <PaymentOption 
-                            id={activePaymentObj.pid}
-                            logo={activePaymentObj.logo}
-                            mainText={activePaymentObj.type}
-                            subText={activePaymentObj.id}
-                            paymentType = {activePaymentObj.paymentType}
-                        />
-                    )
-                    : 
-                    <View style={styles.backDropContainer}>
-                        <Text style={{...styles.backDropText, fontSize:25}}>No Payment Method Found</Text>
-                        <Text style={{...styles.backDropText, fontSize:15}}>Add some payment options now!</Text>
-                    </View>
-                }
+                        <View>
+                            <Text>No Active Payment Found</Text>
+                            <Text>Add some now!</Text>
+                        </View>
+                    }
                 </View>
+
                 <View>
                     <Text style={styles.label}>Add Special Instructions</Text>
                     <View style={styles.noteContainer}>

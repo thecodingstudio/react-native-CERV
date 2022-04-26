@@ -35,12 +35,13 @@ const SignInScreen = props => {
             try {
                 await AsyncStorage.setItem('token', resData.token)
                 await AsyncStorage.setItem('refreshToken', resData.refreshToken)
-                await AsyncStorage.setItem('userID', resData.user.id.toString())
+                await AsyncStorage.setItem('userInfo', JSON.stringify(resData.user))
+                await AsyncStorage.setItem('isLogin', "true")
             } catch (error) {
                 console.log(error)
             }
+            props.navigation.navigate('Home')
             setIsLoading(false);
-            dispatch({ type: LOGIN, token: resData.token})
         } else {
             if (resData.error === 'User does not exist!') {
                 Toast.show(" User does not exist! ");

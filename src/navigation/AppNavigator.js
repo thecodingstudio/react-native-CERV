@@ -1,40 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { useSelector, useDispatch } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import CustomerRoutes from '../screens/customer/CustomerRoutes';
 import RootStackScreen from '../screens/auth/RootStackScreen';
-import { View, ActivityIndicator } from 'react-native';
-
-import { Colors } from '../commonconfig';
+import SplashScreen from '../screens/SplashScreen';
 
 const AppNavigator = props => {
 
-    const [isLoading, setIsLoading] = useState(true)
-
-    const LOGIN = 'LOGIN'
-    let token;
-    const dispatch = useDispatch()
-
-    useEffect( async() => {
-        token = await AsyncStorage.getItem('token');
-        dispatch({ type: LOGIN, token: token})
-        setIsLoading(false)
-    },[])
-
-    const isAuth = useSelector(state => !!state.Auth.token)
+    const AppStack = createStackNavigator();
     
     return (
         <NavigationContainer>
-            {isLoading ? (
-                <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
-                    <ActivityIndicator size={100} color={Colors.ORANGE}/>
-                </View>
-                ) : (
-                    isAuth ? <CustomerRoutes /> : <RootStackScreen />
-                )
-            }
+            <AppStack.Navigator headerMode='none' initialRouteName='Splash'>
+                <AppStack.Screen name="Splash" component={SplashScreen}/>
+                <AppStack.Screen name="Auth" component={RootStackScreen}/>
+                <AppStack.Screen name="Home" component={CustomerRoutes}/>
+            </AppStack.Navigator>
         </NavigationContainer>
     );
 };
