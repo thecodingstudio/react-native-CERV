@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Image, Text, Modal, TextInput, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Image, Text, Modal, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import ImagePicker from 'react-native-image-crop-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
 
 import{ Colors }from '../../../../commonconfig';
-import Users from "../../../../model/users";
+import { Formik } from "formik";
+import * as yup from 'yup';
+import { putPostLogin } from "../../../../helpers/ApiHelpers";
 
 const EditDetailScreen = props => {
 
@@ -13,6 +17,7 @@ const EditDetailScreen = props => {
 
     const [ selectedImage, setSelectedImage ] = useState(null)
     const [modalVisible, setModalVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
     const takeFromCamera = () => {
         ImagePicker.openCamera({
             width: 100,
@@ -35,129 +40,194 @@ const EditDetailScreen = props => {
           });
     }
     
+    const onPressSave = async(values) => {
+        setIsLoading(true)
+        const data = {
+            name: values.name,
+            email: values.email
+        }
+        // console.log(data);
+        const response = await putPostLogin('/edit-profile', data)
+        if(!response.success) {
+            console.log(("Put Request Error"));
+        } else {
+            AsyncStorage.setItem('userInfo', JSON.stringify(response.data.data))
+            Toast.show('Profile updated successfully!')
+            props.navigation.goBack();
+        }
+        setIsLoading(false)
+    }
 
     return (
-        <KeyboardAwareScrollView>
         <View style={styles.screen}>
-            
-            {/* PROFILE PICTURE */}
-            <View style={styles.ppContainer}>
-                {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:180,width:180}}/> : <Image source={{uri: user.image}} style={styles.ppImage}/>}
-            </View>
-            <View style={{height:50,alignItems:'center'}}>
-                <TouchableOpacity  onPress={() => {setModalVisible(true)}} style={styles.ppEdit}>
-                    <FontAwesome name="camera" color='white' size={25}/>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.centeredView}>
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modalVisible}
-                        onRequestClose={() => {
-                            setModalVisible(!modalVisible);
+            <KeyboardAwareScrollView>
+                    {/* PROFILE PICTURE */}
+                    <View style={styles.ppContainer}>
+                        {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:180,width:180}}/> : <Image source={{uri: user.image}} style={styles.ppImage}/>}
+                    </View>
+                    <View style={{height:50,alignItems:'center'}}>
+                        <TouchableOpacity  onPress={() => {setModalVisible(true)}} style={styles.ppEdit}>
+                            <FontAwesome name="camera" color='white' size={25}/>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.centeredView}>
+                        <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={modalVisible}
+                            onRequestClose={() => {
+                                setModalVisible(!modalVisible);
+                            }}
+                        >
+                            <View style={styles.centeredView}>
+                                <View style={styles.modalView}>
+                                    <Text style={styles.modalText}>Choose option: </Text>
+                                    <TouchableOpacity style={[styles.buttonModal, styles.buttonClose]} onPress={pickFromGallery}>   
+                                        <Text style={styles.textStyle}>Choose from gallery</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.buttonModal, styles.buttonClose]} onPress={takeFromCamera}>
+                                        <Text style={styles.textStyle}>Use Camera</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.buttonModal, styles.buttonClose]} onPress={() => {setModalVisible(false)}}>
+                                        <Text style={styles.textStyle}>Close</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </Modal>
+                    </View>
+
+                    {/* DETAILS */}
+
+                    <Formik
+                        initialValues={{
+                            name:'',
+                            email:''
                         }}
+                        onSubmit={ (values) => onPressSave(values) }
+                        validationSchema={ yup.object().shape({
+                            name: yup.string(),
+                            email: yup.string().email('Please enter a valid email.')
+                        }) }
                     >
-                        <View style={styles.centeredView}>
-                            <View style={styles.modalView}>
-                                <Text style={styles.modalText}>Choose option: </Text>
-                                <TouchableOpacity style={[styles.buttonModal, styles.buttonClose]} onPress={pickFromGallery}>   
-                                    <Text style={styles.textStyle}>Choose from gallery</Text>
+                        { ({values, handleChange, isValid, handleSubmit, setFieldTouched}) => (
+                            <View>
+                                <Text style={styles.text_footer}>Username</Text>
+                                <View style={styles.action}>
+                                    <FontAwesome name="user" color={Colors.ORANGE} size={25}/>
+                                    <TextInput 
+                                        value={values.name}
+                                        onBlur={() => setFieldTouched('name')}
+                                        onChangeText={handleChange('name')}
+                                        placeholder="Enter username"
+                                        style={styles.textInput}
+                                    />
+                                </View>
+
+                                <Text style={{...styles.text_footer, marginTop:15 }}>Email</Text>
+                                <View style={styles.action}>
+                                    <FontAwesome name="envelope" color={Colors.ORANGE} size={25}/>
+                                    <TextInput 
+                                        value={values.email}
+                                        onBlur={() => setFieldTouched('email')}
+                                        onChangeText={handleChange('email')}
+                                        placeholder="Enter email"
+                                        style={styles.textInput}
+                                    />
+                                </View>
+
+                                <TouchableOpacity 
+                                    style={{width:'100%', justifyContent:'center', marginTop:25}}    
+                                    onPress={ handleSubmit } 
+                                    disabled={!isValid}
+                                >
+                                    { isLoading ? <ActivityIndicator size={25} color={Colors.ORANGE}/> : 
+                                    <View style={styles.button}>
+                                        <Text style={styles.editText}>Save</Text>
+                                    </View>}
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[styles.buttonModal, styles.buttonClose]} onPress={takeFromCamera}>
-                                    <Text style={styles.textStyle}>Use Camera</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.buttonModal, styles.buttonClose]} onPress={() => {setModalVisible(false)}}>
-                                    <Text style={styles.textStyle}>Close</Text>
-                                </TouchableOpacity>
+
+                            </View>
+                        ) }
+                    </Formik>
+
+                    {/*
+                    <View style={styles.detailItem}>
+                        <Text style={styles.text_footer}>Username</Text>
+                        <View style={styles.action} >
+                            <FontAwesome name="user" color={Colors.ORANGE} size={20}/>
+                            <View style={styles.input}>
+                            <TextInput 
+                                    placeholder={user.name}
+                                    style={styles.input}
+                                />
                             </View>
                         </View>
-                    </Modal>
-                </View>
-
-            {/* DETAILS */}
-
-            {/* Username */}
-            <View style={styles.detailItem}>
-                <Text style={styles.text_footer}>Username</Text>
-                <View style={styles.action} >
-                    <FontAwesome name="user" color={Colors.ORANGE} size={20}/>
-                    <View style={styles.input}>
-                    <TextInput 
-                            placeholder={Users.username}
-                            style={styles.input}
-                        />
                     </View>
-                </View>
-            </View>
 
-            {/* Email */}
-            <View style={styles.detailItem}>
-                <Text style={styles.text_footer}>Email</Text>
-                <View style={styles.action} >
-                    <FontAwesome name="envelope" color={Colors.ORANGE} size={20}/>
-                    <View style={styles.input}>
-                    <TextInput 
-                            keyboardType="email-address"
-                            placeholder={Users.email}
-                            style={styles.input}
-                        />
+                    
+                    <View style={styles.detailItem}>
+                        <Text style={styles.text_footer}>Email</Text>
+                        <View style={styles.action} >
+                            <FontAwesome name="envelope" color={Colors.ORANGE} size={20}/>
+                            <View style={styles.input}>
+                            <TextInput 
+                                    keyboardType="email-address"
+                                    placeholder={Users.email}
+                                    style={styles.input}
+                                />
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </View>
 
-            {/* Phone Number */}
-            <View style={styles.detailItem}>
-                <Text style={styles.text_footer}>Phone Number</Text>
-                <View style={styles.action} >
-                    <FontAwesome name="phone" color={Colors.ORANGE} size={20}/>
-                    <View style={styles.input}>
-                    <TextInput 
-                            keyboardType="phone-pad"
-                            placeholder={Users.phone_number}
-                            style={styles.input}
-                        />
+                    
+                    <View style={styles.detailItem}>
+                        <Text style={styles.text_footer}>Phone Number</Text>
+                        <View style={styles.action} >
+                            <FontAwesome name="phone" color={Colors.ORANGE} size={20}/>
+                            <View style={styles.input}>
+                            <TextInput 
+                                    keyboardType="phone-pad"
+                                    placeholder={Users.phone_number}
+                                    style={styles.input}
+                                />
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </View>
 
-            {/* Postcode */}
-            <View style={styles.detailItem}>
-                <Text style={styles.text_footer}>Home Postcode</Text>
-                <View style={styles.action} >
-                    <FontAwesome name="home" color={Colors.ORANGE} size={20}/>
-                    <View style={styles.input}>
-                        <TextInput 
-                            keyboardType="numeric"
-                            placeholder={Users.post_code}
-                            style={styles.input}
-                        />
-                    </View>
-                </View>
-            </View>
+                    
+                    <View style={styles.detailItem}>
+                        <Text style={styles.text_footer}>Home Postcode</Text>
+                        <View style={styles.action} >
+                            <FontAwesome name="home" color={Colors.ORANGE} size={20}/>
+                            <View style={styles.input}>
+                                <TextInput 
+                                    keyboardType="numeric"
+                                    placeholder={Users.post_code}
+                                    style={styles.input}
+                                />
+                            </View>
+                        </View>
+                    </View> */}
 
-            
+                    
+                        
 
-            {/* Save Button */}
-            <View style={{width:'100%', justifyContent:'center', marginTop:25}}>
-                <TouchableOpacity onPress={() => {
-                    props.navigation.goBack()
-                }} >
-                    <View style={styles.button}>
-                        <Text style={styles.editText}>Save</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
+                    {/* Save Button */}
+                        
+            </KeyboardAwareScrollView>
         </View>
-        </KeyboardAwareScrollView>
     )
 };
 
 const styles = StyleSheet.create({
     screen:{
         flex:1,
-        alignItems:'center',
-        backgroundColor:Colors.WHITE
+        backgroundColor:Colors.WHITE,
+        paddingVertical:10,
+        paddingHorizontal:20
+    },
+    textInput:{
+        marginHorizontal: 10
     },
     detailItem:{
         width:'85%',
@@ -166,7 +236,8 @@ const styles = StyleSheet.create({
     ppContainer:{
         borderRadius:90,
         overflow:'hidden',
-        marginVertical: 25
+        marginVertical: 25,
+        alignSelf:'center'
     },
     ppImage:{
         height:180,
@@ -185,10 +256,9 @@ const styles = StyleSheet.create({
     },
     action:{
         flexDirection:'row',
-        marginTop:10,
         borderBottomWidth:0.5,
         borderBottomColor:Colors.GREY,
-        paddingBottom: 10
+        paddingVertical: 10
     },
     value:{
         fontSize:17,
@@ -240,8 +310,8 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
         position:'absolute',
-        bottom:75,
-        left:35
+        bottom:Dimensions.get('window').height* 0.1 ,
+        right: Dimensions.get('window').width * 0.28
     },
     changePP:{
         textAlign:'center',

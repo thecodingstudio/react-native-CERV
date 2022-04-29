@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import{ Colors }from '../../../../commonconfig';
-import Users from "../../../../model/users";
 
 const PersonalInformationScreen = props => {
 
-    const user = props.route.params.user
-    //console.log(user);
+    const [user, setUser] = useState({})
 
+    useEffect( () => {
+        getProfile()
+    },[])
+    
+    const getProfile = async() => {
+        setUser(JSON.parse(await AsyncStorage.getItem("userInfo")))   
+    }
+   
     return (
         <View style={styles.screen}>
             

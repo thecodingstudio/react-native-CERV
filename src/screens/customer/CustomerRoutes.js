@@ -40,6 +40,7 @@ import ChangePassword from './profile/ChangePassword';
 import SavedCards from './profile/payment/SavedCards';
 import AddCard from './profile/payment/AddCard';
 import AddAddress from './profile/saved_address/AddAddress';
+import EditAddress from './profile/saved_address/EditAddress';
 
 
 
@@ -47,7 +48,7 @@ const Tab = createBottomTabNavigator()
 const CustomerRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['Chat','FAQ','Details','OrderDetail','AddAddress','Notification','Discount','AddCard','OrderReceipt','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
+        const hideOnScreens = ['Chat','FAQ','Details','OrderDetail','AddAddress','EditAddress','Notification','Discount','AddCard','OrderReceipt','SavedCards','EditDetails','ChangePassword','SavedAddresses','MyFavourites','PersonalInformation']
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
     }
@@ -340,6 +341,14 @@ const ProfileStackScreen = ({ navigation }) => {
             component={AddAddress}
             options={{
                 headerTitle:"Add New Address"
+            }}
+        />
+
+        <ProfileStack.Screen 
+            name="EditAddress"
+            component={EditAddress}
+            options={{
+                headerTitle:"Edit Address"
             }}
         />
         <ProfileStack.Screen 

@@ -11,7 +11,7 @@ const SavedCards = props => {
     
     useEffect( () => {
         getCards();
-    }, [cardList])
+    }, [])
     const dispatch = useDispatch();
     
     const [isLoading, setIsLoading] = useState(true);

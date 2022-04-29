@@ -1,5 +1,11 @@
 let addressIcon = [
     {
+        name:'home-outline'
+    },
+    {
+        name:'briefcase-outline'
+    },
+    {
         name:'barbell-outline'
     },
     {
@@ -7,9 +13,6 @@ let addressIcon = [
     },
     {
         name:'book-outline'
-    },
-    {
-        name:'briefcase-outline'
     },
     {
         name:'business-outline'
@@ -28,9 +31,6 @@ let addressIcon = [
     },
     {
         name:'golf-outline'
-    },
-    {
-        name:'home-outline'
     },
     {
         name:'paw-outline'

@@ -11,12 +11,17 @@ const AddressItem = props => {
 
     const dispatch = useDispatch();
 
+    let tag;
+    if(props.address_type === 0) tag = 'Home';
+    if(props.address_type === 1) tag = 'Work';
+    if(props.address_type === 2) tag = 'Other';
+
     return (
         <View style={styles.container}>
             <Grid>
                 {/* Text */}
                 <Col>
-                    <Row style={{height:50}} ><Text style={{fontWeight:'bold', fontSize:25}} >{props.tag}</Text></Row>
+                    <Row style={{height:50}} ><Text style={{fontWeight:'bold', fontSize:25}} >{tag}</Text></Row>
                     <Row style={{height:30,marginTop:-10}}><Text style={{fontWeight:'600', fontSize:14}} >{props.address}</Text></Row>
                 </Col>
                 {/* Radio Button */}
