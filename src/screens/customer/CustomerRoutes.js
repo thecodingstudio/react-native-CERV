@@ -158,7 +158,19 @@ const HomeStackScreen = ({ navigation }) => {
 
         <HomeStack.Screen name="Sort" component={SortScreen} options={{headerShown:false}}/>
 
-        <HomeStack.Screen name="Details" component={DetailScreen}/>
+        <HomeStack.Screen name="Details" component={DetailScreen} options={{
+            headerStyle: {
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 2,
+                },
+                shadowOpacity: 0.1,
+                shadowRadius: 3.84,
+                elevation: 5,
+            },
+        }}/>
+        
         <HomeStack.Screen name="Discount" component={DiscountCodeScreen} options={{
             headerTitle:'View Discount Codes',
             headerStyle: {

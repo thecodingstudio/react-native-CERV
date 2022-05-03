@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Text, View, TextInput, StyleSheet, Image, Modal, Alert,TouchableOpacity } from 'react-native';
+import { Text, View, TextInput, StyleSheet, Image, Modal, Alert,TouchableOpacity, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as Animatable from 'react-native-animatable';
 import Feather from 'react-native-vector-icons/Feather';
@@ -17,7 +17,8 @@ import { postPostLogin } from "../../../../helpers/ApiHelpers";
 import Toast from "react-native-simple-toast";
 
 const AddCard = props => {
-    const [type, setType]= useState('card');
+    const [type, setType] = useState('card');
+    const [isLoading, setIsLoading] = useState(false)
 
     // EXPIRY DATE MODAL LOGIC
     const placeholder = "Select expiry date"
@@ -26,6 +27,7 @@ const AddCard = props => {
     // console.log(moment(value).format('MM/YYYY'));
 
     const onPressCard = async(details) => {
+        setIsLoading(true)
         // console.log(details);
         const data = {
             number : details.cardNumber,
@@ -41,6 +43,7 @@ const AddCard = props => {
             Toast.show('Card added successfully!')
             props.navigation.goBack();
         }
+        setIsLoading(false)
     }
     
     return(
@@ -185,9 +188,9 @@ const AddCard = props => {
                             }
 
                             {/* CONFIRM BUTTON */}
-                            <TouchableOpacity onPress={ handleSubmit} disabled={!isValid}>
+                            <TouchableOpacity onPress={ handleSubmit} disabled={!isValid || isLoading}>
                                 <View style={styles.button}>
-                                    <Text style={styles.buttonText}>Confirm</Text>
+                                    {isLoading ? <ActivityIndicator size={'small'} color={Colors.WHITE} /> : <Text style={styles.buttonText}>Confirm</Text>}
                                 </View>
                             </TouchableOpacity>
                         </View>

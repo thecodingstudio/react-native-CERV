@@ -3,8 +3,9 @@ import { View, StyleSheet, FlatList, ActivityIndicator, Text, TouchableOpacity }
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-simple-toast';
 
+import * as addressActions from '../../../../store/actions/address'
 import AddressItem from "../../../../components/AddressItem";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Colors } from "../../../../commonconfig";
 import { getPostLogin, postPostLogin } from "../../../../helpers/ApiHelpers";
 
@@ -13,6 +14,7 @@ const SavedAddresses = props => {
     const [ isLoading, setIsLoading ] = useState(false)
     const [ addressList, setAddressList ] = useState()
     const [ length, setLength ] = useState()
+    const dispatch = useDispatch()
 
     const getAddresses = async() => {
         setIsLoading(true)
@@ -67,6 +69,7 @@ const SavedAddresses = props => {
         const activeResponse = await postPostLogin('/activate-address',data)
         // console.log(activeResponse);
         if(activeResponse.success) {
+            dispatch(addressActions.activateAddress(activeResponse.data.data))
             Toast.show('Address activated successfully.')
             getAddresses()
         } else {

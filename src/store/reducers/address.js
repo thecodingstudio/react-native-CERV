@@ -29,17 +29,11 @@ export default (state = initialState, action) => {
             }
 
         case ACTIVATE_ADDRESS:
-            const activeId = action.id;
-            const tempList = [];
-            for( const key in state.addresses ) {
-                tempList.push({
-                    ...state.addresses[key]
-                });
-            }           
-            const addressToActivate = tempList.find( item => item.id === activeId )
+            const activeAddress = action.data;
+            
             return{
                 ...state,
-                activeAddress: addressToActivate
+                activeAddress: activeAddress
             }
         default:
             return state

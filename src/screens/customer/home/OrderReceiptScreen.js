@@ -116,7 +116,7 @@ const OrderReceiptScreen = props => {
                         return(
                             <View key={item.id} style={styles.itemContainer}> 
                                 <View style={styles.textButtonContainer}>
-                                    <Text style={{flex:2}}>{item.name}</Text>
+                                    <Text style={{flex:2}}>{item.title}</Text>
                                     <View style={styles.addRemoveContainer}>
                                         <TouchableOpacity onPress={() =>{ dispatch(cartActions.removeFromCart(item)) }} ><Ionicon name="remove-outline" size={20} color={ Colors.ERROR_RED }/></TouchableOpacity>
                                         <Text>{item.qty}</Text>
@@ -203,9 +203,9 @@ const OrderReceiptScreen = props => {
                             />
                         </View> 
                         :
-                        <View>
-                            <Text>No Active Payment Found</Text>
-                            <Text>Add some now!</Text>
+                        <View style={styles.backDropContainer} >
+                            <Text style={{...styles.backDropText, fontSize:25}}>No Active Payment Found</Text>
+                            <Text style={{...styles.backDropText, fontSize:15}}>Add some now!</Text>
                         </View>
                     }
                 </View>

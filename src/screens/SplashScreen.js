@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Colors, Images } from '../commonconfig'
+import { refreshToken } from '../helpers/ApiHelpers';
 
 const SplashScreen = (props) => {
 
@@ -11,8 +12,21 @@ const SplashScreen = (props) => {
     },[])
 
     const loadApp = async() => {
-        const isLogin = await AsyncStorage.getItem('isLogin');
 
+        const refData = {
+            refreshToken: await AsyncStorage.getItem('refreshToken')
+        }
+        const response = await refreshToken( refData )
+        // console.log(response);
+        if(!response.success){
+            props.navigation.navigate('Auth')
+        } else {
+            await AsyncStorage.setItem('token', response.token)
+            await AsyncStorage.setItem('isLogin','true')
+            props.navigation.navigate('Home')
+        }
+
+        const isLogin = await AsyncStorage.getItem('isLogin');
         if(isLogin === "true") {
             props.navigation.navigate('Home')
         } else {
@@ -33,9 +47,9 @@ export default SplashScreen
 
 const styles = StyleSheet.create({
     screen:{
+        flex:1,
         alignItems:'center',
         justifyContent:'space-evenly',
-        flex:1,
         padding:10,
         backgroundColor: Colors.ORANGE
     }

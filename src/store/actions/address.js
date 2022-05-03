@@ -5,6 +5,6 @@ export const addAddress = ( addressObj ) => {
     return { type: ADD_ADDRESS, address_type: addressObj.address_type , address: addressObj.address, icon: addressObj.icon }
 }
 
-export const activateAddress = (id) => {
-    return { type: ACTIVATE_ADDRESS, id: id } 
+export const activateAddress = (data) => {
+    return { type: ACTIVATE_ADDRESS, data } 
 }

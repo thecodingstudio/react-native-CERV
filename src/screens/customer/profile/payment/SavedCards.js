@@ -10,8 +10,12 @@ import{ Colors }from '../../../../commonconfig';
 const SavedCards = props => {
     
     useEffect( () => {
-        getCards();
-    }, [])
+        const unsubscribe = props.navigation.addListener('focus', () => {
+            getCards();
+        })
+        return unsubscribe;
+    }, [props.navigation])
+    
     const dispatch = useDispatch();
     
     const [isLoading, setIsLoading] = useState(true);
