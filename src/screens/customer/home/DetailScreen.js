@@ -11,6 +11,7 @@ import * as cartActions from '../../../store/actions/cart';
 import Caterer from '../../../model/caterer';
 import { Colors } from '../../../commonconfig';
 import { getWithParams } from '../../../helpers/ApiHelpers';
+import moment from 'moment';
 
 const windowWidth = Dimensions.get('window').width
 
@@ -18,47 +19,30 @@ const DetailScreen = props => {
 
     const catererId = props.route.params.catererId;
     const currentCaterer = props.route.params.caterer
-    // console.log("ITEMS:          \n\n",currentCaterer.items);
 
-    // useEffect( () => {
-    //     getCatererDetails()
-    // },[ ])
-
-    // let category = []
-
-    // const getCatererDetails = async() => {
-    //     await getWithParams(`/catererInfo/${catererId}`)
-    //     .then( (response) => {
-    //         // console.log(response);
-    //         category = response.data.category
-    //     })
-    //     .then( () => {
-    //         console.log(category);
-    //     })
-    // }   
-
-    const selectedCaterer = Caterer.find(caterer => { return (caterer.id === catererId) });
+    
     const dispatch = useDispatch();
 
     //Date Time Picker
-    const initialDate = new Date().toLocaleDateString()
-    const initialTime = new Date().toLocaleTimeString()
-    const [selectedDate, setSelectedDate] = useState()
-    const [selectedTime, setSelectedTime] = useState()
+    const initialDate = moment(new Date()).format('DD MMM YYYY')
+    const initialTime = moment(new Date()).format('hh:mm A')
+    const [showPicker, setShowPicker] = useState(false)
+    const [ selectedDateTime, setSelectedDateTime ] = useState();
+    const [x ,setX] = useState();
 
-    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false)
-    const showDatePicker = () => {
-        setIsDatePickerVisible(true)
+    const showDateTimePicker = () => {
+        setShowPicker(true)
     }
-    const hideDatePicker = () => {
-        setIsDatePickerVisible(false)
+    const hideDateTimePicker = () => {
+        setShowPicker(false)
     }
-    const handleConfirm = date => {
-        const dateLocale = date.toLocaleDateString()
-        const timeLocale = date.toLocaleTimeString()
-        setSelectedDate(dateLocale)
-        setSelectedTime(timeLocale)
+    const handleConfirm = (dateTime) => {
+        setX(moment(dateTime).format('YYYY-MM-DD HH:mm:ss'))
+        //Send X to API
+        // console.log(x);
+        setSelectedDateTime(dateTime)
     }
+    
 
     // Delivery Type Logic
     const [deliverySelected, setDeliverySelected] = useState(false);
@@ -80,15 +64,18 @@ const DetailScreen = props => {
     }
 
     const navigateHandler = () => {
+        // dispatch(orderActions.setDate(selectedDate))
+        // dispatch(orderActions.setTime(selectedTime))
+        dispatch(orderActions.setDateTime(x))
         dispatch(cartActions.setTotal(total));
         props.navigation.navigate('OrderReceipt');
     }
 
     // Rendering Menu
-    const [activeMenuItem, setActiveMenuItem] = useState(currentCaterer.categories[0]?.id)
+    const [activeCategory, setActiveCategory] = useState(currentCaterer.user.categories[0] ? currentCaterer.user.categories[0] : {} )
+    
+    const dishes = activeCategory?.items
 
-    const dishes = currentCaterer.items.filter(item => { return (item.categoryId === activeMenuItem) })
-    // console.log(dishes);
 
     //Diff Caterer Logic
     const refRBSheet = useRef();
@@ -151,22 +138,22 @@ const DetailScreen = props => {
                         <Text style={styles.label}>Date and Time</Text>
                         <View style={{ flexDirection: "row", alignItems: 'center', justifyContent: 'space-evenly', paddingVertical: 10 }}>
                             <View style={styles.dateTimeContainer}>
-                                <TouchableOpacity style={styles.dateTimeTouchable} onPress={showDatePicker}>
-                                    <Text>{selectedDate ? selectedDate : initialDate}</Text>
+                                <TouchableOpacity style={styles.dateTimeTouchable} onPress={showDateTimePicker}>
+                                    <Text>{ selectedDateTime ? moment(selectedDateTime).format('DD MMM YYYY')  : initialDate}</Text>
                                     <Ionicon name="calendar" size={30} color={Colors.ORANGE} />
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.dateTimeContainer}>
-                                <TouchableOpacity style={styles.dateTimeTouchable} onPress={showDatePicker}>
-                                    <Text>{selectedTime ? selectedTime : initialTime}</Text>
+                                <TouchableOpacity style={styles.dateTimeTouchable} onPress={showDateTimePicker}>
+                                    <Text>{ selectedDateTime ? moment(selectedDateTime).format('hh:mm A')  : initialTime}</Text>
                                     <Ionicon name="time" size={30} color={Colors.ORANGE} />
                                 </TouchableOpacity>
                             </View>
                             <DateTimePickerModal
-                                isVisible={isDatePickerVisible}
+                                isVisible={showPicker}
                                 mode='datetime'
                                 onConfirm={handleConfirm}
-                                onCancel={hideDatePicker}
+                                onCancel={hideDateTimePicker}
                             />
                         </View>
                     </View>
@@ -208,21 +195,20 @@ const DetailScreen = props => {
 
                     {/* Menu Module */}
                     <View style={styles.menu}>
-                    {currentCaterer.categories.length !== 0 ? 
-                        <>
-                        {/* Category of items */}
+
+                    { currentCaterer.user.categories.length !== 0  && dishes.length !== 0 ?  
+                    <>
                         <Text style={styles.menuTitle}>Menu</Text>
-                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{ marginBottom: 30 }}>
-                            {currentCaterer.categories.map(category => {
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom:20}}>
+                            {currentCaterer.user.categories.map( category => {
                                 return (
-                                    <TouchableOpacity key={category.id} style={activeMenuItem === category.id ? styles.activeMenuItem : styles.inactiveMenuItem} onPress={() => { setActiveMenuItem(category.id) }}>
-                                        <Text style={activeMenuItem === category.id ? styles.activeMenuItemTitle : styles.inactiveMenuItemTitle}>{category.title}</Text>
+                                    <TouchableOpacity key={category.id} style={activeCategory.id === category.id ? styles.activeMenuItem : styles.inactiveMenuItem} onPress={() => { setActiveCategory(category)}}>
+                                        <Text style={activeCategory.id === category.id ? styles.activeMenuItemTitle : styles.inactiveMenuItemTitle}>{category.title}</Text>
                                     </TouchableOpacity>
                                 )
-                            })}
+                            } )}
                         </ScrollView>
 
-                        {/* Dishes in selected category*/}
                         <Text style={styles.menuTitle}>Dishes</Text>
                         {dishes.map(item => {
                             // console.log("Dish   ",item);
@@ -252,16 +238,16 @@ const DetailScreen = props => {
                                 </View>
                             )
                         })}
-                        </>
-                        :
-                        <>
-                            <Text style={styles.menuTitle}>Menu</Text>
-                            <View style={styles.backDropContainer} >
-                                <Text style={{...styles.backDropText, fontSize:25}}>NO DISHES FOUND</Text>
-                                <Text style={{...styles.backDropText, fontSize:15}}>Wait for the caterer to add some.</Text>
-                            </View>
-                        </>
-                        }
+                    </> 
+                    :
+                    <>
+                        <Text style={styles.menuTitle}>Menu</Text>
+                        <View style={styles.backDropContainer} >
+                            <Text style={{...styles.backDropText, fontSize:25}}>NO DISHES FOUND</Text>
+                            <Text style={{...styles.backDropText, fontSize:15}}>Wait for the caterer to add some.</Text>
+                        </View>
+                    </>
+                    }
                     </View>
 
 

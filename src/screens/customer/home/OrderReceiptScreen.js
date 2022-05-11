@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Image, ScrollView, TextInput, Dimensions,TouchableOpacity } from 'react-native';
-import React,{ useRef } from 'react';
+import React,{ useRef, useState } from 'react';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -63,6 +63,7 @@ const OrderReceiptScreen = props => {
 
     const catererId = useSelector(state => state.Cart.catererId)
     const refRBSheet = useRef();
+    const [instructions, setInstructions] = useState('')
     const orderPlaceHandler = () => {
         const data = {
             catererId : catererId,
@@ -70,7 +71,8 @@ const OrderReceiptScreen = props => {
             orderType : orderType,
             discountAmount: discountAmount,
             totalAmount : total,
-            items: cartItems
+            items: cartItems,
+            instructions: instructions
         }
         dispatch(orderActions.placeOrder(data));
         refRBSheet.current.open()
@@ -216,6 +218,7 @@ const OrderReceiptScreen = props => {
                         <TextInput 
                             placeholder='Add text here...'
                             multiline
+                            onChangeText={ text => setInstructions(text) }
                         />
                     </View>
                 </View>

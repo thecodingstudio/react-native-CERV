@@ -1,4 +1,4 @@
-import { CANCEL_ORDER, PLACE_ORDER, SET_DATE, SET_TIME } from "../actions/order"
+import { CANCEL_ORDER, PLACE_ORDER, SET_DATETIME } from "../actions/order"
 
 const initialState = {
     // All Order Lists
@@ -12,8 +12,7 @@ const initialState = {
         pastOrders :[],
 
         // required data
-        deliveryDate : '',
-        deliveryTime : '',
+        deliveryDateTime: ''
 
     //Order Object 
     
@@ -31,18 +30,12 @@ const initialState = {
 
 export default ( state = initialState , action ) => {
     switch(action.type) {
-        case SET_DATE:
-            const dateString = action.str
+        case SET_DATETIME:
+            const dateTime = action.str
+            // console.log("From Reducer:        ",dateTime);
             return {
                 ...state,
-                deliveryDate: dateString
-            }
-
-        case SET_TIME:
-            const timeString = action.str
-            return {
-                ...state,
-                deliveryTime: timeString
+                deliveryDateTime: dateTime
             }
 
         case PLACE_ORDER: 
@@ -53,14 +46,13 @@ export default ( state = initialState , action ) => {
                 orderID: oID,
                 catererId : data.catererId,
                 items : data.items,
-                deliveryDate: state.deliveryDate,
-                deliveryTime: state.deliveryTime,
-                orderPlaceDate: new Date().toLocaleDateString(),
-                orderPlaceTime: new Date().toLocaleTimeString(),
+                deliveryDateTime: state.deliveryDateTime,
+                orderPlaceDateTime: new Date(),
                 orderType: data.orderType,
                 discountAmount: data.discountAmount,
                 totalAmount: data.totalAmount,
                 address: data.address,
+                instructions: data.instructions,
                 orderStatus : "0"
             }
 

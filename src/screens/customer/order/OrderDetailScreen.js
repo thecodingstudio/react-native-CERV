@@ -6,68 +6,180 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 
 import Caterer from '../../../model/caterer'
 import { Colors, Images } from '../../../commonconfig'
+import moment from 'moment';
 
 const OrderDetailScreen = props => {
 
-    const selectedOrderID = props.route.params.id
-    const allOrders = useSelector(state => state.Order.orders)
-    const selectedOrder = allOrders.find(item => item.orderID === selectedOrderID)
-    //console.log(selectedOrder);
-    
-    const selectedCaterer = Caterer.find( item => item.id === selectedOrder.catererId)
+    const selectedOrder = props.route.params.orderObj
+    // console.log(selectedOrder);
+
+    const dateTime = selectedOrder.date + " " + selectedOrder.time
+    // console.log(dateTime);
 
     //Progress Steps
     const stepIndicatorStyles = {
-        stepIndicatorSize : 10,
+        stepIndicatorSize: 10,
         currentStepIndicatorSize: 20,
         currentStepStrokeWidth: 2,
-        separatorUnFinishedColor : Colors.LIGHTER_GREY,
-        separatorFinishedColor : Colors.ORANGE,
+        separatorUnFinishedColor: Colors.LIGHTER_GREY,
+        separatorFinishedColor: Colors.ORANGE,
         labelSize: 15,
         labelColor: Colors.LIGHTER_GREY,
         stepIndicatorFinishedColor: Colors.ORANGE,
-        stepIndicatorUnFinishedColor : Colors.LIGHTER_GREY,
+        stepIndicatorUnFinishedColor: Colors.LIGHTER_GREY,
         stepIndicatorCurrentColor: Colors.ORANGE,
-        currentStepStrokeWidth : 0,
+        currentStepStrokeWidth: 0,
         currentStepLabelColor: Colors.ORANGE
     }
 
-    // Date & Time Processing
-    const orderPlaceDate  = selectedOrder.orderPlaceDate
-    const monthNumber = orderPlaceDate.slice(0,2).replace(/^0+/, '');
-    const monthNames = [ "", 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    const date = orderPlaceDate.slice(3,5)
-    const year = "20" + orderPlaceDate.slice(6,8)
-    const orderDate = date + " " + monthNames[monthNumber] + " " + year
-
-    const orderPlaceTime = selectedOrder.orderPlaceTime
-    const hour = orderPlaceTime.slice(0,2)
-    const ampm = hour >=12 ? ' PM' : ' AM'
-    const minutes = orderPlaceTime.slice(3,5)
-    const hour1 = hour%12 === 0 ? '12' : hour%12
-    const hour12 = hour1 < 10 ? '0' + hour1 : hour1
-    const orderTime = hour12 + ":" + minutes + ampm 
-
     return (
         <View style={styles.screen}>
-            
-            <View style={{paddingVertical:15, backgroundColor: Colors.WHITE}}>
-                {/* Progress Steps */}
-                <StepIndicator 
-                    stepCount={5}
-                    labels={['Order Placed', 'Order Accepted', 'Preparing Food', 'Dispatched for Delivery','Order Delivered']}
-                    customStyles={stepIndicatorStyles}
-                    renderStepIndicator={ () => { return(<View/>) }}
-                    //currentPosition={selectedOrder.orderStage}
-                    currentPosition={selectedOrder.orderStatus}
-                />
-            </View>
-
             <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Order Details */}
+                <View style={{ backgroundColor: Colors.WHITE, paddingTop: 10, paddingHorizontal: 10 }}>
+                    {/* Progress Steps  */}
+                    <StepIndicator
+                        stepCount={5}
+                        labels={['Order Placed', 'Order Accepted', 'Preparing Food', 'Dispatched for Delivery', 'Order Delivered']}
+                        customStyles={stepIndicatorStyles}
+                        renderStepIndicator={() => { return (<View />) }}
+                        // currentPosition={3}
+                        currentPosition={selectedOrder.status}
+                    />
+
+                    {/* Caterer */}
+                    <View style={{ flexDirection: 'row', borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, paddingVertical: 10, marginTop: 15 }}>
+                        <Image source={{ uri: selectedOrder.caterer.image }} style={{ flex: 1, aspectRatio: 1 }} />
+                        <View style={{ flex: 5, marginLeft: 10, justifyContent: 'space-evenly' }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{selectedOrder.caterer.store.name}</Text>
+                            <Text>{selectedOrder.caterer.store.address}</Text>
+                        </View>
+                    </View>
+
+                    <View style={{ borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, paddingVertical: 10 }}>
+                        {selectedOrder.orderItems.map(dish => {
+                            // console.log(dish)
+                            return (
+                                <View key={dish.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <View style={{ flex: 4 }}>
+                                        <Text style={{ fontWeight: 'bold', fontSize: 18, marginVertical: 5 }}>{dish.item.title}</Text>
+                                        <Text style={{ color: Colors.GREY }}>{dish.quantity} dishes</Text>
+                                    </View>
+                                    <Text style={{ flex: 1, letterSpacing: -0.5 }}>$ {dish.itemTotal.toFixed(2)}</Text>
+                                </View>
+                            )
+                        })}
+                    </View>
+
+                    <View style={{ borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, paddingVertical: 10 }}>
+                        <Text style={styles.label}>ORDER TYPE</Text>
+                        <Text style={styles.detail}>{selectedOrder.order_type}</Text>
+
+                        {selectedOrder.order_type === 'Delivery' ?
+                            (
+                                <View style={{ marginVertical: 10 }}>
+                                    <Text style={{ fontWeight: 'bold', fontSize: 12, letterSpacing: -0.5, color: Colors.GREY }}>Delivery fee based on how far the customer location is</Text>
+                                    <Text>*   5Km distance charge $2.50</Text>
+                                    <Text>*   10Km distance charge $5.00</Text>
+                                </View>
+                            )
+                            :
+                            null
+                        }
+
+                        <Text style={styles.label}>ORDER PLACED ON</Text>
+                        <Text style={styles.detail}>{moment(selectedOrder.createdAt).format('DD MMM YYYY')} at {moment(selectedOrder.createdAt).format('hh:mm A')}</Text>
+
+                        <Text style={styles.label}>AMOUNT</Text>
+                        <Text style={styles.detail}>$ {selectedOrder.netAmount.toFixed(2)}</Text>
+                    </View>
+
+                    <View style={{ borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, paddingBottom: 10 }}>
+                        <Text style={styles.label}>DELIVERY DATE AND TIME</Text>
+                        <Text style={{ marginTop: 5, fontSize: 18, fontWeight: 'bold' }}>{moment(dateTime).format('DD MMM YYYY')}   at   {moment(dateTime).format('hh:mm A')}</Text>
+                        {/* <Text>{moment(dateTime).format('hh:mm A')}</Text> */}
+                    </View>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, justifyContent: 'space-between', paddingVertical: 10 }}>
+                        <View style={{ flex: 4 }}>
+                            <Text style={styles.label}>DELIVERY PERSON</Text>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>John Martyn</Text>
+                        </View>
+                        <TouchableOpacity style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 10, backgroundColor: Colors.ORANGE, borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
+                            <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 17 }}>Chat</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={{ paddingVertical: 10 }}>
+                        <Text style={{ ...styles.label, marginBottom: 10 }}>Bill Details</Text>
+                        {selectedOrder.orderItems.map(dish => {
+                            return (
+                                <View key={dish.id} style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5 }}>
+                                    <Text style={{ flex: 4 }}>{dish.item.title} ( {dish.quantity} dishes )</Text>
+                                    <Text style={{ flex: 1 }}>$ {dish.itemTotal.toFixed(2)}</Text>
+                                </View>
+                            )
+                        })}
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5 }}>
+                            <Text style={{ flex: 4 }}>Service Charge</Text>
+                            <Text style={{ flex: 1 }}>$ 1.00</Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5 }}>
+                            <Text style={{ flex: 4 }}>Delivery Charge</Text>
+                            <Text style={{ flex: 1 }}>$ {selectedOrder.order_type === 'Delivery' ? '2.50' : '0.00'}</Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, borderTopColor: Colors.GREY, borderTopWidth: 0.5, paddingVertical: 10 }}>
+                            <Text style={{ flex: 4 }}>Promo Discount</Text>
+                            <Text style={{ flex: 1, color: Colors.GREEN }}>- $ {selectedOrder.discount.toFixed(2)}</Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, borderTopColor: Colors.GREY, borderTopWidth: 0.5, paddingVertical: 10 }}>
+                            <Text style={{ flex: 4 }}>Sub Total</Text>
+                            <Text style={{ flex: 1 }}>$ {(selectedOrder.netAmount - 5.10).toFixed(2)}</Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, borderTopColor: Colors.GREY, borderTopWidth: 0.5, paddingVertical: 10 }}>
+                            <Text style={{ flex: 4 }}>Tax</Text>
+                            <Text style={{ flex: 1 }}>$ 5.10</Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', borderTopColor: Colors.GREY, borderTopWidth: 0.5, paddingVertical: 10 }}>
+                            <Text style={{ flex: 4 }}>Total</Text>
+                            <Text style={{ flex: 1 }}>$ {(selectedOrder.netAmount).toFixed(2)}</Text>
+                        </View>
+                    </View>
+
+                </View>
+                <Image source={Images.PAPER_TEAR} style={{ width: '100%', height:30, marginBottom: 50, transform: [{ rotate: '180deg' }] }} />
+
+                {/* Address Bar */}
+                <View style={{padding:10, backgroundColor: Colors.WHITE}}>
+                    <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingHorizontal:15}}>
+                        <Text>Address</Text>
+                        {selectedOrder.status < 2 ? 
+                        <TouchableOpacity>
+                            <Text style={{color: Colors.ORANGE, fontWeight:'bold', fontSize:18}}>CHANGE</Text>
+                        </TouchableOpacity>
+                        :
+                        null    
+                    }
+                    </View>
+                    <View style={{paddingHorizontal:15, alignItems:'center', flexDirection:'row', justifyContent:'flex-start'}}>
+                        <View style={{padding:10, borderRadius:10, borderWidth:0.5, borderColor: Colors.GREY, marginVertical:10}}>
+                            <Ionicon name={selectedOrder.address.icon} color={Colors.ORANGE} size={25}/>
+                        </View>
+                        <Text style={{fontSize:20, marginLeft:10,flex:0.75}} ellipsizeMode={'tail'} numberOfLines={2}>{selectedOrder.address.address}</Text>
+                    </View>
+                </View>
+            </ScrollView>
+
+            {/*  <ScrollView showsVerticalScrollIndicator={false}>
+                {/* Order Details 
                 <View style={styles.orderContainer}>
-                    
-                    {/* Caterer Container */}
+                
+                    {/* Caterer Container
                     <View style={styles.catererContainer}>
                         <Image source={{uri: selectedCaterer.image}} style={styles.catererImage}/>
                         <View style={styles.catererTextContainer}>
@@ -76,7 +188,7 @@ const OrderDetailScreen = props => {
                         </View>
                     </View>
 
-                    {/* Items List */}
+                    {/* Items List 
                     <View style={styles.itemListContainer}>
                         {selectedOrder.items.map( item => {
                             return (
@@ -91,7 +203,7 @@ const OrderDetailScreen = props => {
                         } )}
                     </View>
 
-                    {/* Other Details */}
+                    {/* Other Details 
                     <View style={styles.otherDetailContainer}>
                         <Text style={styles.otherDetailLabel}>ORDER TYPE</Text>
                         <Text style={styles.otherDetailText}>{selectedOrder.orderType}</Text>
@@ -105,19 +217,19 @@ const OrderDetailScreen = props => {
                         ) : null}
 
                         <Text style={styles.otherDetailLabel}>ORDER PLACED ON</Text>
-                        <Text style={styles.otherDetailText}>{orderDate} at {orderTime}</Text>
+                        {/* <Text style={styles.otherDetailText}>{orderDate} at {orderTime}</Text> 
 
                         <Text style={styles.otherDetailLabel}>AMOUNT</Text>
                         <Text style={styles.otherDetailText}>$ {selectedOrder.totalAmount.toFixed(2)}</Text>
                     </View>
 
-                    {/* Delivery Date & Time */}
+                    {/* Delivery Date & Time 
                     <View style={styles.deliveryDetailContainer}>
                         <Text style={styles.deliveryLabel}>Delivery Date and Time</Text>
                         <Text style={styles.deliveryText}>{selectedOrder.deliveryDate} at {selectedOrder.deliveryTime}</Text>
                     </View>
 
-                    {/* Delivery Person */}
+                    {/* Delivery Person 
                     <View style={styles.deliveryPersonContainer}>
                         <View>
                             <Text style={styles.deliveryLabel}>Delivery Person</Text>
@@ -128,7 +240,7 @@ const OrderDetailScreen = props => {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Bill Details */}
+                    {/* Bill Details 
                     <View style={{borderBottomColor: Colors.LIGHTER_GREY, borderBottomWidth:0.5, paddingVertical:10}}>
                         <Text style={{...styles.otherDetailLabel, marginBottom:10}}>Bill Details</Text>
                         { selectedOrder.items.map( item => {
@@ -173,9 +285,9 @@ const OrderDetailScreen = props => {
                         <Text style={{flex:0.7, fontWeight:'bold', fontSize:20}}>$ {selectedOrder.totalAmount.toFixed(2)}</Text>
                     </View>
                 </View>
-                <Image source={Images.PAPER_TEAR} style={{width:'100%', height:30, marginBottom:50,transform:[{ rotate: '180deg'}]}}/>
+                
 
-                {/* Address Bar */}
+                {/* Address Bar 
                 <View style={styles.addressContainer}>
                     <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingHorizontal:10}}> 
                         <Text style={styles.addressLabel}>ADDRESS</Text>
@@ -188,7 +300,7 @@ const OrderDetailScreen = props => {
                         <Text style={styles.address}>{selectedOrder.address.address}</Text>
                     </View>
                 </View>
-            </ScrollView>
+            </ScrollView> */}
         </View>
     )
 }
@@ -196,143 +308,16 @@ const OrderDetailScreen = props => {
 export default OrderDetailScreen
 
 const styles = StyleSheet.create({
-    screen:{
-        flex:1,
+    screen: {
+        flex: 1,
         backgroundColor: Colors.BACKGROUND_GREY,
     },
-    iconContainer:{
-        alignItems:'center',
-        justifyContent:'center',
-        padding:10,
-        borderWidth:0.5,
-        borderColor: Colors.GREY,
-        borderRadius:5,
-        marginRight: 10
-    },
-    address:{
-        fontWeight:'600',
-        fontSize:18,
-        maxWidth:'80%'
-    },
-    addressContainer:{
-        backgroundColor: Colors.WHITE,  
-        paddingTop:15,
-        paddingBottom:25
-    },
-    change:{
-        fontWeight:'bold',
-        fontSize:20,
-        color: Colors.ORANGE
-    },
-    addressLabel:{
-        fontWeight:'bold',
-        fontSize: 20
-    },
-    billDetailRow:{
-        flexDirection:'row', 
-        justifyContent:'space-between', 
-        alignItems:'center',
-        paddingVertical:5
-    },
-    orderContainer:{
-        flex:1,
-        padding:10,
-        backgroundColor: Colors.WHITE
-    },
-    chatButton:{
-        paddingVertical: 10,
-        paddingHorizontal:20,
-        backgroundColor: Colors.ORANGE,
-        borderRadius:5
-    },
-    chatText:{
-        fontWeight:'bold',
-        color: Colors.WHITE
-    },
-    catererContainer:{
-        paddingVertical:10,
-        flexDirection:'row',
-        borderBottomColor: Colors.LIGHTER_GREY,
-        borderBottomWidth: 0.5
-    },
-    catererTextContainer:{
-        flex: 5,
-        paddingHorizontal:10,
-        justifyContent:'space-evenly',
-    },
-    catererImage:{
-        flex: 1,
-        aspectRatio:1
-    },
-    catererName:{
-        fontWeight:'bold',
-        fontSize:20
-    },
-    catererAddress:{
-        fontWeight:'600',
-        fontSize:15
-    },
-    itemListContainer:{
-        paddingVertical:10,
-        borderBottomColor: Colors.LIGHTER_GREY,
-        borderBottomWidth: 0.5,
-        paddingHorizontal:5
-    },
-    itemContainer:{
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'space-between'
-    },
-    itemName:{
-        fontWeight:'bold',
-        fontSize:16
-    },
-    itemQty:{
-        fontSize:15,
-        color: Colors.GREY
-    },
-    itemPrice:{
-        fontWeight:'bold',
-        fontSize:18
-    },
-    otherDetailContainer:{
-        paddingVertical:10,
-        borderBottomColor: Colors.LIGHTER_GREY,
-        borderBottomWidth: 0.5
-    },
-    otherDetailLabel:{
+    label: {
+        fontWeight: '700',
         color: Colors.GREY,
-        fontWeight: 'bold',
-        fontSize:16,
+        marginTop: 10
     },
-    otherDetailText:{
-        fontWeight:'100',
-        fontSize:15,
-        marginBottom:10
-    },
-    deliveryDetailContainer:{
-        paddingVertical:10,
-        borderBottomColor: Colors.LIGHTER_GREY,
-        borderBottomWidth: 0.5
-    },
-    deliveryLabel:{
-        fontWeight:'bold',
-        color: Colors.GREY,
-        fontSize:18
-    },
-    deliveryText:{
-        fontWeight:'600',
-        fontSize:18,
-        color: Colors.BLACK
-    },
-    deliveryPersonContainer:{
-        paddingVertical:10,
-        borderBottomColor: Colors.LIGHTER_GREY,
-        borderBottomWidth: 0.5,
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'space-between',
-        paddingRight:20,
-        marginBottom:10
+    detail: {
+        marginTop: 5
     },
 })

@@ -23,7 +23,7 @@ const SavedCards = props => {
 
     const getCards = async() => {
         const response = await getPostLogin('/getCards')
-        //console.log(response.data.message.data)
+        // console.log(response)
         const tempArray = response.data.message.data
         setCardList(tempArray)
         { tempArray.map( item => {

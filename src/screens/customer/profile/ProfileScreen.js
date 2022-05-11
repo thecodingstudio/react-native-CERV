@@ -10,6 +10,7 @@ import ProfileOption from '../../../components/profileOption';
 import{ Colors }from '../../../commonconfig';
 import { getPostLogin, postPostLogin, refreshToken } from '../../../helpers/ApiHelpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CommonActions } from '@react-navigation/native';
 
 
 const ProfileScreen = props => {
@@ -100,7 +101,12 @@ const ProfileScreen = props => {
                 leftIcon = "log-out-outline"
                 onPress={ () => {
                     AsyncStorage.clear()
-                    props.navigation.navigate('Auth')
+                    props.navigation.dispatch(
+                        CommonActions.reset({
+                            index:0,
+                            routes:[{name:'Auth'}]
+                        })
+                    )
                 }}
             />
 

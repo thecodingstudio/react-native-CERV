@@ -13,6 +13,7 @@ import Toast from 'react-native-simple-toast';
 import{ Colors, Images }from '../../commonconfig';
 import SignInScreenValidationSchema from '../../schema/SignInScreenSchema';
 import { postPreLogin } from "../../helpers/ApiHelpers";
+import { CommonActions } from '@react-navigation/native';
 
 const LOGIN = 'LOGIN';
 
@@ -30,7 +31,7 @@ const SignInScreen = props => {
         };
         const response = await postPreLogin('/users/login', data);
         const resData = response.data;
-        // console.log(response)
+        console.log(response)
         if (response.success) {
             try {
                 await AsyncStorage.setItem('token', resData.token)
@@ -40,7 +41,12 @@ const SignInScreen = props => {
             } catch (error) {
                 console.log(error)
             }
-            props.navigation.navigate('Home')
+            props.navigation.dispatch(
+                CommonActions.reset({
+                    index:0,
+                    routes: [{name: 'Home'}]
+                })
+            )
             setIsLoading(false);
         } else {
             if (resData.error === 'User does not exist!') {

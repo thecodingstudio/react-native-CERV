@@ -5,6 +5,7 @@ import * as orderActions from '../store/actions/order';
 
 import { Colors } from '../commonconfig'
 import Caterer from '../model/caterer'
+import moment from 'moment';
 
 const CurrentOrderItem = (props) => {
 
@@ -15,20 +16,20 @@ const CurrentOrderItem = (props) => {
     const items = props.items
 
     //Date processing
-    const orderPlaceDate  = props.orderPlaceDate
-    const monthNumber = orderPlaceDate.slice(0,2).replace(/^0+/, '');
-    const monthNames = [ "", 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    const date = orderPlaceDate.slice(3,5)
-    const year = "20" + orderPlaceDate.slice(6,8)
-    const orderDate = date + " " + monthNames[monthNumber] + " " + year
+    const orderPlaceDateTime  = props.orderPlaceDateTime
+    // const monthNumber = orderPlaceDate.slice(0,2).replace(/^0+/, '');
+    // const monthNames = [ "", 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    // const date = orderPlaceDate.slice(3,5)
+    // const year = "20" + orderPlaceDate.slice(6,8)
+    // const orderDate = date + " " + monthNames[monthNumber] + " " + year
 
-    const orderPlaceTime = props.orderPlaceTime
-    const hour = orderPlaceTime.slice(0,2)
-    const ampm = hour >=12 ? ' PM' : ' AM'
-    const minutes = orderPlaceTime.slice(3,5)
-    const hour1 = hour%12 === 0 ? '12' : hour%12
-    const hour12 = hour1 < 10 ? '0' + hour1 : hour1
-    const orderTime = hour12 + ":" + minutes + ampm 
+    // const orderPlaceTime = props.orderPlaceTime
+    // const hour = orderPlaceTime.slice(0,2)
+    // const ampm = hour >=12 ? ' PM' : ' AM'
+    // const minutes = orderPlaceTime.slice(3,5)
+    // const hour1 = hour%12 === 0 ? '12' : hour%12
+    // const hour12 = hour1 < 10 ? '0' + hour1 : hour1
+    // const orderTime = hour12 + ":" + minutes + ampm 
 
     return (
         <TouchableOpacity style={styles.orderItemContainer} onPress={ props.onPress }>
@@ -48,7 +49,7 @@ const CurrentOrderItem = (props) => {
                 {items.map( item => {
                     return (
                         <View key={item.id} style={styles.itemRow}>
-                            <Text>{item.name}</Text>
+                            <Text>{item.title}</Text>
                             <Text style={{fontWeight:'900'}}>$ {item.itemTotal.toFixed(2)}</Text>
                         </View>
                     )
@@ -61,9 +62,9 @@ const CurrentOrderItem = (props) => {
                 <Text style={styles.detail}>{props.orderType}</Text>
                 <Text style={styles.label}>ORDER PLACED ON</Text>
                 <View style={{flexDirection:'row', alignItems:'flex-start', justifyContent:'flex-start'}}>
-                    <Text style={{...styles.detail, fontWeight:'bold'}}>{orderDate} </Text>
+                    <Text style={{...styles.detail, fontWeight:'bold'}}>{moment(orderPlaceDateTime).format('DD MMM YYYY')}</Text>
                     <Text> at  </Text>
-                    <Text style={{...styles.detail, fontWeight:'bold'}}>{orderTime}</Text>
+                    <Text style={{...styles.detail, fontWeight:'bold'}}>{moment(orderPlaceDateTime).format('hh:mm A')}</Text>
                 </View>
                 <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
                     <View>

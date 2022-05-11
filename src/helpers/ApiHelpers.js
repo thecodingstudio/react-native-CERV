@@ -166,11 +166,11 @@ export const postPostLogin = async( url, data) => {
 export const deletePostLogin = async( url, data) => {
     return await axios
     .delete( apiBaseUrl + url ,{
-    headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + ( await AsyncStorage.getItem('token') )
-    } , data
-})
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + ( await AsyncStorage.getItem('token') )
+        } , data
+    })
     .then( (response) => {
         if(response.data.status===1) {
             return {
@@ -235,6 +235,7 @@ export const getPostLogin = async(url) => {
         }
     })
     .then( (response) => {
+        // console.log(response);
         if(response.data.status===1) {
             return {
               success: true,
@@ -250,6 +251,7 @@ export const getPostLogin = async(url) => {
         }
     })
     .catch((error) => {
+        // console.log(error);
           return {
             success: false,
             data: error.response.data,

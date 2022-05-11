@@ -10,7 +10,7 @@ import { Rating } from 'react-native-ratings';
 import messaging from '@react-native-firebase/messaging';
 
 import{ Colors } from '../../../commonconfig';
-import { getPreLogin } from '../../../helpers/ApiHelpers';
+import { getPostLogin, getPreLogin } from '../../../helpers/ApiHelpers';
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -22,10 +22,14 @@ const HomeScreen = props => {
     const [ catererList, setCatererList ] = useState([])
     const [ bannerList, setBannerList ] = useState([])
     const [ isLoading, setIsLoading ] = useState(true)
+    const [ addresses, setAddresses ] = useState([])
+    const [ activeAddress, setActiveAddress ] = useState({})
     
-    useEffect( () => {
+    useEffect( async() => {
         getCaterer();
         getBanners();
+        getAddresses();
+        // getActiveAddress();
         setIsLoading(false)
     },[])
     
@@ -48,8 +52,20 @@ const HomeScreen = props => {
             console.log(response);
         }
     }
+
+    const getAddresses = async() => {
+        const response = await getPostLogin('/get-address')
+        // console.log(response);
+        if(response.success) {
+            // setAddresses()
+            const aAddress = response.data.data.find( item => { return( item.is_active === true ) } )
+            setActiveAddress(aAddress)
+        } else {
+            console.log(response);
+        }
+    }
     
-    const activeAddress = useSelector( state => state.Address.activeAddress)
+    // const activeAddress = useSelector( state => state.Address.activeAddress)
     const tabBartHeight = useBottomTabBarHeight();
     
     const renderBanner = itemData => {
@@ -71,7 +87,7 @@ const HomeScreen = props => {
                     <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile',{ screen:'SavedAddresses' })}}>
                         <Text style={{fontWeight:'600', color:'#777777'}} >My Event Location</Text>
                         <View style={{flexDirection:'row', alignItems:'center'}}>
-                            <Text style={{fontSize:12, fontWeight:'bold'}}>{activeAddress.address ? activeAddress.address : 'Add a new address'}</Text>
+                            <Text style={{fontSize:12, fontWeight:'bold'}}>{activeAddress ? activeAddress.address : 'Add a new address'}</Text>
                             <Ionicon name="caret-down" color="#2EE742" size={15}/>
                         </View>
                     </TouchableOpacity>
