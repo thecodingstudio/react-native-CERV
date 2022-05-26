@@ -72,7 +72,7 @@ const DetailScreen = props => {
     }
 
     // Rendering Menu
-    const [activeCategory, setActiveCategory] = useState(currentCaterer.user.categories[0] ? currentCaterer.user.categories[0] : {} )
+    const [activeCategory, setActiveCategory] = useState(currentCaterer.caterer.categories[0] ? currentCaterer.caterer.categories[0] : {} )
     
     const dishes = activeCategory?.items
 
@@ -120,7 +120,7 @@ const DetailScreen = props => {
                 <ScrollView>
                     {/* Caterer Details */}
                     <View style={styles.screen}>
-                        <Image source={{ uri: currentCaterer.user.image }} style={styles.image} />
+                        <Image source={{ uri: currentCaterer.caterer.image }} style={styles.image} />
                         <Text style={styles.name}>{currentCaterer.name}</Text>
                         <Text style={styles.address}>{currentCaterer.address}</Text>
                         <View style={{ marginTop: 3, alignItems: 'flex-start' }} >
@@ -196,11 +196,11 @@ const DetailScreen = props => {
                     {/* Menu Module */}
                     <View style={styles.menu}>
 
-                    { currentCaterer.user.categories.length !== 0  && dishes.length !== 0 ?  
+                    { currentCaterer.caterer.categories.length !== 0  && dishes.length !== 0 ?  
                     <>
                         <Text style={styles.menuTitle}>Menu</Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom:20}}>
-                            {currentCaterer.user.categories.map( category => {
+                            {currentCaterer.caterer.categories.map( category => {
                                 return (
                                     <TouchableOpacity key={category.id} style={activeCategory.id === category.id ? styles.activeMenuItem : styles.inactiveMenuItem} onPress={() => { setActiveCategory(category)}}>
                                         <Text style={activeCategory.id === category.id ? styles.activeMenuItemTitle : styles.inactiveMenuItemTitle}>{category.title}</Text>

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, StatusBar, TouchableOpacity, TextInput, Dimensions, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, StatusBar, TouchableOpacity, TextInput, Dimensions, ActivityIndicator } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { getPostLogin } from '../../helpers/ApiHelpers'
 
-import { Colors } from '../../CommonConfig';
-import Categories from '../../model/categories';
+import { Colors, Images } from '../../CommonConfig';
 
 const SearchScreen = props => {
 
@@ -47,6 +46,18 @@ const SearchScreen = props => {
     //     console.log("Categories:\n", categories)
     //     console.log("Restaurants:\n", restaurants)
     // },[ dishes, categories, restaurants ])
+
+
+    const handleNavigation = async (id) => {
+        setLoading(true)
+        const response = await getPostLogin(`/catererInfo/${id}`)
+        if (response.success) {
+            props.navigation.navigate('Details', { caterer: response.data.caterer })
+        } else {
+            console.log(response)
+        }
+        setLoading(false)
+    }
 
     return (
         <View style={styles.screen} >
@@ -109,25 +120,57 @@ const SearchScreen = props => {
                                     type === 1 ?
                                         // Categories ( userId )
                                         <View style={styles.searchResultContainer}>
-                                            { categories.map(item => {
-                                                return(
-                                                    <TouchableOpacity key={item.id} style={styles.searchResultTouchable}>
-                                                        <Text style={{fontWeight:'bold', fontSize:16}}>{item.title}</Text>
+                                            {categories.map(item => {
+                                                return (
+                                                    <TouchableOpacity key={item.id} style={styles.searchResultTouchable} onPress={() => { handleNavigation(item.userId) }}>
+                                                        <View>
+                                                            <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.title}</Text>
+                                                            <Text style={styles.catererName}>{item.user.name}</Text>
+                                                        </View>
                                                         <Ionicon name='chevron-forward' size={25} color={Colors.GREY} />
                                                     </TouchableOpacity>
                                                 )
-                                            }) }
+                                            })}
                                         </View>
                                         :
                                         type === 2 ?
                                             // Dishes ( userId )
-                                            <View>
-
+                                            <View style={styles.searchResultContainer}>
+                                                {
+                                                    dishes.map(dish => {
+                                                        // console.log(dish)
+                                                        return (
+                                                            <TouchableOpacity key={dish.id} style={styles.searchResultTouchable} onPress={() => { handleNavigation(dish.userId) }}>
+                                                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                                    <Image source={{ uri: dish.image }} style={{ aspectRatio: 1, height: 30 }} />
+                                                                    <View style={{ marginLeft: 10 }}>
+                                                                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{dish.title}</Text>
+                                                                        <Text style={styles.catererName}>{dish.user.name}</Text>
+                                                                    </View>
+                                                                </View>
+                                                                <Ionicon name='chevron-forward' size={25} color={Colors.GREY} />
+                                                            </TouchableOpacity>
+                                                        )
+                                                    })
+                                                }
                                             </View>
                                             :
                                             // Restaurants (catererId)
-                                            <View>
-
+                                            <View style={styles.searchResultContainer}>
+                                                {restaurants.map(item => {
+                                                    // console.log(item)
+                                                    return (
+                                                        <TouchableOpacity key={item.id} style={styles.searchResultTouchable} onPress={() => { handleNavigation(item.catererId) }}>
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                                <Image source={{ uri: item.caterer.image }} style={{ aspectRatio: 1, height: 50, borderRadius: 25 }} />
+                                                                <View style={{ marginLeft: 10 }}>
+                                                                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.name}</Text>
+                                                                </View>
+                                                            </View>
+                                                            <Ionicon name='chevron-forward' size={25} color={Colors.GREY} />
+                                                        </TouchableOpacity>
+                                                    )
+                                                })}
                                             </View>
                                 }
                             </View>
@@ -200,19 +243,24 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderRadius: 20
     },
-    searchResultContainer:{
-        alignSelf:'center',
-        width:'100%'
+    searchResultContainer: {
+        alignSelf: 'center',
+        width: '100%'
     },
-    searchResultTouchable:{
-        flexDirection:'row', 
-        padding:15, 
-        alignItems:'center', 
-        justifyContent:'space-between', 
-        marginVertical:5, 
-        backgroundColor: Colors.WHITE, 
-        borderRadius:10
+    searchResultTouchable: {
+        flexDirection: 'row',
+        padding: 15,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginVertical: 5,
+        backgroundColor: Colors.WHITE,
+        borderRadius: 10
     },
+    catererName: {
+        color: Colors.ORANGE,
+        fontWeight: '200',
+        fontSize: 12
+    }
 });
 
 export default SearchScreen;
