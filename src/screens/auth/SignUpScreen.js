@@ -7,7 +7,7 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Formik } from 'formik';
-import{ Colors, Images }from '../../commonconfig';
+import{ Colors, Images }from '../../CommonConfig';
 import SignUpValidationSchema from '../../schema/SignUpValidationSchema';
 import * as registerActions from '../../store/actions/register';
 import { useDispatch } from 'react-redux';

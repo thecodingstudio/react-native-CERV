@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Constants } from '../commonconfig';
+import { Constants } from '../CommonConfig';
 
 const apiBaseUrl = Constants.API_BASE_URL;
 

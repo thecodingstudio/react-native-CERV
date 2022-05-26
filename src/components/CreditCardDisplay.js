@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import Ionicon from 'react-native-vector-icons/Ionicons';
 
 import * as paymentAction from '../store/actions/paymentMethod';
-import { Images, Colors } from '../commonconfig';
+import { Images, Colors } from '../CommonConfig';
 
 const CreditCardDisplay = props => {
 

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
 
 import Caterer from '../model/caterer'
-import { Colors } from '../commonconfig'
+import { Colors } from '../CommonConfig'
 import moment from 'moment'
 
 const PastOrderItem = props => {

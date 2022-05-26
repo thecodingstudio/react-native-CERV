@@ -12,7 +12,7 @@ import MonthPicker from 'react-native-month-picker';
 import * as paymentActions from '../../../../store/actions/paymentMethod';
 import OtherPaymentTypeValidationSchema from '../../../../schema/OtherPaymentTypeValidationSchema';
 import CreditCardValidationSchema from "../../../../schema/CreditCardValidationSchema";
-import{ Colors, Images }from '../../../../commonconfig'
+import{ Colors, Images }from '../../../../CommonConfig'
 import { postPostLogin } from "../../../../helpers/ApiHelpers";
 import Toast from "react-native-simple-toast";
 

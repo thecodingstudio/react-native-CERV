@@ -9,7 +9,7 @@ import { Rating } from 'react-native-ratings';
 import * as orderActions from '../../../store/actions/order';
 import * as cartActions from '../../../store/actions/cart';
 import Caterer from '../../../model/caterer';
-import { Colors } from '../../../commonconfig';
+import { Colors } from '../../../CommonConfig';
 import { getWithParams } from '../../../helpers/ApiHelpers';
 import moment from 'moment';
 

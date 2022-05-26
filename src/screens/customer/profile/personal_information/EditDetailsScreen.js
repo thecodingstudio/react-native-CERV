@@ -6,7 +6,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 
-import{ Colors }from '../../../../commonconfig';
+import{ Colors }from '../../../../CommonConfig';
 import { Formik } from "formik";
 import * as yup from 'yup';
 import { putPostLogin } from "../../../../helpers/ApiHelpers";

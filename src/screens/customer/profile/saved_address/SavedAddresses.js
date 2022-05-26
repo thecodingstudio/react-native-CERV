@@ -6,7 +6,7 @@ import Toast from 'react-native-simple-toast';
 import * as addressActions from '../../../../store/actions/address'
 import AddressItem from "../../../../components/AddressItem";
 import { useDispatch, useSelector } from "react-redux";
-import { Colors } from "../../../../commonconfig";
+import { Colors } from "../../../../CommonConfig";
 import { getPostLogin, postPostLogin } from "../../../../helpers/ApiHelpers";
 
 const SavedAddresses = props => {

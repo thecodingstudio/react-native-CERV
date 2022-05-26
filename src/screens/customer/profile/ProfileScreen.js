@@ -7,7 +7,7 @@ import Toast from 'react-native-simple-toast'
 import * as authActions from '../../../store/actions/auth';
 import * as userActions from '../../../store/actions/user';
 import ProfileOption from '../../../components/profileOption';
-import{ Colors }from '../../../commonconfig';
+import{ Colors }from '../../../CommonConfig';
 import { getPostLogin, postPostLogin, refreshToken } from '../../../helpers/ApiHelpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
@@ -101,6 +101,7 @@ const ProfileScreen = props => {
                 leftIcon = "log-out-outline"
                 onPress={ () => {
                     AsyncStorage.clear()
+                    AsyncStorage.setItem('isLogin', "false")
                     props.navigation.dispatch(
                         CommonActions.reset({
                             index:0,

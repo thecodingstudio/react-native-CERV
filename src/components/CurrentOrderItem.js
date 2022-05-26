@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import React from 'react'
 import * as orderActions from '../store/actions/order';
 
-import { Colors } from '../commonconfig'
+import { Colors } from '../CommonConfig'
 import Caterer from '../model/caterer'
 import moment from 'moment';
 

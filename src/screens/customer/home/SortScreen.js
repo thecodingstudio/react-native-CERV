@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 
-import{ Colors }from '../../../commonconfig';
+import{ Colors }from '../../../CommonConfig';
 
 const SortScreen = props => {
 

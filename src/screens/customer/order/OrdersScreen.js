@@ -1,10 +1,12 @@
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Image, StatusBar, TextInput } from 'react-native';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-simple-toast';
+import { Rating } from 'react-native-ratings';
+import RBSheet from 'react-native-raw-bottom-sheet';
 
-import { Colors } from '../../../commonconfig';
+import { Colors } from '../../../CommonConfig';
 import { getPostLogin, postPostLogin } from '../../../helpers/ApiHelpers';
 
 const OrdersScreen = props => {
@@ -13,6 +15,11 @@ const OrdersScreen = props => {
     const [state, setState] = useState('1');
     const [orders, setOrders] = useState([])
     const [length, setLength] = useState(0)
+
+    const reviewModal = useRef(null)
+    const [ reviewOrder, setReviewOrder ] = useState({});
+    const [ rating, setRating ] = useState(0)
+    const [ feedback, setFeedback ] = useState('')
 
     //Current = 1
     //Past = 2
@@ -34,18 +41,39 @@ const OrdersScreen = props => {
         }
     }
 
-    const cancelOrder = async(id) => {
+    const cancelOrder = async (id) => {
         setLoading(true)
         const data = {
             orderId: id
         }
-        const response = await postPostLogin('/cancelOrder',data)
+        const response = await postPostLogin('/cancelOrder', data)
         // console.log(response);
-        if(response.success){
+        if (response.success) {
             Toast.show('Order cancelled successfully')
         } else {
             console.log(response);
-        }   
+        }
+    }
+
+    const feedbackHandler = async() => {
+        console.log(reviewOrder)
+        // setLoading(true)
+        // const data = {
+
+        // }
+    }
+
+    const statusText = (status) => {
+        switch (status) {
+            case 5:
+                return "Cancelled by user"
+            case 6:
+                return "Rejected by user"
+            case 4:
+                return "Order Completed"
+            default:
+                return 'Past Order!'
+        }
     }
 
     // useEffect(() => {
@@ -92,47 +120,47 @@ const OrdersScreen = props => {
                                     {orders.map(order => {
                                         // console.log(order.orderItems[0]);
                                         return (
-                                            <TouchableOpacity onPress={() => {props.navigation.navigate('OrderDetail',{ orderObj: order })}} key={order.id} style={{padding:10, marginVertical:5, backgroundColor:Colors.WHITE, borderRadius:10, borderColor: Colors.GREY, borderWidth:0.5}}>
+                                            <TouchableOpacity onPress={() => { props.navigation.navigate('OrderDetail', { orderObj: order }) }} key={order.id} style={{ padding: 10, marginVertical: 5, backgroundColor: Colors.WHITE, borderRadius: 10, borderColor: Colors.GREY, borderWidth: 0.5 }}>
                                                 {/* Caterer Info */}
-                                                <View style={{flexDirection:'row', borderBottomColor: Colors.GREY, borderBottomWidth:0.5, paddingVertical:10}}>
-                                                    <Image source={{uri: order.caterer.image}} style={{flex:1, aspectRatio:1}}/>
-                                                    <View style={{flex:5, marginLeft:10, justifyContent:'space-evenly'}}>
-                                                        <Text style={{fontWeight:'bold', fontSize:18}}>{order.caterer.store.name}</Text>
+                                                <View style={{ flexDirection: 'row', borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, paddingVertical: 10 }}>
+                                                    <Image source={{ uri: order.caterer.image }} style={{ flex: 1, aspectRatio: 1 }} />
+                                                    <View style={{ flex: 5, marginLeft: 10, justifyContent: 'space-evenly' }}>
+                                                        <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{order.caterer.store.name}</Text>
                                                         <Text>{order.caterer.store.address}</Text>
                                                     </View>
                                                 </View>
 
                                                 {/* Cart Items Details */}
-                                                <View style={{borderBottomColor: Colors.GREY, borderBottomWidth:0.5, paddingVertical:10}}>
-                                                    {order.orderItems.map( item => {
+                                                <View style={{ borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, paddingVertical: 10 }}>
+                                                    {order.orderItems.map(item => {
                                                         return (
-                                                            <View key={item.id} style={{flexDirection:'row', justifyContent:'space-between'}}>
-                                                                <Text style={{flex:5, fontWeight:'bold'}}>{item.item.title}</Text>
-                                                                <Text style={{flex:1}}>$ {item.item.price.toFixed(2)}</Text>
+                                                            <View key={item.id} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                                <Text style={{ flex: 5, fontWeight: 'bold' }}>{item.item.title}</Text>
+                                                                <Text style={{ flex: 1 }}>$ {item.item.price.toFixed(2)}</Text>
                                                             </View>
                                                         )
-                                                    } )}
+                                                    })}
                                                 </View>
 
-                                                {/* Other Details */} 
-                                                <View style={{paddingBottom:10}}>
+                                                {/* Other Details */}
+                                                <View style={{ paddingBottom: 10 }}>
                                                     <Text style={styles.label}>ORDER TYPE</Text>
                                                     <Text style={styles.detail}>{order.order_type}</Text>
 
                                                     <Text style={styles.label}>ORDER PLACED ON</Text>
                                                     <Text style={styles.detail}>{moment(order.createdAt).format('DD MMM YYYY')} at {moment(order.createdAt).format('hh:mm A')}</Text>
 
-                                                    <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                                         <View>
                                                             <Text style={styles.label}>AMOUNT</Text>
                                                             <Text style={styles.detail}>$ {order.netAmount.toFixed(2)}</Text>
                                                         </View>
                                                         {order.status < 2 ?
-                                                        <TouchableOpacity onPress={() => {cancelOrder(order.id)}} style={{backgroundColor: Colors.ERROR_RED, paddingHorizontal:20, paddingVertical:10, alignItems:'center', justifyContent:'center'}}>
-                                                            <Text style={{fontWeight:'bold', color: Colors.WHITE}}>Cancel Order</Text>
-                                                        </TouchableOpacity> 
-                                                        : 
-                                                        <Text style={{color: Colors.GREEN}}>• In Progress</Text>
+                                                            <TouchableOpacity onPress={() => { cancelOrder(order.id) }} style={{ backgroundColor: Colors.ERROR_RED, paddingHorizontal: 20, paddingVertical: 10, alignItems: 'center', justifyContent: 'center' }}>
+                                                                <Text style={{ fontWeight: 'bold', color: Colors.WHITE }}>Cancel Order</Text>
+                                                            </TouchableOpacity>
+                                                            :
+                                                            <Text style={{ color: Colors.GREEN }}>• In Progress</Text>
                                                         }
                                                     </View>
                                                 </View>
@@ -147,9 +175,63 @@ const OrdersScreen = props => {
                                 //Past Orders
                                 <ScrollView>
                                     {orders.map(order => {
+                                        // console.log("\n\n",order)
                                         return (
-                                            <View key={order.id}>
-                                                <Text>{order.id}</Text>
+                                            <View key={order.id} style={{ padding: 10, marginVertical: 5, backgroundColor: Colors.WHITE, borderRadius: 10, borderColor: Colors.GREY, borderWidth: 0.5 }}>
+
+                                                {/* Caterer Info */}
+                                                <View style={{ flexDirection: 'row', borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, paddingVertical: 10 }}>
+                                                    <Image source={{ uri: order.caterer.image }} style={{ flex: 1, aspectRatio: 1 }} />
+                                                    <View style={{ flex: 5, marginLeft: 10, justifyContent: 'space-evenly' }}>
+                                                        <Text style={{ fontWeight: 'bold', fontSize: 18 }}>{order.caterer.store.name}</Text>
+                                                        <Text>{order.caterer.store.address}</Text>
+                                                    </View>
+                                                </View>
+
+                                                {/* Cart Items Details */}
+                                                <View style={{ borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, paddingVertical: 10 }}>
+                                                    {order.orderItems.map(item => {
+                                                        return (
+                                                            <View key={item.id} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                                                <Text style={{ flex: 5, fontWeight: 'bold' }}>{item.item.title}</Text>
+                                                                <Text style={{ flex: 1 }}>$ {item.item.price.toFixed(2)}</Text>
+                                                            </View>
+                                                        )
+                                                    })}
+                                                </View>
+
+                                                {/* Other Details */}
+                                                <View style={{ paddingBottom: 10, borderBottomWidth: 0.5, borderBottomColor: Colors.GREY }}>
+                                                    <Text style={styles.label}>ORDER PLACED ON</Text>
+                                                    <Text style={styles.detail}>{moment(order.createdAt).format('DD MMM YYYY')} at {moment(order.createdAt).format('hh:mm A')}</Text>
+
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                        <View>
+                                                            <Text style={styles.label}>AMOUNT</Text>
+                                                            <Text style={styles.detail}>$ {order.netAmount.toFixed(2)}</Text>
+                                                        </View>
+                                                    </View>
+
+                                                    <Text style={{ color: order.status === 4 ? Colors.GREEN : Colors.ERROR_RED, fontWeight: 'bold', marginTop: 10 }}>{statusText(order.status)}</Text>
+                                                </View>
+
+                                                {order.status === 4 ?
+                                                    <View style={{ paddingTop: 10, alignItems: 'flex-end' }}>
+                                                        {!order.is_reviewed ?
+                                                            <TouchableOpacity onPress={() => { 
+                                                                    setReviewOrder(order)
+                                                                    reviewModal.current.open() 
+                                                                }}>
+                                                                <Text style={{ color: 'blue', fontWeight: 'bold', letterSpacing: -0.5, fontSize: 16 }}>Write a Review</Text>
+                                                            </TouchableOpacity>
+                                                            :
+                                                            <Text>Order Reviewed!</Text>
+                                                        }
+                                                    </View>
+                                                    :
+                                                    null
+                                                }
+
                                             </View>
                                         )
                                     })}
@@ -157,7 +239,66 @@ const OrdersScreen = props => {
                             )
                 }
             </View>
+            <RBSheet
+                ref={reviewModal}
+                closeOnDragDown={false}
+                closeOnPressMask={false}
+                closeOnPressBack={false}
+                dragFromTopOnly
+                animationType='fade'
+                customStyles={{
+                wrapper: {
+                    backgroundColor: "rgba(0,0,0,0.5)"
+                },
+                container:{
+                    flex:1,
+                    paddingHorizontal:20,
+                    backgroundColor: Colors.WHITE,
+                    borderTopRightRadius:30,
+                    borderTopLeftRadius:30,
+                }
+                }}
+            >
+                <StatusBar backgroundColor='rgba(0,0,0,0.5)' />
+                <View style={{flex:1, justifyContent:'space-between', paddingVertical:10}}>
+                <View style={{alignItems:'center', borderBottomColor:Colors.GREY, borderBottomWidth:0.5, flex:0.8}} >
+                    <Text>Give Feedback</Text>
+                    <Text>Write your feedback to Caterer</Text>
+                    <Rating 
+                        minValue={1}
+                        imageSize={25}
+                        startingValue={0}
+                        onFinishRating={(e) => {setRating(e)}}
+                    />
+                    <TextInput 
+                        autoCapitalize='none'
+                        style={{borderWidth:0.5, borderColor: Colors.GREY, flex:1, width:'100%', marginVertical:10, padding:10}}
+                        onChangeText={c => setFeedback(c)}
+                        placeholder='Enter your feedback'
+                        value={feedback}
+                        multiline
+                        textAlignVertical='top'
+                    />
+                </View>
 
+                <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-evenly', flex:0.2}}>
+                    <TouchableOpacity 
+                        style={{flex:1, justifyContent:'center', alignItems:'center', borderRightColor: Colors.GREY, borderRightWidth:0.25}}
+                        onPress={() => {
+                            setReviewOrder({})
+                            reviewModal.current.close()
+                        }}>
+                        <Text style={[styles.reviewModalButtons,{color:Colors.GREY}]}>CANCEL</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{flex:1, alignItems:'center', justifyContent:'center', borderLeftColor: Colors.GREY, borderLeftWidth:0.25}}
+                        onPress={feedbackHandler}
+                        >
+                        <Text style={[styles.reviewModalButtons,{color:Colors.ORANGE}]}>SEND REVIEW</Text>
+                    </TouchableOpacity>
+                </View>
+                </View>
+            </RBSheet>
         </View>
     );
 };
@@ -198,12 +339,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 15
     },
-    label:{
-        fontWeight:'700',
+    label: {
+        fontWeight: '700',
         color: Colors.GREY,
-        marginTop:10
+        marginTop: 10
     },
-    detail:{
-
-    },
+    reviewModalButtons:{
+        fontWeight:'bold',
+        fontSize:18
+    }
 });

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 
-import {Colors} from '../commonconfig';
+import {Colors} from '../CommonConfig';
 
 const DiscountCoupon = props => {
 

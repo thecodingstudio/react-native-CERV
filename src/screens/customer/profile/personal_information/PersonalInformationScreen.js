@@ -3,7 +3,7 @@ import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import{ Colors }from '../../../../commonconfig';
+import{ Colors }from '../../../../CommonConfig';
 
 const PersonalInformationScreen = props => {
 

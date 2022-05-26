@@ -7,7 +7,7 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-simple-toast';
 
 import addressIcon from '../../../../model/addressIcon';
-import { Colors } from '../../../../commonconfig'
+import { Colors } from '../../../../CommonConfig'
 
 const EditAddress = props => {
 

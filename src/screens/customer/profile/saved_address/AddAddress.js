@@ -1,6 +1,6 @@
 import { ActivityIndicator, Button, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
-import { Colors } from '../../../../commonconfig';
+import { Colors } from '../../../../CommonConfig';
 import { Formik } from 'formik';
 import { useDispatch } from 'react-redux';
 import * as addressActions from '../../../../store/actions/address';

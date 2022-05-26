@@ -2,11 +2,18 @@ import { Image, StatusBar, StyleSheet, View, ActivityIndicator } from 'react-nat
 import React, { useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
+import messaging from '@react-native-firebase/messaging';
 
-import { Colors, Images } from '../commonconfig'
-import { refreshToken } from '../helpers/ApiHelpers';
+import { Colors, Images } from '../CommonConfig'
 
 const SplashScreen = (props) => {
+
+    useEffect( () => {
+        messaging().getToken().then( async(token) => { 
+            // console.log("\n\nDevice Token: ",typeof(token))
+            await AsyncStorage.setItem('deviceToken', token)
+         });
+    },[])
 
     useEffect( () => {
         loadApp()
@@ -14,45 +21,12 @@ const SplashScreen = (props) => {
 
     const loadApp = async() => {
 
-        // const refToken = await AsyncStorage.getItem('refreshToken') || '$'
-        
-        // if(refToken !== '$') {
-        //     const refData = {
-        //         refreshToken:  refToken
-        //     }
-        //     const response = await refreshToken( refData )
-        //     // console.log(response);
-        //     if(!response.success){
-        //         props.navigation.navigate('Auth')
-        //     } else {
-        //         await AsyncStorage.setItem('token', response.data.token)
-        //         await AsyncStorage.setItem('isLogin','true')
-        //     }
-        // } else {
-        //     props.navigation.navigate('Auth')
-        // }
-
         const isLogin = await AsyncStorage.getItem('isLogin');
         if(isLogin === "true") {
-            // const refToken = await AsyncStorage.getItem('refreshToken')
-            // const refData = {
-            //     refreshToken: refToken
-            // }
-            // const response = await refreshToken(refData)
-            // console.log(response);
-            // if(!response.success){
-            //     props.navigation.dispatch( CommonActions.reset({
-            //         index:0,
-            //         routes: [{name: 'Auth'}]
-            //     }))
-            // } else {
-            //     await AsyncStorage.setItem('token', response.data.token)
-                props.navigation.dispatch(CommonActions.reset({
-                    index:0,
-                    routes: [{name:'Home'}]
-                }))
-            // }
-           
+            props.navigation.dispatch(CommonActions.reset({
+                index:0,
+                routes: [{name:'Home'}]
+            }))
         } else {
             props.navigation.dispatch(CommonActions.reset({
                 index:0,

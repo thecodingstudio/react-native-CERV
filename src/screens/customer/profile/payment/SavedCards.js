@@ -5,7 +5,7 @@ import { getPostLogin } from "../../../../helpers/ApiHelpers";
 
 import * as paymentActions from '../../../../store/actions/paymentMethod'
 import CreditCardDisplay from "../../../../components/CreditCardDisplay";
-import{ Colors }from '../../../../commonconfig';
+import{ Colors }from '../../../../CommonConfig';
 
 const SavedCards = props => {
     

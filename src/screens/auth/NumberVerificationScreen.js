@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import CountryPicker from 'react-native-country-codes-picker';
 
 import * as registerActions from '../../store/actions/register';
-import{ Colors, Images }from '../../commonconfig';
+import{ Colors, Images }from '../../CommonConfig';
 import { postRequest } from '../../helpers/ApiHelpers';
 
 

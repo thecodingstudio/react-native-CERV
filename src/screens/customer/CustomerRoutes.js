@@ -8,7 +8,7 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
-import{ Colors, Images }from '../../commonconfig';
+import { Colors, Images } from '../../CommonConfig'
 
 // Home Screens
 import HomeScreen from'./home/HomeScreen';

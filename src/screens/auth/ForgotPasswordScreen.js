@@ -7,7 +7,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { Formik } from 'formik';
 import Toast from 'react-native-simple-toast';
 
-import{ Colors, Images }from '../../commonconfig';
+import{ Colors, Images }from '../../CommonConfig';
 import ForgotPasswordValidationSchema from '../../schema/ForgotPasswordValidationSchema';
 import { postRequest } from '../../helpers/ApiHelpers';
 

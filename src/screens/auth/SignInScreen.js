@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-simple-toast';
 
-import{ Colors, Images }from '../../commonconfig';
+import{ Colors, Images }from '../../CommonConfig';
 import SignInScreenValidationSchema from '../../schema/SignInScreenSchema';
 import { postPreLogin } from "../../helpers/ApiHelpers";
 import { CommonActions } from '@react-navigation/native';
@@ -19,7 +19,8 @@ const LOGIN = 'LOGIN';
 
 const SignInScreen = props => {
 
-    const dispatch = useDispatch();
+    const role = props.route.params.role
+
     const [eyeTouched, setEyeTouched] = useState(false)
     const [isLoading ,setIsLoading] = useState(false);
 
@@ -27,8 +28,11 @@ const SignInScreen = props => {
         setIsLoading(true)
         const data = {
             email: values.email,
-            password: values.password
+            password: values.password,
+            role: role,
+            device_token: JSON.stringify(AsyncStorage.getItem('deviceToken'))
         };
+        // console.log("LOGIN SCREEN:   ",typeof(data.device_token));
         const response = await postPreLogin('/users/login', data);
         const resData = response.data;
         console.log(response)

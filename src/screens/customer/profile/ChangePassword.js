@@ -7,7 +7,7 @@ import { ref } from 'yup';
 import { postPostLogin, refreshToken } from '../../../helpers/ApiHelpers';
 import Toast from 'react-native-simple-toast';
 
-import{ Colors }from '../../../commonconfig';
+import{ Colors }from '../../../CommonConfig';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ChangePassword = props => {

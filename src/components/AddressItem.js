@@ -5,7 +5,7 @@ import * as addressActions from '../store/actions/address';
 import { useDispatch } from 'react-redux';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 
-import {Colors} from '../commonconfig'; 
+import {Colors} from '../CommonConfig'; 
 
 const AddressItem = props => {
 

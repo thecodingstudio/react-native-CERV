@@ -4,7 +4,7 @@ import * as Animatable from 'react-native-animatable';
 
 import * as registerActions from '../../store/actions/register';
 import Button from '../../components/Button';
-import{ Colors, Images }from '../../commonconfig';
+import{ Colors, Images }from '../../CommonConfig';
 import { useDispatch } from 'react-redux';
 
 const SelectRoleScreen = props => {
@@ -60,7 +60,7 @@ const SelectRoleScreen = props => {
                 {showButton ? <Button 
                     onPress={ () => {
                         dispatch(registerActions.setUserRole(customerActive? 1 : 0))
-                        props.navigation.navigate('SignInScreen')
+                        props.navigation.navigate('SignInScreen',{ role: customerActive ? 1 : 0 })
                     }}
                     title = { customerActive ? " I'm Customer" : "I'm Caterer" }
                 /> : null }

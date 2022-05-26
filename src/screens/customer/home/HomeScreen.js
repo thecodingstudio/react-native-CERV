@@ -2,27 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Image, ScrollView, StatusBar, ActivityIndicator, FlatList } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
-import Carousel, { ParallaxImage } from 'react-native-snap-carousel';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useSelector } from 'react-redux';
 import Toast from 'react-native-simple-toast';
 import { Rating } from 'react-native-ratings';
-import messaging from '@react-native-firebase/messaging';
 
-import{ Colors } from '../../../commonconfig';
+import{ Colors } from '../../../CommonConfig';
 import { getPostLogin, getPreLogin } from '../../../helpers/ApiHelpers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get("window").width;
 
 const HomeScreen = props => {
 
-    // useEffect( () => {
-    //     messaging().getToken().then(token => { console.log(token) });
-    // },[])
+
     const [ catererList, setCatererList ] = useState([])
     const [ bannerList, setBannerList ] = useState([])
     const [ isLoading, setIsLoading ] = useState(true)
-    const [ addresses, setAddresses ] = useState([])
     const [ activeAddress, setActiveAddress ] = useState({})
     
     useEffect( async() => {
@@ -34,7 +30,7 @@ const HomeScreen = props => {
     },[])
     
     const getCaterer = async() => {
-        const response = await getPreLogin('/caterers')
+        const response = await getPostLogin('/caterers')
         // console.log("GET CATERERS RESPONSE      \n\n\n\n",JSON.stringify(response));
         if(response.success) {
             setCatererList(response.data.caterer)
@@ -44,12 +40,12 @@ const HomeScreen = props => {
     }
     
     const getBanners = async() => {
-        const response = await getPreLogin('/get-banners')
+        const response = await getPostLogin('/get-banners')
         if(response.success) {
             setBannerList(response.data.banners)
             // console.log("Banners:   ", bannerList);
         } else {
-            console.log(response);
+            console.log("\n\n",response);
         }
     }
 
@@ -123,15 +119,15 @@ const HomeScreen = props => {
                 return (
                     <TouchableOpacity 
                         style={styles.catererItemContainer} 
-                        key={item.userId} 
-                        onPress = { () => { props.navigation.navigate('Details', { caterer: item ,catererId : item.userId }) } }
+                        key={item.id} 
+                        onPress = { () => { props.navigation.navigate('Details', { caterer: item ,catererId : item.caterer.id }) } }
                     >
                         <View style={{flex:2}}>
-                            <Image source={{uri: item.user.image}} style={{width:'100%', height:'100%'}} />
+                            <Image source={{uri: item.caterer.image}} style={{width:'100%', height:'100%'}} />
                         </View>
                         <View style={styles.catererDetailContainer}>
                             <View style={styles.textContainer}>
-                                <Text style={styles.catererName}>{item.user.name}</Text>
+                                <Text style={styles.catererName}>{item.caterer.name}</Text>
                                 <Text style={styles.catererAddress}>{item.address}</Text>
                                 {/* <Stars rating = {item.rating} /> */}
                                 <View style={{alignItems:'flex-start'}}>

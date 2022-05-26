@@ -4,7 +4,7 @@ import { GiftedChat, Bubble, Send } from 'react-native-gifted-chat';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import{ Colors }from '../../../commonconfig';
+import{ Colors }from '../../../CommonConfig';
 
 const ChatScreen = props => {
 

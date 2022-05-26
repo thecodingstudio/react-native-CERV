@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, Alert } fro
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 
-import{ Colors, Images }from '../../commonconfig';
+import{ Colors, Images }from '../../CommonConfig';
 import { postFormDataRequest, postRequest } from '../../helpers/ApiHelpers';
 import { useSelector } from 'react-redux';
 

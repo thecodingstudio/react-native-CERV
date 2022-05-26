@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "473453370711",
-    "firebase_url": "https://pharmacy-backend-tcs-default-rtdb.firebaseio.com",
-    "project_id": "pharmacy-backend-tcs",
-    "storage_bucket": "pharmacy-backend-tcs.appspot.com"
+    "project_number": "315477077650",
+    "project_id": "cerv19",
+    "storage_bucket": "cerv19.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:473453370711:android:d50b022374cb7227953212",
+        "mobilesdk_app_id": "1:315477077650:android:4cc8fc66725bf7b643804b",
         "android_client_info": {
-          "package_name": "com.tanish7800.CERV"
+          "package_name": "com.cerv"
         }
       },
       "oauth_client": [
         {
-          "client_id": "473453370711-vmgf1h3uof3el044k2o99mobv990l0pg.apps.googleusercontent.com",
+          "client_id": "315477077650-r9qm5u86m8icv73pa2pcqhi0nv2bln0s.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB3Qlhi1Oy-qSJEqulQC3oSJw6jmHM74mw"
+          "current_key": "AIzaSyBR4Lu4Wd3I23GQonNvvSoaKvHZ35OpEmE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "473453370711-vmgf1h3uof3el044k2o99mobv990l0pg.apps.googleusercontent.com",
+              "client_id": "315477077650-r9qm5u86m8icv73pa2pcqhi0nv2bln0s.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "473453370711-12ruj60dfb674lhupgqs6vk7nrlfuduc.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "hi"
-              }
             }
           ]
         }

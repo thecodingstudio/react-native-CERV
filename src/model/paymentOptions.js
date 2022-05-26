@@ -1,4 +1,4 @@
-import { Images } from '../commonconfig'
+import { Images } from '../CommonConfig'
 
 export default paymentOptions = [
     {   

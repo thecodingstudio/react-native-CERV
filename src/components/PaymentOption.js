@@ -4,7 +4,7 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from "react-redux";
 
 import * as paymentActions from '../store/actions/paymentMethod';
-import { Colors } from "../commonconfig";
+import { Colors } from "../CommonConfig";
 
 const PaymentOption = (props) => {
 

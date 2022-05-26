@@ -5,7 +5,7 @@ import StepIndicator from 'react-native-step-indicator'
 import Ionicon from 'react-native-vector-icons/Ionicons';
 
 import Caterer from '../../../model/caterer'
-import { Colors, Images } from '../../../commonconfig'
+import { Colors, Images } from '../../../CommonConfig'
 import moment from 'moment';
 
 const OrderDetailScreen = props => {

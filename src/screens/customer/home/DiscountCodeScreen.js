@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import React from 'react'
 
 import DiscountCoupon from '../../../components/DiscountCoupon';
-import{ Colors }from '../../../commonconfig';
+import{ Colors }from '../../../CommonConfig';
 import discounts from '../../../model/discounts';
 import * as cartActions from '../../../store/actions/cart';
 import { useDispatch } from 'react-redux';

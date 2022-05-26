@@ -7,7 +7,7 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 
 import * as orderActions from '../../../store/actions/order';
 import * as cartActions from '../../../store/actions/cart';
-import { Colors, Images } from '../../../commonconfig';
+import { Colors, Images } from '../../../CommonConfig';
 import PaymentOption from '../../../components/PaymentOption';
 import CreditCardDisplay from '../../../components/CreditCardDisplay';
 
