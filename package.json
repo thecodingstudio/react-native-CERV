@@ -67,6 +67,7 @@
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1",
+    "socket.io-client": "^4.5.1",
     "start": "^5.1.0",
     "yup": "^0.32.11"
   },

@@ -41,7 +41,7 @@ const SignInScreen = props => {
                 await AsyncStorage.setItem('token', resData.token)
                 await AsyncStorage.setItem('refreshToken', resData.refreshToken)
                 await AsyncStorage.setItem('userInfo', JSON.stringify(resData.user))
-                await AsyncStorage.setItem('isLogin', "true")
+                await AsyncStorage.setItem('isLogin', "1")
             } catch (error) {
                 console.log(error)
             }

@@ -1,103 +1,113 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
+import { View, Text, StyleSheet, LogBox, TextInput, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { GiftedChat, Bubble, Send } from 'react-native-gifted-chat';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { io } from 'socket.io-client';
 
-import{ Colors }from '../../../CommonConfig';
+import { Colors } from '../../../CommonConfig';
+import { getPostLogin, postPostLogin } from '../../../helpers/ApiHelpers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
+
+var socket;
+
+LogBox.ignoreAllLogs()
 
 const ChatScreen = props => {
 
-    const [messages, setMessages] = useState([]);
+    const [ loading, setLoading ] = useState(true)
+    const messageScroll = useRef(null)
+ 
+    const [user, setUser] = useState({})
+    const chatObj = props.route.params.chatObj
+    // console.log(chatObj)
 
-    useEffect(() => {
-        setMessages([
-        {
-            _id: 1,
-            text: 'Hello developer',
-            createdAt: new Date(),
-            user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://placeimg.com/140/140/any',
-            },
-        },
-        {
-            _id: 2,
-            text: 'Hello! ',
-            createdAt: new Date(),
-            user: {
-            _id: 1,
-            name: 'React Native',
-            avatar: 'https://placeimg.com/140/140/any',
-            },
-        }
-        ])
+    useEffect(async () => {
+        setUser(JSON.parse(await AsyncStorage.getItem('userInfo')))
+        socket = io('https://cerv-api.herokuapp.com')
+        getMessages()
+        setLoading(false);
     }, [])
 
-    const onSend = useCallback((messages = []) => {
-        setMessages(previousMessages => GiftedChat.append(previousMessages, messages))
-      }, [])
+    const [messages, setMessages] = useState([])
+    const [chat, setChat] = useState('')
 
-    const renderBubble = (props) => {
-        return (<Bubble 
-            {...props}
-            wrapperStyle={{
-                right:{ 
-                    backgroundColor:'#cccccc'
-                },
-                left:{
-                    backgroundColor:Colors.ORANGE
-                }
-            }}
-            textStyle={{
-                right:{
-                    color:Colors.BLACK
-                },
-                left:{
-                    color:Colors.WHITE
-                }
-            }}
-        />)
-    };
+    const getMessages = async () => {
+        const response = await getPostLogin(`/message/${chatObj.id}`)
+        // console.log(response.data)
+        if (response.success) {
+            setMessages(response.data.data)
+            socket.emit("join chat", chatObj.id);
+        } else {
+            console.log(response)
+        }
+    }
 
-    const renderSend = (props) => {
-        return (
-            <Send {...props} >
-                <View>
-                    <MaterialCommunityIcons name='send-circle' size={32} color={Colors.ORANGE} style={{marginBottom:5, marginRight:5}}/>
-                </View>
-            </Send>
-        )
-    };
-
-    const scrollToBottomComponent = (props) => {
-        return (
-            <FontAwesome name='angle-double-down' size={22} color="#333"/>
-        )
-    };
-
+    const sendChat = async() => {
+        // console.log("Sending Message!", chat)
+        const params = {
+            content: chat,
+            chatId: chatObj.id
+        }
+        const response = await postPostLogin('/message', params)
+        // console.log(response.data.data)
+        socket.emit("new message", response.data.data)
+        setChat('')
+        socket.on("message sent", () => { getMessages() })
+        // console.log(response.data.data);
+        setMessages([...messages, response.data.data])
+    }
+    
     return (
-        <GiftedChat
-            messages={messages}
-            onSend={messages => onSend(messages)}
-            user={{
-                _id: 1,
-            }}
-            renderBubble={renderBubble}
-            alwaysShowSend
-            renderSend={renderSend}
-            scrollToBottom
-            scrollToBottomComponent={scrollToBottomComponent}
-        />
-    );
-};
+        <>
+            <View style={styles.screen}>
+                { loading ?
+                <View>
+                    <ActivityIndicator  size={65} color={Colors.ORANGE} />
+                </View>
+                :
+                <View>
+                    <ScrollView showsVerticalScrollIndicator={false} ref={messageScroll} onContentSizeChange={() => { messageScroll.current.scrollToEnd({animated: false}) }}>
+                    {messages.map(item => {
+                        // console.log("Message: \n",item)
+                        return (
+                            <>
+                                <View key={item.id} style={{ alignSelf: item.senderId === user.id ? 'flex-end' : 'flex-start', paddingHorizontal:10, paddingVertical:5, marginVertical:2 ,borderRadius:5, maxWidth:'60%' , backgroundColor: item.senderId !== user.id ? Colors.LIGHTER_GREY : Colors.ORANGE }}>
+                                    <Text style={{color: item.senderId === user.id ? Colors.WHITE : Colors.BLACK, fontSize:18}} >{item.content}</Text>
+                                </View>
+                                <Text style={{alignSelf: item.senderId === user.id ? 'flex-end' : 'flex-start', color: Colors.LIGHTER_GREY, fontSize:12}}>{moment(item.createdAt).format('Do MMM yy, hh:mm A')}</Text>
+                            </>
+                        )
+                    })}
+                    </ScrollView>
+                </View>
+                
+                }
+            </View>
+            <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingVertical:5, paddingHorizontal:10, backgroundColor: Colors.WHITE}}>
+                <TextInput
+                    value={chat}
+                    placeholder='Type your message here ...'
+                    onChangeText={(e) => setChat(e)}
+                    style={{flex:1 }}
+                />
+                <TouchableOpacity style={{padding:10, alignItems:'center', backgroundColor: Colors.ORANGE, borderRadius:200}} onPress={sendChat} activeOpacity={0.75} disabled={ chat.length === 0 ? true : false }>
+                    <Ionicons name="send" size={25} color={Colors.WHITE} />
+                </TouchableOpacity>
+            </View>
+        </>
+    )
+}
+
+
 
 const styles = StyleSheet.create({
-    screen:{
-        flex:1,
-        alignItems:'center',
-        justifyContent:'center'
+    screen: {
+        flex: 1,
+        width: '100%',
+        padding: 10,
+        justifyContent: 'space-between'
     }
 });
 

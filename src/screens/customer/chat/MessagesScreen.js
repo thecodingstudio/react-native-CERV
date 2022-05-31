@@ -1,28 +1,70 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, LogBox } from 'react-native';
 
-import Messages from '../../../model/messages';
+import { getPostLogin } from '../../../helpers/ApiHelpers'
+// import Messages from '../../../model/messages';
+import io from 'socket.io-client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
+
+LogBox.ignoreAllLogs()
+
+let socket;
 
 const MessagesScreen = props => {
+
+    const [ socketConnected, setSocketConnected ] = useState(false)
+    const [ user, setUser ] = useState({})
+
+    useEffect( async() => {
+        setUser( await AsyncStorage.getItem('userInfo') )
+        socket = io('https://cerv-api.herokuapp.com')
+        socket.emit('setup',user)
+        socket.on('connected', () => setSocketConnected(true))
+        getAllChats();
+    },[])
+
+    useEffect( () => {
+        const unsubscribe = props.navigation.addListener('focus', () => {
+            getAllChats();
+        })
+        return unsubscribe;
+    }, [props.navigation])
+
+    const [allChats, setAllChats] = useState([])
+
+    const getAllChats = async() => {
+        const response = await getPostLogin('/chat/getChats')
+        // console.log(response.data.chats)
+        if(response.success) {
+            setAllChats(response.data.chats)
+        } else {
+            console.log(response);
+        }
+    }
+
+    const navigateHandler = (chatObj) => {
+        console.log(chatObj);
+        props.navigation.navigate('Chat',{ chatObj })
+    }
+
     return (
         <View style={styles.container} >
             <FlatList 
-                data={Messages}
+                data={allChats}
                 keyExtractor={item => item.id}
                 renderItem={ ({item}) => (
-                    <TouchableOpacity style={styles.card} onPress={ () => { props.navigation.navigate('Chat', {
-                        userName: item.userName
-                    }) }}>
+                    <TouchableOpacity style={styles.card} onPress={ () => { navigateHandler(item) } }>
                         <View style={styles.userInfo}>
                             <View style={styles.imgWrapper}>
-                                <Image source={item.userImg} style={styles.userImg} />
+                                <Image source={{uri:item.caterer.image}} style={styles.userImg} />
                             </View>
                             <View style={styles.textSection}>
                                 <View style={styles.userInfoText} >
-                                    <Text style={styles.userName}>{item.userName}</Text>
-                                    <Text style={styles.postTime}>{item.messageTime}</Text>
+                                    <Text style={styles.userName}>{item.caterer.name}</Text>
+                                    <Text style={styles.postTime}>{moment(item.updatedAt).format('hh:mm A')}</Text>
                                 </View>
-                                <Text style={styles.messageText}>{item.messageText}</Text>
+                                <Text style={styles.messageText}>{item.lastMessage}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>

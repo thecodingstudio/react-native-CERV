@@ -22,7 +22,8 @@ const SplashScreen = (props) => {
     const loadApp = async() => {
 
         const isLogin = await AsyncStorage.getItem('isLogin');
-        if(isLogin === "true") {
+        console.log(isLogin);
+        if(isLogin === "1") {
             props.navigation.dispatch(CommonActions.reset({
                 index:0,
                 routes: [{name:'Home'}]

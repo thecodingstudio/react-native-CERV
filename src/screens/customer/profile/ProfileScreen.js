@@ -101,7 +101,7 @@ const ProfileScreen = props => {
                 leftIcon = "log-out-outline"
                 onPress={ () => {
                     AsyncStorage.clear()
-                    AsyncStorage.setItem('isLogin', "false")
+                    AsyncStorage.setItem('isLogin', "0")
                     props.navigation.dispatch(
                         CommonActions.reset({
                             index:0,

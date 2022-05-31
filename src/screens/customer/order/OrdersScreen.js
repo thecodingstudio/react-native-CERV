@@ -56,11 +56,21 @@ const OrdersScreen = props => {
     }
 
     const feedbackHandler = async() => {
-        console.log(reviewOrder)
-        // setLoading(true)
-        // const data = {
-
-        // }
+        setLoading(true)
+        reviewModal.current.close()
+        // console.log(reviewOrder)
+        const params = {
+            catererId: reviewOrder.caterer.id,
+            rating: rating,
+            review: feedback,
+            orderId: reviewOrder.id
+        }
+        const feedbackResponse = await postPostLogin('/post-review', params)
+        if(feedbackResponse.success){
+            Toast.show(feedbackResponse.data.message)
+        } else {
+            Toast.show(feedbackResponse.data.message)
+        }
     }
 
     const statusText = (status) => {
@@ -72,7 +82,7 @@ const OrdersScreen = props => {
             case 4:
                 return "Order Completed"
             default:
-                return 'Past Order!'
+                return 'Old Order'
         }
     }
 
@@ -220,6 +230,7 @@ const OrdersScreen = props => {
                                                         {!order.is_reviewed ?
                                                             <TouchableOpacity onPress={() => { 
                                                                     setReviewOrder(order)
+                                                                    setFeedback('')
                                                                     reviewModal.current.open() 
                                                                 }}>
                                                                 <Text style={{ color: 'blue', fontWeight: 'bold', letterSpacing: -0.5, fontSize: 16 }}>Write a Review</Text>
