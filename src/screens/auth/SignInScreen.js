@@ -149,7 +149,7 @@ const SignInScreen = props => {
 
                                     <Image source={Images.OR} style={{width:'100%', height:30, marginTop:20}}/>
 
-                                    <TouchableOpacity onPress={() => props.navigation.navigate('SignUpScreen')} style={{alignItems:'center', marginTop:25}} >
+                                    <TouchableOpacity onPress={() => props.navigation.navigate('SignUpScreen', {role})} style={{alignItems:'center', marginTop:25}} >
                                         <Text style={styles.signUp} >Don't have an Account? <Text style={styles.register}>Register</Text></Text>
                                     </TouchableOpacity>
 

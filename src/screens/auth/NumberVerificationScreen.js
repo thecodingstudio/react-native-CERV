@@ -8,36 +8,31 @@ import CountryPicker from 'react-native-country-codes-picker';
 
 import * as registerActions from '../../store/actions/register';
 import{ Colors, Images }from '../../CommonConfig';
-import { postRequest } from '../../helpers/ApiHelpers';
+import { postPreLogin } from '../../helpers/ApiHelpers';
 
 
 const NumberVerificationScreen = props => {
 
+    const params = props.route.params.data
+    // console.log(data)
     const [show, setShow] = useState(false);
     const [countryCode, setCountryCode] = useState('+91');
     const [phoneNumber, setPhoneNumber ] = useState('');
-    
-    const dispatch = useDispatch()
 
     const pressHandler = async(countryCode, phoneNumber) => {
-        const data = {
-            country_code: countryCode,
-            phone_number: phoneNumber
-        }
-        dispatch(registerActions.addPhone(data))
-
         const OTPData = {
             country_code: countryCode,
             phone_number: phoneNumber,
             channel: "sms"
         }
-        const response = await postRequest('/users/generateOTP', OTPData);
+        const response = await postPreLogin('/users/generateOTP', OTPData);
         let errorMsg = 'Something went wrong!';
         if (response.success) {
-            props.navigation.navigate('VerifyScreen',{countryCode: countryCode, phoneNumber: phoneNumber})
+            props.navigation.navigate('VerifyScreen',{countryCode: countryCode, phoneNumber: phoneNumber, params})
         } else {
             Alert.alert("Error",errorMsg,[{text:"Okay"}])
         }
+        // props.navigation.navigate('VerifyScreen',{countryCode: countryCode, phoneNumber: phoneNumber, params})
     }
 
     return (

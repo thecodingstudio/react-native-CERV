@@ -4,12 +4,14 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { StripeProvider } from '@stripe/stripe-react-native'
 
 import * as orderActions from '../../../store/actions/order';
 import * as cartActions from '../../../store/actions/cart';
 import { Colors, Images } from '../../../CommonConfig';
 import PaymentOption from '../../../components/PaymentOption';
 import CreditCardDisplay from '../../../components/CreditCardDisplay';
+import { postPostLogin } from '../../../helpers/ApiHelpers';
 
 const OrderReceiptScreen = props => {
 
@@ -64,7 +66,7 @@ const OrderReceiptScreen = props => {
     const catererId = useSelector(state => state.Cart.catererId)
     const refRBSheet = useRef();
     const [instructions, setInstructions] = useState('')
-    const orderPlaceHandler = () => {
+    const orderPlaceHandler = async() => {
         const data = {
             catererId : catererId,
             address : selectedAddress,
@@ -72,10 +74,18 @@ const OrderReceiptScreen = props => {
             discountAmount: discountAmount,
             totalAmount : total,
             items: cartItems,
-            instructions: instructions
+            instructions: instructions,
+            activeCard: activeCard
         }
-        dispatch(orderActions.placeOrder(data));
-        refRBSheet.current.open()
+        const params = {
+            card_id: activeCard.id,
+            amount: total
+        }
+        console.log(params)
+        const getPaymentIntent = await postPostLogin('/checkout', params)
+        console.log(getPaymentIntent)
+        // dispatch(orderActions.placeOrder(data));
+        // refRBSheet.current.open()
     }
 
     // RB 
@@ -87,179 +97,183 @@ const OrderReceiptScreen = props => {
     }
 
     return (
-        <View style={styles.screen}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.body}>    
-                {/* Address Container */}
-                <View style={styles.addressContainer}>
+        <StripeProvider
+            publishableKey='pk_test_51KWJVESJATkWAz1BNwkKHuCnoZ9xLHlWwfucxpzQ8kjiCkWVbjj050t3wy2nupttqkzoppLzmoFg88NZSu2Ony6S00g1IwuVVg'
+        >
+            <View style={styles.screen}>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.body}>    
+                    {/* Address Container */}
+                    <View style={styles.addressContainer}>
+                        <View style={styles.addressTextAlign}>
+                            <Text style={styles.label}>Address</Text>
+                            <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile', { screen: 'SavedAddresses' }) } } >
+                                <Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text>
+                            </TouchableOpacity>
+                        </View>
+                        { selectedAddress.address ? <View style={styles.addressIconAlign}>
+                            <View style={styles.iconContainer}>
+                                <Ionicon name={selectedAddress.icon}color={Colors.ORANGE} size={25}/>
+                            </View>
+                            <Text style={styles.addressText} numberOfLines={2}>{selectedAddress.address}</Text>
+                        </View>
+                        :
+                        <View style={styles.backDropContainer} >
+                            <Text style={{...styles.backDropText, fontSize:25}}>NO ADDRESS FOUND</Text>
+                            <Text style={{...styles.backDropText, fontSize:15}}>Add some addresses now!</Text>
+                        </View>
+                        }
+                    </View>
+
+                    <View style={styles.billDetailsContainer} >
+                        <Text style={styles.label}>Bill Details</Text>
+                        { cartItems.map( item => {
+                            return(
+                                <View key={item.id} style={styles.itemContainer}> 
+                                    <View style={styles.textButtonContainer}>
+                                        <Text style={{flex:2}}>{item.title}</Text>
+                                        <View style={styles.addRemoveContainer}>
+                                            <TouchableOpacity onPress={() =>{ dispatch(cartActions.removeFromCart(item)) }} ><Ionicon name="remove-outline" size={20} color={ Colors.ERROR_RED }/></TouchableOpacity>
+                                            <Text>{item.qty}</Text>
+                                            <TouchableOpacity onPress={() =>{ dispatch(cartActions.addToCart(item)) }}><Ionicon name="add-outline" size={20} color={ Colors.GREEN }/></TouchableOpacity>
+                                        </View>
+                                    </View>
+                                    <View style={{flex:1}}>
+                                        <Text>$ {item.itemTotal.toFixed(2)}</Text>
+                                    </View>
+                                </View>
+                            )
+                        } ) }
+
+                        { cartItems.length !== 0 ?
+                        <View>
+                            <View style={styles.serviceChargeContainer}>
+                                <Text style={styles.transactionTitle}>Service Charges</Text>
+                                <Text style={{flex:1}}>$ 1.00</Text>
+                            </View>
+                            <View style={styles.deliveryFee}>
+                                <Text style={styles.transactionTitle}>Delivery Fee</Text>
+                                <Text style={{flex:1}}>$ {deliveryFee.toFixed(2)}</Text>
+                            </View>
+
+
+                            {discountApplied ? 
+                            <View style={styles.deliveryFee}>
+                                <Text style={styles.discountTitle}>Code <Text style={{fontWeight:'bold'}}>{discountApplied}</Text> applied</Text>
+                                <View style={{flex:1}}>
+                                    <Text style={styles.discountAmount}>- ${discountAmount.toFixed(2)}</Text>
+                                    <TouchableOpacity onPress={ () => { dispatch(cartActions.removeDiscount()) }}><Text style={styles.remove}>Remove</Text></TouchableOpacity>
+                                </View>
+                            </View>   
+                            :
+                            <TouchableOpacity style={styles.couponCodeContainer} onPress={ () => { props.navigation.navigate('Discount') } } >
+                                <Text style={{flex:3,fontWeight:'bold'}}>Apply Coupon Code</Text>
+                                <Text style={{...styles.label, color: Colors.ORANGE, flex:1}}>CHECK</Text>
+                            </TouchableOpacity>}
+
+
+                            <View style={styles.subTotal}>
+                                <Text style={styles.transactionTitle}>Sub Total</Text>
+                                <Text style={{flex:1}}>$ {updatedSubTotal.toFixed(2)}</Text>
+                            </View>
+                            <View style={styles.tax}>
+                                <Text style={styles.transactionTitle}>Tax</Text>
+                                <Text style={{flex:1}}>$ 5.10</Text>
+                            </View>
+                            <View style={styles.total}>
+                                <Text style={styles.totalTitle}>Total</Text>
+                                <Text style={{flex:1, fontWeight:'bold', fontSize:18}}>$ {total.toFixed(2)}</Text>
+                            </View> 
+                        </View>
+                        :
+                        <View style={styles.backDropContainer}>
+                            <Text style={{...styles.backDropText, fontSize:25}}>CART EMPTY</Text>
+                            <Text style={{...styles.backDropText, fontSize:15}}>Add some dishes now!</Text>
+                        </View>}
+
+                    </View>
+                    <Image source={Images.PAPER_TEAR} style={{width:'100%', marginBottom:25, height:25, transform:[{rotate:'180deg'}]}}/>
+                    
+                </View>
+
+                <View style={styles.footer}>
                     <View style={styles.addressTextAlign}>
-                        <Text style={styles.label}>Address</Text>
-                        <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile', { screen: 'SavedAddresses' }) } } >
+                        <Text style={styles.label}>Payment with</Text>
+                        <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile', { screen: 'SavedCards' }) } } >
                             <Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text>
                         </TouchableOpacity>
                     </View>
-                    { selectedAddress.address ? <View style={styles.addressIconAlign}>
-                        <View style={styles.iconContainer}>
-                            <Ionicon name={selectedAddress.icon}color={Colors.ORANGE} size={25}/>
-                        </View>
-                        <Text style={styles.addressText} numberOfLines={2}>{selectedAddress.address}</Text>
-                    </View>
-                    :
-                    <View style={styles.backDropContainer} >
-                        <Text style={{...styles.backDropText, fontSize:25}}>NO ADDRESS FOUND</Text>
-                        <Text style={{...styles.backDropText, fontSize:15}}>Add some addresses now!</Text>
-                    </View>
-                    }
-                </View>
 
-                <View style={styles.billDetailsContainer} >
-                    <Text style={styles.label}>Bill Details</Text>
-                    { cartItems.map( item => {
-                        return(
-                            <View key={item.id} style={styles.itemContainer}> 
-                                <View style={styles.textButtonContainer}>
-                                    <Text style={{flex:2}}>{item.title}</Text>
-                                    <View style={styles.addRemoveContainer}>
-                                        <TouchableOpacity onPress={() =>{ dispatch(cartActions.removeFromCart(item)) }} ><Ionicon name="remove-outline" size={20} color={ Colors.ERROR_RED }/></TouchableOpacity>
-                                        <Text>{item.qty}</Text>
-                                        <TouchableOpacity onPress={() =>{ dispatch(cartActions.addToCart(item)) }}><Ionicon name="add-outline" size={20} color={ Colors.GREEN }/></TouchableOpacity>
-                                    </View>
-                                </View>
-                                <View style={{flex:1}}>
-                                    <Text>$ {item.itemTotal.toFixed(2)}</Text>
-                                </View>
+                    <View style={{paddingVertical:10}}>
+                        {activeCard ? 
+                            <View>
+                                <CreditCardDisplay 
+                                    brand = {activeCard.brand}
+                                    customer = { activeCard.customer }
+                                    exp_month = { activeCard.exp_month }
+                                    exp_year = { activeCard.exp_year }
+                                    id = { activeCard.id }
+                                    last4 = { activeCard.last4 }
+                                    name = { activeCard.name }
+                                />
+                            </View> 
+                            :
+                            <View style={styles.backDropContainer} >
+                                <Text style={{...styles.backDropText, fontSize:25}}>No Active Payment Found</Text>
+                                <Text style={{...styles.backDropText, fontSize:15}}>Add some now!</Text>
                             </View>
-                        )
-                    } ) }
+                        }
+                    </View>
 
-                    { cartItems.length !== 0 ?
                     <View>
-                        <View style={styles.serviceChargeContainer}>
-                            <Text style={styles.transactionTitle}>Service Charges</Text>
-                            <Text style={{flex:1}}>$ 1.00</Text>
-                        </View>
-                        <View style={styles.deliveryFee}>
-                            <Text style={styles.transactionTitle}>Delivery Fee</Text>
-                            <Text style={{flex:1}}>$ {deliveryFee.toFixed(2)}</Text>
-                        </View>
-
-
-                        {discountApplied ? 
-                        <View style={styles.deliveryFee}>
-                            <Text style={styles.discountTitle}>Code <Text style={{fontWeight:'bold'}}>{discountApplied}</Text> applied</Text>
-                            <View style={{flex:1}}>
-                                <Text style={styles.discountAmount}>- ${discountAmount.toFixed(2)}</Text>
-                                <TouchableOpacity onPress={ () => { dispatch(cartActions.removeDiscount()) }}><Text style={styles.remove}>Remove</Text></TouchableOpacity>
-                            </View>
-                        </View>   
-                        :
-                        <TouchableOpacity style={styles.couponCodeContainer} onPress={ () => { props.navigation.navigate('Discount') } } >
-                            <Text style={{flex:3,fontWeight:'bold'}}>Apply Coupon Code</Text>
-                            <Text style={{...styles.label, color: Colors.ORANGE, flex:1}}>CHECK</Text>
-                        </TouchableOpacity>}
-
-
-                        <View style={styles.subTotal}>
-                            <Text style={styles.transactionTitle}>Sub Total</Text>
-                            <Text style={{flex:1}}>$ {updatedSubTotal.toFixed(2)}</Text>
-                        </View>
-                        <View style={styles.tax}>
-                            <Text style={styles.transactionTitle}>Tax</Text>
-                            <Text style={{flex:1}}>$ 5.10</Text>
-                        </View>
-                        <View style={styles.total}>
-                            <Text style={styles.totalTitle}>Total</Text>
-                            <Text style={{flex:1, fontWeight:'bold', fontSize:18}}>$ {total.toFixed(2)}</Text>
-                        </View> 
-                    </View>
-                    :
-                    <View style={styles.backDropContainer}>
-                        <Text style={{...styles.backDropText, fontSize:25}}>CART EMPTY</Text>
-                        <Text style={{...styles.backDropText, fontSize:15}}>Add some dishes now!</Text>
-                    </View>}
-
-                </View>
-                <Image source={Images.PAPER_TEAR} style={{width:'100%', marginBottom:25, height:25, transform:[{rotate:'180deg'}]}}/>
-                
-            </View>
-
-            <View style={styles.footer}>
-                <View style={styles.addressTextAlign}>
-                    <Text style={styles.label}>Payment with</Text>
-                    <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile', { screen: 'SavedCards' }) } } >
-                        <Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={{paddingVertical:10}}>
-                    {activeCard ? 
-                        <View>
-                            <CreditCardDisplay 
-                                brand = {activeCard.brand}
-                                customer = { activeCard.customer }
-                                exp_month = { activeCard.exp_month }
-                                exp_year = { activeCard.exp_year }
-                                id = { activeCard.id }
-                                last4 = { activeCard.last4 }
-                                name = { activeCard.name }
+                        <Text style={styles.label}>Add Special Instructions</Text>
+                        <View style={styles.noteContainer}>
+                            <TextInput 
+                                placeholder='Add text here...'
+                                multiline
+                                onChangeText={ text => setInstructions(text) }
                             />
-                        </View> 
-                        :
-                        <View style={styles.backDropContainer} >
-                            <Text style={{...styles.backDropText, fontSize:25}}>No Active Payment Found</Text>
-                            <Text style={{...styles.backDropText, fontSize:15}}>Add some now!</Text>
                         </View>
-                    }
-                </View>
-
-                <View>
-                    <Text style={styles.label}>Add Special Instructions</Text>
-                    <View style={styles.noteContainer}>
-                        <TextInput 
-                            placeholder='Add text here...'
-                            multiline
-                            onChangeText={ text => setInstructions(text) }
-                        />
                     </View>
-                </View>
-                <TouchableOpacity style={styles.makePayment} onPress={ orderPlaceHandler } activeOpacity={0.7} disabled={((cartItems.length===0) || (activePID === null ) || (!selectedAddress) )? true : false}>
-                    <Text style={{...styles.label, color: Colors.WHITE}}>{activePID ? "Confirm Order" : "Make Payment"}</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.makePayment} onPress={ orderPlaceHandler } activeOpacity={0.7} disabled={((cartItems.length===0) || (activePID === null ) || (!selectedAddress) )? true : false}>
+                        <Text style={{...styles.label, color: Colors.WHITE}}>{activePID ? "Confirm Order" : "Make Payment"}</Text>
+                    </TouchableOpacity>
 
-                <RBSheet
-                    ref={refRBSheet}
-                    closeOnDragDown={false}
-                    closeOnPressMask={false}
-                    closeOnPressBack={false}
-                    dragFromTopOnly
-                    customStyles={{
-                    wrapper: {
-                        backgroundColor: "rgba(0,0,0,0.5)"
-                    },
-                    container:{
-                        height:'auto',
-                        paddingHorizontal:20,
-                        backgroundColor: Colors.WHITE,
-                        borderTopRightRadius:30,
-                        borderTopLeftRadius:30,
-                    }
-                    }}
-                >
-                    <View style={{justifyContent:'space-between'}}>
-                        <View style={styles.rbView}>
-                            <Image source={Images.ORDER_SUCCESSFUL} style={styles.rbImage}/>
-                            <Text style={styles.rbText}>Your order was placed successfully!</Text>
+                    <RBSheet
+                        ref={refRBSheet}
+                        closeOnDragDown={false}
+                        closeOnPressMask={false}
+                        closeOnPressBack={false}
+                        dragFromTopOnly
+                        customStyles={{
+                        wrapper: {
+                            backgroundColor: "rgba(0,0,0,0.5)"
+                        },
+                        container:{
+                            height:'auto',
+                            paddingHorizontal:20,
+                            backgroundColor: Colors.WHITE,
+                            borderTopRightRadius:30,
+                            borderTopLeftRadius:30,
+                        }
+                        }}
+                    >
+                        <View style={{justifyContent:'space-between'}}>
+                            <View style={styles.rbView}>
+                                <Image source={Images.ORDER_SUCCESSFUL} style={styles.rbImage}/>
+                                <Text style={styles.rbText}>Your order was placed successfully!</Text>
+                            </View>
+                            <View style={styles.rbLine} />
+                            <TouchableOpacity style={styles.rbButton} onPress={ rbButtonHandler } >
+                                <Text style={styles.rbOk}>OK</Text>
+                            </TouchableOpacity>
                         </View>
-                        <View style={styles.rbLine} />
-                        <TouchableOpacity style={styles.rbButton} onPress={ rbButtonHandler } >
-                            <Text style={styles.rbOk}>OK</Text>
-                        </TouchableOpacity>
-                    </View>
-                </RBSheet>
+                    </RBSheet>
 
+                </View>
+                </ScrollView>
             </View>
-            </ScrollView>
-        </View>
+        </StripeProvider>
     )
 }
 

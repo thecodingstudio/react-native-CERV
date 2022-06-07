@@ -2,9 +2,12 @@ import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, Alert } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
+import { CommonActions } from '@react-navigation/native';
 
 import{ Colors, Images }from '../../CommonConfig';
-import { postFormDataRequest, postRequest } from '../../helpers/ApiHelpers';
+import { postFormDataRequest, postPreLogin } from '../../helpers/ApiHelpers';
 import { useSelector } from 'react-redux';
 
 const VerifyScreen = props => {
@@ -20,19 +23,20 @@ const VerifyScreen = props => {
        return result;
     }
 
-    const user = useSelector(state => state.Register)
-    const userFormData = new FormData();
-    userFormData.append("name",user.name)
-    userFormData.append("email",user.email)
-    userFormData.append("password", user.password)
-    userFormData.append("role", user.role)
-    userFormData.append("country_code", user.country_code)
-    userFormData.append("phone_number", user.phone_number)
-    userFormData.append("image", { uri: user.image.path, type: user.image.mime, name: makeid(10) })
-    console.log(userFormData)
+    // const user = useSelector(state => state.Register)
+    // const userFormData = new FormData();
+    // userFormData.append("name",user.name)
+    // userFormData.append("email",user.email)
+    // userFormData.append("password", user.password)
+    // userFormData.append("role", user.role)
+    
+    // userFormData.append("image", { uri: user.image.path, type: user.image.mime, name: makeid(10) })
+    // console.log(userFormData)
 
     const countryCode = props.route.params.countryCode;
     const phoneNumber = props.route.params.phoneNumber;
+    const data = props.route.params.params
+    // console.log(data)
 
     const [ otpValue, setOTPValue ] = useState('');
 
@@ -42,21 +46,66 @@ const VerifyScreen = props => {
             country_code: countryCode,
             phone_number: phoneNumber
         }
-        const response = await postRequest('/users/verifyOTP', verifyOTP);
+        const response = await postPreLogin('/users/verifyOTP', verifyOTP);
         const resData = response.data;
         let errorMsg = 'Something went wrong!';
         if (response.success) {
-            // CALL REGISTER API 
-            const regResponse = await postFormDataRequest('/users/register', userFormData );
-            console.log(regResponse);
-            if (!regResponse.success) {
-                if (regResponse.data.error === 'USER ALREADY EXISTS') {
-                    errorMsg = "The credentials entered already exist. Please check the details.";
-                } 
-                Alert.alert("Error!", errorMsg, [{text: "Okay"}]);
+            const user = new FormData();
+            user.append('image',{ uri: data.selectedImage.path, type: data.selectedImage.mime, name: makeid(10) })
+            user.append('email', data.email)
+            user.append('password', data.password)
+            user.append('role', data.role)
+            user.append("country_code", countryCode)
+            user.append("phone_number", phoneNumber)
+            user.append('name', data.username.trim())
+            //image, email, password, role, phone & cc , username
+
+            const res = await fetch('https://cerv-api.herokuapp.com/users/register',{
+                method: 'POST',
+                headers:{
+                    "Content-Type" : "multipart/form-data"
+                },
+                body: user
+            })
+
+            const registerResponse = await res.json()
+            // console.log(registerResponse)
+            if( registerResponse.status === 1 ) {
+                //SUCCESS
+                const loginData = {
+                    email: data.email,
+                    password: data.password,
+                    role: data.role,
+                    device_token: JSON.stringify(AsyncStorage.getItem('deviceToken'))
+                }
+                
+                const response = await postPreLogin('/users/login', loginData)
+                const resData = response.data
+                if( response.success ) {
+                    try {
+                        await AsyncStorage.setItem('token', resData.token)
+                        await AsyncStorage.setItem('refreshToken', resData.refreshToken)
+                        await AsyncStorage.setItem('userInfo', JSON.stringify(resData.user))
+                        await AsyncStorage.setItem('isLogin', "1")
+                    } catch (error) {
+                        console.log(error)
+                    }
+                    props.navigation.dispatch(
+                        CommonActions.reset({
+                            index:0,
+                            routes: [{name: 'Home'}]
+                        })
+                    )
+                } else {
+                    if (resData.error === 'User does not exist!') {
+                        Toast.show(" User does not exist! ");
+                    } else if (resData.error === 'Invalid Password!') {
+                        Toast.show("Incorrect Password")
+                    }
+                }
+
             } else {
-                //SUCCESS  then Route
-                props.navigation.navigate('SignInScreen')
+                console.log(registerResponse)
             }
         } else {
             if( resData.error ==="Invalid OTP entered!"){

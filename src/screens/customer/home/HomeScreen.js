@@ -7,15 +7,16 @@ import { useSelector } from 'react-redux';
 import Toast from 'react-native-simple-toast';
 import { Rating } from 'react-native-ratings';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import GetLocation from 'react-native-get-location';
 
 import { Colors } from '../../../CommonConfig';
-import { getPostLogin, getPreLogin, postPostLogin } from '../../../helpers/ApiHelpers';
+import { getPostLogin } from '../../../helpers/ApiHelpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get("window").width;
 
 const HomeScreen = props => {
-
+    
     const filterSheet = useRef(null)
     const [filter, setFilter] = useState()
 
@@ -24,17 +25,53 @@ const HomeScreen = props => {
     const [isLoading, setIsLoading] = useState(true)
     const [activeAddress, setActiveAddress] = useState({})
 
-    useEffect(async () => {
+    const [ location , setLocation ] = useState({
+        latitude: 0,
+        longitude: 0
+    })
+
+    useEffect( () => {
+        GetLocation.getCurrentPosition({
+            enableHighAccuracy: true
+        })
+        .then( (location) => {
+            // console.log("Current Location:\n",location)
+            setLocation({ latitude: location.latitude, longitude: location.longitude })
+        })
+        .catch( (err) => {
+            console.log(err)
+        })
+    } , [])
+
+    useEffect(() => {
         getCaterer();
-        getBanners();
         getAddresses();
-        // getActiveAddress();
+        getBanners();
         setIsLoading(false)
-    }, [isLoading])
+    }, [isLoading,location])
+
+    
+    const getAddresses = async () => {
+        const response = await getPostLogin('/get-address')
+        // console.log(response);
+        if (response.success) {
+            // setAddresses()
+            const aAddress = response.data.data.find(item => { return (item.is_active === true) })
+            setActiveAddress(aAddress)
+            AsyncStorage.setItem('activeAddress', JSON.stringify(aAddress))
+            // console.log(aAddress)
+            if(aAddress && location.longitude === 0 && location.latitude === 0) {
+                setLocation({ latitude: aAddress.latitude, longitude: aAddress.longitude })
+            }
+        } else {
+            console.log(response);
+        }
+    }
 
     const getCaterer = async () => {
-        const response = await getPostLogin('/caterers')
-        // console.log("GET CATERERS RESPONSE      \n\n\n\n",JSON.stringify(response));
+
+        const response = await getPostLogin(`/caterers/${location.latitude}/${location.longitude}`)
+        // console.log("GET CATERERS RESPONSE      \n",response);
         if (response.success) {
             setCatererList(response.data.caterer)
         } else {
@@ -49,18 +86,6 @@ const HomeScreen = props => {
             // console.log("Banners:   ", bannerList);
         } else {
             console.log("\n\n", response);
-        }
-    }
-
-    const getAddresses = async () => {
-        const response = await getPostLogin('/get-address')
-        // console.log(response);
-        if (response.success) {
-            // setAddresses()
-            const aAddress = response.data.data.find(item => { return (item.is_active === true) })
-            setActiveAddress(aAddress)
-        } else {
-            console.log(response);
         }
     }
 
@@ -90,6 +115,7 @@ const HomeScreen = props => {
         }
         setIsLoading(false)
     }
+
 
     return (
         <View style={{ paddingBottom: tabBartHeight + 20, backgroundColor: Colors.BACKGROUND_GREY, height: '100%' }}>
