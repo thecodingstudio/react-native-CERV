@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Image, ScrollView, TextInput, Dimensions,TouchableOpacity } from 'react-native';
-import React,{ useRef, useState } from 'react';
+import React,{ useEffect, useRef, useState } from 'react';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -12,8 +12,16 @@ import { Colors, Images } from '../../../CommonConfig';
 import PaymentOption from '../../../components/PaymentOption';
 import CreditCardDisplay from '../../../components/CreditCardDisplay';
 import { postPostLogin } from '../../../helpers/ApiHelpers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OrderReceiptScreen = props => {
+
+    const [ selectedAddress, setSelectedAddress ] = useState({})
+
+    useEffect( async() => {
+        setSelectedAddress( JSON.parse( await AsyncStorage.getItem('activeAddress') ) )
+        console.log(selectedAddress);
+    },[])
 
     const dispatch = useDispatch();
     const cartItems = useSelector( state => {
@@ -25,7 +33,7 @@ const OrderReceiptScreen = props => {
         }
         return updatedCartItems.sort( (a,b) => a.id > b.id ? 1 : -1);
     })
-    const selectedAddress = useSelector( state => state.Address.activeAddress? state.Address.activeAddress : null);
+    // const selectedAddress = useSelector( state => state.Address.activeAddress? state.Address.activeAddress : null);
     const orderType = useSelector( state => state.Cart.orderType )
     const deliveryFee = orderType === 'Delivery' ? 2.5 : 0
     const serviceCharge = 1.00
