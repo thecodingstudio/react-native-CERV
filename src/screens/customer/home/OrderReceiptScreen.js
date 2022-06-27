@@ -1,10 +1,10 @@
-import { Text, View, StyleSheet, Image, ScrollView, TextInput, Dimensions,TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Image, ScrollView, TextInput, Dimensions,TouchableOpacity, Alert } from 'react-native';
 import React,{ useEffect, useRef, useState } from 'react';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import RBSheet from 'react-native-raw-bottom-sheet';
-import { StripeProvider } from '@stripe/stripe-react-native'
+import { StripeProvider, useStripe } from '@stripe/stripe-react-native'
 
 import * as orderActions from '../../../store/actions/order';
 import * as cartActions from '../../../store/actions/cart';
@@ -13,17 +13,39 @@ import PaymentOption from '../../../components/PaymentOption';
 import CreditCardDisplay from '../../../components/CreditCardDisplay';
 import { postPostLogin } from '../../../helpers/ApiHelpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from 'react-native';
 
 const OrderReceiptScreen = props => {
 
+    const dispatch = useDispatch()
+
+    const { initPaymentSheet, presentPaymentSheet } = useStripe()
+
     const [ selectedAddress, setSelectedAddress ] = useState({})
+    const [ selectedCard, setSelectedCard ] = useState({})
+    const [ loading, setLoading ] = useState(true)
 
-    useEffect( async() => {
-        setSelectedAddress( JSON.parse( await AsyncStorage.getItem('activeAddress') ) )
-        console.log(selectedAddress);
-    },[])
+    useEffect( () => {
+        const refresh = props.navigation.addListener('focus', () => {
+            setLoading(true)
+            getAddress()
+            getPaymentMethod()
+            setLoading(false)
+        });
 
-    const dispatch = useDispatch();
+        return refresh
+
+    }, [ props.navigation ] ) 
+
+    const getAddress = async() => {
+        setSelectedAddress( JSON.parse(await AsyncStorage.getItem('activeAddress')))
+        // console.log("getting address\n",selectedAddress)
+    }
+
+    const getPaymentMethod = async() => {
+        setSelectedCard( JSON.parse(await AsyncStorage.getItem('activeCard')))
+    }
+
     const cartItems = useSelector( state => {
         const updatedCartItems = [];
         for ( const key in state.Cart.items ) {
@@ -33,7 +55,7 @@ const OrderReceiptScreen = props => {
         }
         return updatedCartItems.sort( (a,b) => a.id > b.id ? 1 : -1);
     })
-    // const selectedAddress = useSelector( state => state.Address.activeAddress? state.Address.activeAddress : null);
+
     const orderType = useSelector( state => state.Cart.orderType )
     const deliveryFee = orderType === 'Delivery' ? 2.5 : 0
     const serviceCharge = 1.00
@@ -61,18 +83,10 @@ const OrderReceiptScreen = props => {
     }
     const updatedSubTotal = subTotal - discountAmount
     const total = updatedSubTotal + 5.10;
-    
-    //Payment Logic
-    const activePID = useSelector(state => state.Payment.activeMethodID)
-    const cardList = useSelector( state => state.Payment.paymentMethods )
-    // console.log(activePID);
-    const activeCard = cardList?.find( item => item.id === activePID )
-    // console.log(activeCard);
-
-    //Order Place Handler
 
     const catererId = useSelector(state => state.Cart.catererId)
     const refRBSheet = useRef();
+    const [paymentLoader, setPaymentLoader] = useState(false)
     const [instructions, setInstructions] = useState('')
     const orderPlaceHandler = async() => {
         const data = {
@@ -83,20 +97,36 @@ const OrderReceiptScreen = props => {
             totalAmount : total,
             items: cartItems,
             instructions: instructions,
-            activeCard: activeCard
+            activeCard: selectedCard
         }
         const params = {
-            card_id: activeCard.id,
-            amount: total
+            card_id: selectedCard.id,
+            amount: total.toFixed(2)
         }
-        console.log(params)
-        const getPaymentIntent = await postPostLogin('/checkout', params)
-        console.log(getPaymentIntent)
+        // console.log(params)
+        setPaymentLoader(true)
+        const getPaymentIntentResponse = await postPostLogin('/checkout', params)
+        console.log(getPaymentIntentResponse.data)
+        setPaymentLoader(false)
+        const { error } = await initPaymentSheet({
+            customerId: getPaymentIntentResponse.data.data.customerId,
+            paymentIntentClientSecret: getPaymentIntentResponse.data.data.client_secret
+        })
+        console.log("Init Successful!");
+        console.log(error);
+        // if(!error){
+        //     const { error } = await presentPaymentSheet()
+        //     if (error) {
+        //         Alert.alert(`Error code: ${error.code}`, error.message);
+        //       } else {
+        //         Alert.alert('Success', 'Your order is confirmed!');
+        //       }
+        // }
+        // console.log("Present Error");
         // dispatch(orderActions.placeOrder(data));
         // refRBSheet.current.open()
     }
 
-    // RB 
     const rbButtonHandler = () => {
         props.navigation.popToTop()
         dispatch(cartActions.clearCart())
@@ -104,36 +134,43 @@ const OrderReceiptScreen = props => {
         props.navigation.navigate('Order')
     }
 
+    if(loading) {
+        return( 
+            <View style={styles.loader}>
+                <ActivityIndicator size={65} color={Colors.ORANGE}/>
+            </View>
+        )
+    }
+
     return (
         <StripeProvider
             publishableKey='pk_test_51KWJVESJATkWAz1BNwkKHuCnoZ9xLHlWwfucxpzQ8kjiCkWVbjj050t3wy2nupttqkzoppLzmoFg88NZSu2Ony6S00g1IwuVVg'
         >
             <View style={styles.screen}>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.body}>    
-                    {/* Address Container */}
-                    <View style={styles.addressContainer}>
-                        <View style={styles.addressTextAlign}>
-                            <Text style={styles.label}>Address</Text>
-                            <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile', { screen: 'SavedAddresses' }) } } >
-                                <Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text>
-                            </TouchableOpacity>
-                        </View>
-                        { selectedAddress.address ? <View style={styles.addressIconAlign}>
-                            <View style={styles.iconContainer}>
-                                <Ionicon name={selectedAddress.icon}color={Colors.ORANGE} size={25}/>
-                            </View>
-                            <Text style={styles.addressText} numberOfLines={2}>{selectedAddress.address}</Text>
-                        </View>
-                        :
-                        <View style={styles.backDropContainer} >
-                            <Text style={{...styles.backDropText, fontSize:25}}>NO ADDRESS FOUND</Text>
-                            <Text style={{...styles.backDropText, fontSize:15}}>Add some addresses now!</Text>
-                        </View>
-                        }
+                <ScrollView>
+                {/* Address */}
+                <View style={styles.addressContainer}>
+                    <View style={styles.addressTextAlign}>
+                        <Text style={styles.label}>Address</Text>
+                        <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile', { screen: 'SavedAddresses', initial: false }) } } >
+                            <Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text>
+                        </TouchableOpacity>
                     </View>
+                    { selectedAddress.address ? <View style={styles.addressIconAlign}>
+                        <View style={styles.iconContainer}>
+                            <Ionicon name={selectedAddress.icon}color={Colors.ORANGE} size={25}/>
+                        </View>
+                        <Text style={styles.addressText} numberOfLines={2}>{selectedAddress.address}</Text>
+                    </View>
+                    :
+                    <View style={styles.backDropContainer} >
+                        <Text style={{...styles.backDropText, fontSize:25}}>NO ADDRESS FOUND</Text>
+                        <Text style={{...styles.backDropText, fontSize:15}}>Add some addresses now!</Text>
+                    </View>
+                    }
+                </View>
 
-                    <View style={styles.billDetailsContainer} >
+                <View style={styles.billDetailsContainer} >
                         <Text style={styles.label}>Bill Details</Text>
                         { cartItems.map( item => {
                             return(
@@ -202,9 +239,7 @@ const OrderReceiptScreen = props => {
                     </View>
                     <Image source={Images.PAPER_TEAR} style={{width:'100%', marginBottom:25, height:25, transform:[{rotate:'180deg'}]}}/>
                     
-                </View>
-
-                <View style={styles.footer}>
+                    <View style={styles.footer}>
                     <View style={styles.addressTextAlign}>
                         <Text style={styles.label}>Payment with</Text>
                         <TouchableOpacity onPress={ () => { props.navigation.navigate('Profile', { screen: 'SavedCards' }) } } >
@@ -213,18 +248,16 @@ const OrderReceiptScreen = props => {
                     </View>
 
                     <View style={{paddingVertical:10}}>
-                        {activeCard ? 
-                            <View>
-                                <CreditCardDisplay 
-                                    brand = {activeCard.brand}
-                                    customer = { activeCard.customer }
-                                    exp_month = { activeCard.exp_month }
-                                    exp_year = { activeCard.exp_year }
-                                    id = { activeCard.id }
-                                    last4 = { activeCard.last4 }
-                                    name = { activeCard.name }
-                                />
-                            </View> 
+                        {selectedCard ? 
+                            <View style={styles.cardItemContainer}>
+                                <View style={{ flex: 10, alignItems: 'center', flexDirection: 'row' }}>
+                                    <Image source={Images.CREDIT_CARD} style={{ height: 80, width: 80 }} />
+                                    <View style={{ marginHorizontal: 20 }}>
+                                        <Text style={styles.cardNumber}>**** **** **** {selectedCard.last4}</Text>
+                                        <Text style={styles.expiry}>Expires {selectedCard.exp_month} / {selectedCard.exp_year}</Text>
+                                    </View>
+                                </View>
+                            </View>
                             :
                             <View style={styles.backDropContainer} >
                                 <Text style={{...styles.backDropText, fontSize:25}}>No Active Payment Found</Text>
@@ -243,51 +276,102 @@ const OrderReceiptScreen = props => {
                             />
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.makePayment} onPress={ orderPlaceHandler } activeOpacity={0.7} disabled={((cartItems.length===0) || (activePID === null ) || (!selectedAddress) )? true : false}>
-                        <Text style={{...styles.label, color: Colors.WHITE}}>{activePID ? "Confirm Order" : "Make Payment"}</Text>
+                    <TouchableOpacity style={styles.makePayment} onPress={ orderPlaceHandler } activeOpacity={0.7} disabled={((cartItems.length===0) || (!selectedCard ) || (!selectedAddress) || paymentLoader )? true : false}>
+                        <Text style={{...styles.label, color: Colors.WHITE}}>{selectedCard.id ? "Confirm Order" : "Make Payment"}</Text>
                     </TouchableOpacity>
 
-                    <RBSheet
-                        ref={refRBSheet}
-                        closeOnDragDown={false}
-                        closeOnPressMask={false}
-                        closeOnPressBack={false}
-                        dragFromTopOnly
-                        customStyles={{
-                        wrapper: {
-                            backgroundColor: "rgba(0,0,0,0.5)"
-                        },
-                        container:{
-                            height:'auto',
-                            paddingHorizontal:20,
-                            backgroundColor: Colors.WHITE,
-                            borderTopRightRadius:30,
-                            borderTopLeftRadius:30,
-                        }
-                        }}
-                    >
-                        <View style={{justifyContent:'space-between'}}>
-                            <View style={styles.rbView}>
-                                <Image source={Images.ORDER_SUCCESSFUL} style={styles.rbImage}/>
-                                <Text style={styles.rbText}>Your order was placed successfully!</Text>
-                            </View>
-                            <View style={styles.rbLine} />
-                            <TouchableOpacity style={styles.rbButton} onPress={ rbButtonHandler } >
-                                <Text style={styles.rbOk}>OK</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </RBSheet>
+                    
 
                 </View>
+
+                <RBSheet
+                    ref={refRBSheet}
+                    closeOnDragDown={false}
+                    closeOnPressMask={false}
+                    closeOnPressBack={false}
+                    dragFromTopOnly
+                    customStyles={{
+                    wrapper: {
+                        backgroundColor: "rgba(0,0,0,0.5)"
+                    },
+                    container:{
+                        height:'auto',
+                        paddingHorizontal:20,
+                        backgroundColor: Colors.WHITE,
+                        borderTopRightRadius:30,
+                        borderTopLeftRadius:30,
+                    }
+                    }}
+                >
+                    <View style={{justifyContent:'space-between'}}>
+                        <View style={styles.rbView}>
+                            <Image source={Images.ORDER_SUCCESSFUL} style={styles.rbImage}/>
+                            <Text style={styles.rbText}>Your order was placed successfully!</Text>
+                        </View>
+                        <View style={styles.rbLine} />
+                        <TouchableOpacity style={styles.rbButton} onPress={ rbButtonHandler } >
+                            <Text style={styles.rbOk}>OK</Text>
+                        </TouchableOpacity>
+                    </View>
+                </RBSheet>
                 </ScrollView>
             </View>
         </StripeProvider>
     )
+
 }
 
 const styles = StyleSheet.create({
+    loader:{
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center'
+    },
     screen:{
         flex:1,
+        // backgroundColor: Colors.BACKGROUND_GREY
+    },
+    backDropText:{
+        color: Colors.LIGHTER_GREY
+    },
+    backDropContainer:{
+        height:100, 
+        alignItems:'center', 
+        justifyContent:'center'
+    },
+    addressContainer:{
+        paddingVertical:0, 
+        paddingHorizontal: 15,
+        borderBottomColor: Colors.LIGHTER_GREY, 
+        borderBottomWidth:1, 
+        backgroundColor: Colors.WHITE
+    },
+    addressTextAlign:{
+        flexDirection:'row', 
+        justifyContent:'space-between',
+        alignItems:'center',
+        marginTop: 10
+    },
+    iconContainer:{
+        borderColor: Colors.LIGHTER_GREY, 
+        borderWidth:1, 
+        padding:10, 
+        borderRadius:5, 
+        marginRight:10
+    },
+    addressIconAlign:{
+        flexDirection:'row', 
+        marginVertical:10
+    },
+    addressText:{
+        fontWeight:'900', 
+        width: '70%', 
+        fontSize:18,
+        color: Colors.BLACK
+    },
+    label:{
+        fontWeight:'bold', 
+        fontSize: 18
     },
     rbView:{
         alignItems:'center',
@@ -322,10 +406,7 @@ const styles = StyleSheet.create({
         fontWeight:'bold', 
         color: Colors.ORANGE
     },
-    label:{
-        fontWeight:'bold', 
-        fontSize: 18
-    },
+    
     totalTitle:{
         flex:3, 
         marginRight:10, 
@@ -357,14 +438,7 @@ const styles = StyleSheet.create({
         marginTop:15, 
         height:50
     },
-    backDropText:{
-        color: Colors.LIGHTER_GREY
-    },
-    backDropContainer:{
-        height:100, 
-        alignItems:'center', 
-        justifyContent:'center'
-    },
+    
     subTotal:{
         marginTop:15, 
         flexDirection:'row', 
@@ -424,33 +498,6 @@ const styles = StyleSheet.create({
         padding:20,
         justifyContent:'flex-start'
     },
-    addressContainer:{
-        padding:20, 
-        borderBottomColor: Colors.LIGHTER_GREY, 
-        borderBottomWidth:1, 
-        backgroundColor: Colors.WHITE
-    },
-    addressTextAlign:{
-        flexDirection:'row', 
-        justifyContent:'space-between',
-        alignItems:'center'
-    },
-    iconContainer:{
-        borderColor: Colors.LIGHTER_GREY, 
-        borderWidth:1, 
-        padding:10, 
-        borderRadius:5, 
-        marginRight:10
-    },
-    addressIconAlign:{
-        flexDirection:'row', 
-        marginVertical:10
-    },
-    addressText:{
-        fontWeight:'900', 
-        width: '70%', 
-        fontSize:18
-    },
     billDetailsContainer:{ 
         backgroundColor: Colors.WHITE, 
         padding:20 
@@ -473,6 +520,150 @@ const styles = StyleSheet.create({
         borderWidth:1, 
         borderRadius: 5
     },
+    cardItemContainer: {
+        height: 100,
+        alignSelf: 'center',
+        backgroundColor: Colors.WHITE,
+        marginVertical: 5,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.18,
+        shadowRadius: 1.00,
+        elevation: 1,
+        overflow: 'hidden',
+        paddingHorizontal: 10
+    },
+    cardNumber: {
+        fontWeight: 'bold',
+        fontSize: 18
+    },
+    expiry: {
+        fontSize: 14,
+        color: Colors.GREY
+    },
 });
 
 export default OrderReceiptScreen;
+
+// screen:{
+    //     flex:1,
+    // },
+    
+
+// const [ selectedAddress, setSelectedAddress ] = useState({})
+
+    // useEffect( async() => {
+    //     setSelectedAddress( JSON.parse( await AsyncStorage.getItem('activeAddress') ) )
+    //     console.log(selectedAddress);
+    // },[])
+
+    // const dispatch = useDispatch();
+    
+    // // const selectedAddress = useSelector( state => state.Address.activeAddress? state.Address.activeAddress : null);
+    
+    
+    // //Payment Logic
+    // const activePID = useSelector(state => state.Payment.activeMethodID)
+    // const cardList = useSelector( state => state.Payment.paymentMethods )
+    // // console.log(activePID);
+    // const activeCard = cardList?.find( item => item.id === activePID )
+    // // console.log(activeCard);
+
+    // //Order Place Handler
+
+    
+    
+
+    // // RB 
+    
+
+    // return (
+        
+    //         <View style={styles.screen}>
+    //             <ScrollView showsVerticalScrollIndicator={false}>
+    //             <View style={styles.body}>    
+    //                 {/* Address Container */}
+                    
+
+    //                 <View style={styles.billDetailsContainer} >
+    //                     <Text style={styles.label}>Bill Details</Text>
+    //                     { cartItems.map( item => {
+    //                         return(
+    //                             <View key={item.id} style={styles.itemContainer}> 
+    //                                 <View style={styles.textButtonContainer}>
+    //                                     <Text style={{flex:2}}>{item.title}</Text>
+    //                                     <View style={styles.addRemoveContainer}>
+    //                                         <TouchableOpacity onPress={() =>{ dispatch(cartActions.removeFromCart(item)) }} ><Ionicon name="remove-outline" size={20} color={ Colors.ERROR_RED }/></TouchableOpacity>
+    //                                         <Text>{item.qty}</Text>
+    //                                         <TouchableOpacity onPress={() =>{ dispatch(cartActions.addToCart(item)) }}><Ionicon name="add-outline" size={20} color={ Colors.GREEN }/></TouchableOpacity>
+    //                                     </View>
+    //                                 </View>
+    //                                 <View style={{flex:1}}>
+    //                                     <Text>$ {item.itemTotal.toFixed(2)}</Text>
+    //                                 </View>
+    //                             </View>
+    //                         )
+    //                     } ) }
+
+    //                     { cartItems.length !== 0 ?
+    //                     <View>
+    //                         <View style={styles.serviceChargeContainer}>
+    //                             <Text style={styles.transactionTitle}>Service Charges</Text>
+    //                             <Text style={{flex:1}}>$ 1.00</Text>
+    //                         </View>
+    //                         <View style={styles.deliveryFee}>
+    //                             <Text style={styles.transactionTitle}>Delivery Fee</Text>
+    //                             <Text style={{flex:1}}>$ {deliveryFee.toFixed(2)}</Text>
+    //                         </View>
+
+
+    //                         {discountApplied ? 
+    //                         <View style={styles.deliveryFee}>
+    //                             <Text style={styles.discountTitle}>Code <Text style={{fontWeight:'bold'}}>{discountApplied}</Text> applied</Text>
+    //                             <View style={{flex:1}}>
+    //                                 <Text style={styles.discountAmount}>- ${discountAmount.toFixed(2)}</Text>
+    //                                 <TouchableOpacity onPress={ () => { dispatch(cartActions.removeDiscount()) }}><Text style={styles.remove}>Remove</Text></TouchableOpacity>
+    //                             </View>
+    //                         </View>   
+    //                         :
+    //                         <TouchableOpacity style={styles.couponCodeContainer} onPress={ () => { props.navigation.navigate('Discount') } } >
+    //                             <Text style={{flex:3,fontWeight:'bold'}}>Apply Coupon Code</Text>
+    //                             <Text style={{...styles.label, color: Colors.ORANGE, flex:1}}>CHECK</Text>
+    //                         </TouchableOpacity>}
+
+
+    //                         <View style={styles.subTotal}>
+    //                             <Text style={styles.transactionTitle}>Sub Total</Text>
+    //                             <Text style={{flex:1}}>$ {updatedSubTotal.toFixed(2)}</Text>
+    //                         </View>
+    //                         <View style={styles.tax}>
+    //                             <Text style={styles.transactionTitle}>Tax</Text>
+    //                             <Text style={{flex:1}}>$ 5.10</Text>
+    //                         </View>
+    //                         <View style={styles.total}>
+    //                             <Text style={styles.totalTitle}>Total</Text>
+    //                             <Text style={{flex:1, fontWeight:'bold', fontSize:18}}>$ {total.toFixed(2)}</Text>
+    //                         </View> 
+    //                     </View>
+    //                     :
+    //                     <View style={styles.backDropContainer}>
+    //                         <Text style={{...styles.backDropText, fontSize:25}}>CART EMPTY</Text>
+    //                         <Text style={{...styles.backDropText, fontSize:15}}>Add some dishes now!</Text>
+    //                     </View>}
+
+    //                 </View>
+    //                 <Image source={Images.PAPER_TEAR} style={{width:'100%', marginBottom:25, height:25, transform:[{rotate:'180deg'}]}}/>
+                    
+    //             </View>
+
+                
+    //             </ScrollView>
+    //         </View>
+    //     </StripeProvider>
+    // )

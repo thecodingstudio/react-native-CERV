@@ -32,6 +32,18 @@ const HomeScreen = props => {
         // For tasks that need to refresh upon opening home screen
         const refresh = props.navigation.addListener('focus', () => {
             setLoading(true)
+            // setActiveAddress(JSON.parse(await AsyncStorage.getItem('activeAddress')))
+            // console.log("Active Address: \n\n",activeAddress)
+            AsyncStorage.getItem('activeAddress')
+            .then( addressObj => {
+                setActiveAddress(JSON.parse(addressObj))
+            })
+            .then(() =>{
+                console.log("Use Effect:   ",activeAddress);
+            })
+            .catch( (err) => {
+                console.log(err)
+            })
             loadHomeScreen()
         });
 
@@ -39,11 +51,14 @@ const HomeScreen = props => {
 
     }, [ props.navigation ])
 
-
+    // useEffect( () => {
+    //     console.log("\n\nACTIVE ADDRESS: ",activeAddress,"\n\n");
+    // },[activeAddress])
 
     // ---------- Functions ----------
 
-    const loadHomeScreen = async() => {
+    const loadHomeScreen = async() => {        
+
         // Banners
         const bannerResponse = await getPostLogin('/get-banners')
         if(bannerResponse.success) {
@@ -52,8 +67,7 @@ const HomeScreen = props => {
             console.log(bannerResponse);
         }
 
-        setActiveAddress(JSON.parse(await AsyncStorage.getItem('activeAddress')))
-        console.log("Active Address: \n\n",activeAddress)
+        console.log("Load Home Screen:   ",activeAddress)
         
         //Caterer
         if( activeAddress === null || activeAddress === undefined || Object.keys(activeAddress).length === 0  ) {

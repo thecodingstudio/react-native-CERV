@@ -28,9 +28,9 @@ const CreditCardDisplay = props => {
                 </View>
                 <Text style={styles.expiry}>Expires {props.exp_month} / {props.exp_year}</Text>
             </View>
-            <TouchableOpacity onPress={ () => { dispatch(paymentAction.activatePayment(props.id)) } }>
+            {props.editable ? <TouchableOpacity onPress={ () => { dispatch(paymentAction.activatePayment(props.id)) } }>
                 <Ionicon name="checkmark-circle" size={45} color={ props.id === activeCard  ? Colors.GREEN : Colors.GREY} />
-            </TouchableOpacity>
+            </TouchableOpacity> : null}
         </View>
     )
 }

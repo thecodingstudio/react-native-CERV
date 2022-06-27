@@ -57,6 +57,7 @@ const SavedAddresses = props => {
             // console.log(activeAddress)
             await AsyncStorage.setItem('activeAddress', JSON.stringify(activeAddress))
             Toast.show('Address activated successfully!')
+            props.navigation.goBack()
         }
 
     }
