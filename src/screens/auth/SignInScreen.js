@@ -38,6 +38,7 @@ const SignInScreen = props => {
         console.log(response)
         if (response.success) {
             try {
+                await AsyncStorage.setItem('role',resData.user.role.toString())
                 await AsyncStorage.setItem('token', resData.token)
                 await AsyncStorage.setItem('refreshToken', resData.refreshToken)
                 await AsyncStorage.setItem('userInfo', JSON.stringify(resData.user))
@@ -45,12 +46,21 @@ const SignInScreen = props => {
             } catch (error) {
                 console.log(error)
             }
-            props.navigation.dispatch(
-                CommonActions.reset({
-                    index:0,
-                    routes: [{name: 'Home'}]
-                })
-            )
+            if(resData.user.role === 0) {
+                props.navigation.dispatch(
+                    CommonActions.reset({
+                        index:0,
+                        routes: [{name: 'CatererHome'}]
+                    })
+                )
+            } else {
+                props.navigation.dispatch(
+                    CommonActions.reset({
+                        index:0,
+                        routes: [{name: 'Home'}]
+                    })
+                )
+            }
             setIsLoading(false);
         } else {
             if (resData.error === 'User does not exist!') {

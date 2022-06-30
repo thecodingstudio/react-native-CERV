@@ -83,6 +83,7 @@ const VerifyScreen = props => {
                 const resData = response.data
                 if( response.success ) {
                     try {
+                        await AsyncStorage.setItem('role',resData.user.role.toString())
                         await AsyncStorage.setItem('token', resData.token)
                         await AsyncStorage.setItem('refreshToken', resData.refreshToken)
                         await AsyncStorage.setItem('userInfo', JSON.stringify(resData.user))
@@ -90,12 +91,21 @@ const VerifyScreen = props => {
                     } catch (error) {
                         console.log(error)
                     }
-                    props.navigation.dispatch(
-                        CommonActions.reset({
-                            index:0,
-                            routes: [{name: 'Home'}]
-                        })
-                    )
+                    if(resData.user.role === 0) {
+                        props.navigation.dispatch(
+                            CommonActions.reset({
+                                index:0,
+                                routes: [{name: 'CatererHome'}]
+                            })
+                        )
+                    } else {
+                        props.navigation.dispatch(
+                            CommonActions.reset({
+                                index:0,
+                                routes: [{name: 'Home'}]
+                            })
+                        )
+                    }
                 } else {
                     if (resData.error === 'User does not exist!') {
                         Toast.show(" User does not exist! ");

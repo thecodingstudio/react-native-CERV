@@ -22,12 +22,20 @@ const SplashScreen = (props) => {
     const loadApp = async() => {
 
         const isLogin = await AsyncStorage.getItem('isLogin');
+        const role = await AsyncStorage.getItem('role');
         console.log(isLogin);
         if(isLogin === "1") {
-            props.navigation.dispatch(CommonActions.reset({
-                index:0,
-                routes: [{name:'Home'}]
-            }))
+            if(role === "0"){
+                props.navigation.dispatch(CommonActions.reset({
+                    index:0,
+                    routes: [{name:'CatererHome'}]
+                }))
+            } else {
+                props.navigation.dispatch(CommonActions.reset({
+                    index:0,
+                    routes: [{name:'Home'}]
+                }))
+            }
         } else {
             props.navigation.dispatch(CommonActions.reset({
                 index:0,

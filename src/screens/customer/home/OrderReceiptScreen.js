@@ -110,21 +110,24 @@ const OrderReceiptScreen = props => {
         setPaymentLoader(false)
         const { error } = await initPaymentSheet({
             customerId: getPaymentIntentResponse.data.data.customerId,
-            paymentIntentClientSecret: getPaymentIntentResponse.data.data.client_secret
+            paymentIntentClientSecret: getPaymentIntentResponse.data.data.client_secret,
+            customerEphemeralKeySecret: getPaymentIntentResponse.data.data.ephemeralKey
         })
         console.log("Init Successful!");
-        console.log(error);
-        // if(!error){
-        //     const { error } = await presentPaymentSheet()
-        //     if (error) {
-        //         Alert.alert(`Error code: ${error.code}`, error.message);
-        //       } else {
-        //         Alert.alert('Success', 'Your order is confirmed!');
-        //       }
-        // }
+
+        setTimeout(async() => {
+            try {
+                const { error } = await presentPaymentSheet()
+            } catch (e) {
+                console.log(e)
+            }
+        }, 1000)
+        // console.log(error);
+        // await presentPaymentSheet()
         // console.log("Present Error");
         // dispatch(orderActions.placeOrder(data));
         // refRBSheet.current.open()
+        
     }
 
     const rbButtonHandler = () => {
