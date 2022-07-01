@@ -28,6 +28,14 @@ const OrdersScreen = () => {
         }
     }
 
+    const dateFormatter = (date, time) => {
+        let dateString = date+'T'+time
+        const dateObj = new Date(dateString)
+        dateObj.setHours(dateObj.getHours() - 5)
+        dateObj.setMinutes(dateObj.getMinutes() - 30)
+        return `${moment(dateObj).format('DD/MM/YYYY')} at ${moment(dateObj).format('hh:mm A')}`
+    }
+
     return (
         <View style={styles.screen}>
 
@@ -115,9 +123,39 @@ const OrdersScreen = () => {
                                 } )}
                             </ScrollView>
                             :
-                            <View>
-                                <Text>Past Orders</Text>
-                            </View>
+                            <ScrollView showsVerticalScrollIndicator={false}>
+                                {orders.map( order => {
+                                    // console.log(order)
+                                    return(
+                                        <TouchableOpacity key={order.id} style={styles.currentOrderItemContainer}>
+
+                                            <View style={{height:75, width:'100%', flexDirection:'row'}}>
+                                                <Image source={{uri: order.user.image}} style={{height: '100%', aspectRatio:1}}/>
+                                                <View style={{height:'100%', justifyContent:'space-evenly', marginLeft: 10}}>
+                                                    <Text style={{fontWeight:'bold', fontSize:18}}>{order.user.name}</Text>
+                                                    <Text>{order.address.address}</Text>
+                                                    <Text>{moment(order.date).format('DD/MM/YYYY')}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={{height:0 , width:'100%', borderWidth:0.25, borderColor: Colors.LIGHTER_GREY, marginVertical: 10}} />
+                                            {order.orderItems.map( item => {
+                                                return(
+                                                    <View key={item.id} style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
+                                                        <Text style={{flex:5}}>{item.item.title}</Text>
+                                                        <Text style={{flex:1}}>$ {item.itemTotal}</Text>
+                                                    </View>
+                                                )
+                                            } )}
+                                            <View style={{height:0 , width:'100%', borderWidth:0.25, borderColor: Colors.LIGHTER_GREY, marginVertical: 10}} />
+
+                                            {order.status === 4 && <Text style={styles.completedOrder}>• Completed on {dateFormatter(order.date, order.time)}</Text>}
+                                            {order.status === 5 && <Text style={styles.cancelledOrder}>• Cancelled by user</Text>}
+                                            {order.status === 6 && <Text style={styles.rejectedOrder}>• Order rejected</Text>}
+                                        
+                                        </TouchableOpacity>
+                                    )
+                                } )}
+                            </ScrollView>
                 }
             </View>
 
@@ -181,5 +219,20 @@ const styles = StyleSheet.create({
         fontWeight:'bold',
         fontSize: 15,
         color: Colors.WHITE
+    },
+    completedOrder:{
+        fontWeight:'bold',
+        color: Colors.GREEN,
+        fontSize: 16
+    },
+    cancelledOrder:{
+        fontWeight:'bold',
+        color: Colors.ERROR_RED,
+        fontSize: 16
+    },
+    rejectedOrder:{
+        fontWeight:'bold',
+        color: Colors.ERROR_RED,
+        fontSize: 16
     }
 })
