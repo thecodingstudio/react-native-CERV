@@ -55,6 +55,7 @@ const OrdersScreen = () => {
                         state === '1' ?
                             <ScrollView showsVerticalScrollIndicator={false}>
                                 {orders.map( order => {
+                                    // console.log(order)
                                     return(
                                         <TouchableOpacity key={order.id} style={styles.currentOrderItemContainer}>
 
@@ -76,6 +77,38 @@ const OrdersScreen = () => {
                                                 )
                                             } )}
                                             <View style={{height:0 , width:'100%', borderWidth:0.25, borderColor: Colors.LIGHTER_GREY, marginVertical: 10}} />
+
+                                            <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-evenly'}}>
+                                                { 
+                                                    order.status === 0 && 
+                                                    <>
+                                                        <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.GREEN}]} activeOpacity={0.6}>
+                                                            <Text style={styles.orderButtonText}>ACCEPT ORDER</Text>
+                                                        </TouchableOpacity>
+                                                        <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ERROR_RED}]} activeOpacity={0.6}>
+                                                            <Text style={styles.orderButtonText}>REJECT ORDER</Text>
+                                                        </TouchableOpacity>
+                                                    </>
+                                                }
+                                                { 
+                                                    order.status === 1 && 
+                                                    <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} activeOpacity={0.6}>
+                                                        <Text style={styles.orderButtonText}>START PREPARING</Text>
+                                                    </TouchableOpacity>
+                                                }
+                                                { 
+                                                    order.status === 2 && 
+                                                    <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} activeOpacity={0.6}>
+                                                        <Text style={styles.orderButtonText}>DISPATCH ORDER</Text>
+                                                    </TouchableOpacity>
+                                                }
+                                                { 
+                                                    order.status === 3 && 
+                                                    <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} activeOpacity={0.6}>
+                                                        <Text style={styles.orderButtonText}>COMPLETE ORDER</Text>
+                                                    </TouchableOpacity>
+                                                }
+                                            </View>
                                         
                                         </TouchableOpacity>
                                     )
@@ -97,7 +130,7 @@ export default OrdersScreen
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: Colors.BACKGROUND_GREY
+        backgroundColor: Colors.BACKGROUND_GREY,
     },
     currentPastButtonContainer: {
         paddingHorizontal: 30,
@@ -105,6 +138,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'center',
+        marginBottom: 10,
         backgroundColor: Colors.WHITE,
         flex: 1,
         shadowColor: Colors.BLACK,
@@ -129,6 +163,23 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
     currentOrderItemContainer:{
-        padding:10
+        padding:10,
+        backgroundColor: Colors.WHITE,
+        marginHorizontal:10,
+        borderRadius:15,
+        borderColor: Colors.LIGHTER_GREY,
+        borderWidth:0.5
+    },
+    orderButton:{
+        width:'45%',
+        paddingVertical:10,
+        borderRadius: 5,
+        alignItems:'center',
+        justifyContent:'center'
+    },
+    orderButtonText:{
+        fontWeight:'bold',
+        fontSize: 15,
+        color: Colors.WHITE
     }
 })

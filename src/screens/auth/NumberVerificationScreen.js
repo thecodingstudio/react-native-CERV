@@ -26,6 +26,7 @@ const NumberVerificationScreen = props => {
             channel: "sms"
         }
         const response = await postPreLogin('/users/generateOTP', OTPData);
+        console.log(response);
         let errorMsg = 'Something went wrong!';
         if (response.success) {
             props.navigation.navigate('VerifyScreen',{countryCode: countryCode, phoneNumber: phoneNumber, params})
