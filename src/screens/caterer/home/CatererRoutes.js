@@ -3,19 +3,24 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { Colors } from '../../../CommonConfig';
 
 //Menu Screens
 import MenuScreen from './menu/MenuScreen';
-import { Colors } from '../../../CommonConfig';
-import OrdersScreen from './orders/OrdersScreen';
-import ChatScreen from './chat/ChatScreen';
-import ProfileScreen from './profile/ProfileScreen';
+import CategoryItems from './menu/CategoryItems';
+import DishDetailScreen from './menu/DishDetailScreen';
 
 //Order Screens
+import OrdersScreen from './orders/OrdersScreen';
 
 //Chat Screens
+import ChatScreen from './chat/ChatScreen';
 
 //Profile Screens
+import ProfileScreen from './profile/ProfileScreen';
+import SavedDiscountCodes from './profile/Discount Codes/SavedDiscountCodes';
+import EditCoupons from './profile/Discount Codes/EditCoupons';
+import ChangePassword from './profile/ChangePassword';
 
 const MenuStack = createStackNavigator()
 const OrderStack = createStackNavigator()
@@ -36,6 +41,40 @@ const MenuStackScreen = () => {
                 options={{
                     headerTitle: 'Menu'
                 }}
+            />
+            <MenuStack.Screen 
+                name='CategoryItems'
+                component={CategoryItems}
+                options={{
+                    headerTitle: 'Product',
+                    headerStyle: {
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                    },
+                }}
+            />
+            <MenuStack.Screen 
+                name='DishDetail'
+                component={DishDetailScreen}
+                options={ ({route}) => ({
+                    headerTitle: route.params.mode === 'view' ? 'Product Details' : route.params.mode === 'edit' ? 'Edit Product' : 'Add Product',
+                    headerStyle: {
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                    },
+                })}
             />
         </MenuStack.Navigator>
     )
@@ -104,6 +143,57 @@ const ProfileStackScreen = () => {
                     },
                 }}
             />
+            <ProfileStack.Screen 
+                name='SavedDiscountCodes'
+                component={SavedDiscountCodes}
+                options={{
+                    headerTitle: 'Discount Codes',
+                    headerStyle: {
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                    },
+                }}
+            />
+            <ProfileStack.Screen 
+                name='EditCoupon'
+                component={EditCoupons}
+                options={ ({route}) => ({
+                    headerTitle: route.params.mode === 'edit' ? 'Edit Discount Code' : 'Create Discount Code',
+                    headerStyle: {
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                    },
+                })}
+            />
+            <ProfileStack.Screen 
+                name='ChangePassword'
+                component={ChangePassword}
+                options={{
+                    headerTitle: 'Change Password',
+                    headerStyle: {
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                    },
+                }}
+            />
         </ProfileStack.Navigator>
     )
 }
@@ -112,7 +202,7 @@ const CatererTab = createBottomTabNavigator()
 const CatererRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = []
+        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail']
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
     }

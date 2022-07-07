@@ -31,10 +31,12 @@ const MenuScreen = ({navigation}) => {
 
     const renderCategoryItem = ({item}) => {
         return(
-            <View style={styles.categoryItem}>
+            <TouchableOpacity style={styles.categoryItem} activeOpacity={0.6} onPress={() => { 
+                navigation.navigate('CategoryItems',{ item })
+            }}>
                 {/* Image & Title */}
                 <View style={{flex:6,flexDirection:'row', alignItems:'center'}}>
-                    <Image source={{uri: item.image}} style={{height: '100%', aspectRatio: 1, borderRadius:10, marginRight: 10}}/>
+                    <Image source={{uri: item.image}} style={styles.categoryImage}/>
                     <Text style={styles.categoryTitle}>{item.title}</Text>
                 </View>
                 {/* Buttons */}
@@ -48,7 +50,7 @@ const MenuScreen = ({navigation}) => {
                 </View>
 
                 <Ionicons name='chevron-forward' color={Colors.GREY} size={25}/>
-            </View>
+            </TouchableOpacity>
         )
     }
 
@@ -62,7 +64,7 @@ const MenuScreen = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle='dark-content'/>
+            <StatusBar barStyle='dark-content' backgroundColor={Colors.WHITE}/>
             <FlatList 
                 data={categories}
                 keyExtractor={item => item.id}
@@ -105,6 +107,12 @@ const styles = StyleSheet.create({
     categoryTitle:{
         fontWeight:'bold',
         fontSize: 18
+    },
+    categoryImage:{
+        height: '100%', 
+        aspectRatio: 1, 
+        borderRadius:10, 
+        marginRight: 10
     },
     actionBtn:{
         height: 35,

@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import ProfileOption from '../../../../components/profileOption'
 import { CommonActions } from '@react-navigation/native' 
 
-const ProfileScreen = (props) => {
+const ProfileScreen = ({navigation}) => {
 
     const [loading, setLoading] = useState(true)
     const [ user, setUser ] = useState({})
@@ -39,13 +39,13 @@ const ProfileScreen = (props) => {
             />
 
             {/* Payment Method */}
-            <ProfileOption 
+            {/* <ProfileOption 
                 title = "Payment Method"
                 leftIcon = "wallet-outline"
                 rightIcon = "chevron-forward-outline"
                 onPress={() => {
                 }}
-            />
+            /> */}
 
             {/* Saved Address */}
             <ProfileOption 
@@ -53,6 +53,7 @@ const ProfileScreen = (props) => {
                 leftIcon = "film-outline"
                 rightIcon = "chevron-forward-outline"
                 onPress={() => {
+                    navigation.navigate('SavedDiscountCodes')
                 }}
             />
 
@@ -62,6 +63,7 @@ const ProfileScreen = (props) => {
                 leftIcon = "lock-open-outline"
                 rightIcon = "chevron-forward-outline"
                 onPress={() => {
+                    navigation.navigate('ChangePassword')
                 }}
             />
 
@@ -72,7 +74,7 @@ const ProfileScreen = (props) => {
                 onPress={ () => {
                     AsyncStorage.clear()
                     AsyncStorage.setItem('isLogin', "0")
-                    props.navigation.dispatch(
+                    navigation.dispatch(
                         CommonActions.reset({
                             index:0,
                             routes:[{name:'Auth'}]

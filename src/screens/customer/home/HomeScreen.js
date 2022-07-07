@@ -30,21 +30,21 @@ const HomeScreen = props => {
     useEffect( () => {
 
         // For tasks that need to refresh upon opening home screen
-        const refresh = props.navigation.addListener('focus', () => {
+        const refresh = props.navigation.addListener('focus', async() => {
             setLoading(true)
             // setActiveAddress(JSON.parse(await AsyncStorage.getItem('activeAddress')))
             // console.log("Active Address: \n\n",activeAddress)
-            AsyncStorage.getItem('activeAddress')
+            await AsyncStorage.getItem('activeAddress')
             .then( addressObj => {
                 setActiveAddress(JSON.parse(addressObj))
-            })
-            .then(() =>{
                 console.log("Use Effect:   ",activeAddress);
+            })
+            .then(() => {
+                loadHomeScreen()
             })
             .catch( (err) => {
                 console.log(err)
             })
-            loadHomeScreen()
         });
 
         return refresh;

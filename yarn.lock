@@ -7163,7 +7163,7 @@
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-18.2.0.tgz"
   "version" "18.2.0"
 
-"react-native-animatable@^1.3.3":
+"react-native-animatable@^1.3.3", "react-native-animatable@1.3.3":
   "integrity" "sha512-2ckIxZQAsvWn25Ho+DK3d1mXIgj7tITkrS4pYDvx96WyOttSvzzFeQnM2od0+FUMzILbdHDsDEqZvnz1DYNQ1w=="
   "resolved" "https://registry.npmjs.org/react-native-animatable/-/react-native-animatable-1.3.3.tgz"
   "version" "1.3.3"
@@ -7330,6 +7330,14 @@
   "version" "13.1.2"
   dependencies:
     "prop-types" "^15.7.2"
+
+"react-native-modal@^13.0.1":
+  "integrity" "sha512-UB+mjmUtf+miaG/sDhOikRfBOv0gJdBU2ZE1HtFWp6UixW9jCk/bhGdHUgmZljbPpp0RaO/6YiMmQSSK3kkMaw=="
+  "resolved" "https://registry.npmjs.org/react-native-modal/-/react-native-modal-13.0.1.tgz"
+  "version" "13.0.1"
+  dependencies:
+    "prop-types" "^15.6.2"
+    "react-native-animatable" "1.3.3"
 
 "react-native-month-picker@^1.0.1":
   "integrity" "sha512-evQ4asv45XekHNgVi37kzev3IOm5OCZ/Am+d8Uup61voTUerDtytE77E/NHjn0vNK2qv5+qdxYvK7SlAHZwl8w=="
