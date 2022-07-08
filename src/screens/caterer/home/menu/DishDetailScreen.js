@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View, TextInput, Dimensions, Modal } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, TextInput, Dimensions, Modal, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { Colors } from '../../../../CommonConfig';
 import { Formik } from 'formik';
@@ -6,6 +6,8 @@ import * as yup from 'yup';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import ImagePicker from 'react-native-image-crop-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-simple-toast';
 
 const DishDetailScreen = ({route, navigation}) => {
 
@@ -15,14 +17,13 @@ const DishDetailScreen = ({route, navigation}) => {
     const isAddMode = mode ==='add' ? true : false
     const isEditMode = mode === 'edit' ? true : false
 
+    const [loading, setLoading ] = useState(false)
     const [selectedImage, setSelectedImage] = useState(null)
     const [modalVisible, setModalVisible] = useState(false);
     const [showError, setShowError ] = useState(false)
 
     const takeFromCamera = () => {
         ImagePicker.openCamera({
-            width: Dimensions.get('screen').width,
-            height: 200,
             cropping: true,
         }).then(image => {
             // dispatch(registerActions.addImage(image))
@@ -33,8 +34,6 @@ const DishDetailScreen = ({route, navigation}) => {
 
     const pickFromGallery = () => {
         ImagePicker.openPicker({
-            width: Dimensions.get('screen').width,
-            height: 200,
             cropping: true
         }).then(image => {
             // dispatch(registerActions.addImage(image))
@@ -43,12 +42,86 @@ const DishDetailScreen = ({route, navigation}) => {
         });
     }
 
+    // Random Name generator for images
+    const makeid = (length) => {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+       return result;
+    }
+
     const addDish = async(values) => {
-        console.log("Add Mode: \n\n",values);
+        setLoading(true)
+        const newDish = new FormData()
+        newDish.append('image',{ uri: values.selectedImage.path, type: values.selectedImage.mime, name: makeid(10) })
+        newDish.append('title', values.dishName)
+        newDish.append('categoryId', values.categoryId)
+        newDish.append('price', parseFloat(values.price))
+        newDish.append('description', values.description)
+
+        const res = await fetch('https://cerv-api.herokuapp.com/caterer/add-item',{
+            method: 'POST',
+            headers:{
+                "Content-Type" : "multipart/form-data",
+                "Authorization" : 'Bearer ' + ( await AsyncStorage.getItem('token') )
+            },
+            body: newDish
+        })
+        const response = await res.json()
+        
+        if(response.status === 1){
+            Toast.show("Dish added successfully!")
+            navigation.goBack()
+            setLoading(false)
+        } else {
+            Toast.show("Something went wrong!")
+            navigation.goBack()
+            setLoading(false)
+        }
     }
 
     const editDish = async(values) => {
-        console.log("Edit Mode: \n\n",values);
+        setLoading(true)
+        const updateDish = new FormData()
+        if(values.selectedImage){
+            updateDish.append('image',{ uri: values.selectedImage.path, type: values.selectedImage.mime, name: makeid(10) })
+        }
+        updateDish.append('title', values.dishName)
+        updateDish.append('description', values.description)
+        updateDish.append('price', parseFloat(values.price))
+        
+        // console.log(await AsyncStorage.getItem('token'));
+
+        const res = await fetch(`https://cerv-api.herokuapp.com/caterer/edit-item/${values.id}`,{
+            method: 'PUT',
+            headers:{
+                "Content-Type" : "multipart/form-data",
+                "Authorization" : 'Bearer ' + ( await AsyncStorage.getItem('token') )
+            },
+            body: updateDish
+        })
+        const response = await res.json()
+        
+        if(response.status === 1){
+            Toast.show("Dish updated successfully!")
+            navigation.pop(2)
+            setLoading(false)
+        } else {
+            Toast.show("Something went wrong!")
+            navigation.pop(2)
+            setLoading(false)
+        }
+    }
+
+    if(loading){
+        return(
+            <View style={styles.loader}>
+                <ActivityIndicator size={65} color={Colors.ORANGE}/>
+            </View>
+        )
     }
 
     return (
@@ -89,10 +162,29 @@ const DishDetailScreen = ({route, navigation}) => {
             <Text style={styles.label}>Product Photo</Text>
             <View style={styles.imageContainer}>
                 {(isEditMode || isViewMode) && <Image source={{uri: selectedImage ? selectedImage.path : selectedDish.image}} style={{height:'100%', width:'100%'}} resizeMode={'cover'}/>}
-                {isAddMode && <Image source={{uri: selectedImage?.path }} style={{height:'100%', width:'100%'}} resizeMode={'cover'}/>}
-                {(isEditMode || isAddMode) && <TouchableOpacity style={styles.cameraBtn} onPress={() => {setModalVisible(true)}}>
-                    <Ionicons name={'camera'} size={25} color={Colors.WHITE}/>
-                </TouchableOpacity>}
+                {isAddMode && ( selectedImage ? 
+                        <Image source={{uri: selectedImage.path }} style={{height:'100%', width:'100%'}} resizeMode={'cover'}/> 
+                        : 
+                        <TouchableOpacity style={{flex:1, backgroundColor: Colors.LIGHTEST_GREY, alignItems:'center', justifyContent:'center'}} onPress={() => {setModalVisible(true)}}>
+                            <Ionicons name={'camera'} size={100} color={Colors.WHITE}/>
+                        </TouchableOpacity>
+                    )}
+                {isAddMode && selectedImage && 
+                    <TouchableOpacity style={styles.deleteImageBtn} onPress={() => {setSelectedImage(null)}}>
+                        <Ionicons name={'close'} size={25} color={Colors.WHITE}/>
+                    </TouchableOpacity>
+                    
+                }
+                {isEditMode && !selectedImage && 
+                    <TouchableOpacity style={[styles.deleteImageBtn,{ backgroundColor: Colors.ORANGE }]} onPress={() => {setModalVisible(true)}}>
+                        <Ionicons name={'camera'} size={25} color={Colors.WHITE}/>
+                    </TouchableOpacity>
+                }
+                {isEditMode && selectedImage && 
+                    <TouchableOpacity style={styles.deleteImageBtn} onPress={() => {setSelectedImage(null)}}>
+                        <Ionicons name={'close'} size={25} color={Colors.WHITE}/>
+                    </TouchableOpacity>
+                }
             </View>
             { isAddMode && !selectedImage && showError && <Text style={{ fontSize: 11, color: Colors.ERROR_RED, margin: 10 }}>Please select an image for the dish</Text> }
 
@@ -217,6 +309,11 @@ const DishDetailScreen = ({route, navigation}) => {
 export default DishDetailScreen
 
 const styles = StyleSheet.create({
+    loader:{
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center'
+    },
     screen:{
         flex:1,
         backgroundColor: Colors.WHITE,
@@ -273,6 +370,16 @@ const styles = StyleSheet.create({
     },
     cameraBtn:{
         backgroundColor: Colors.ORANGE, 
+        height:40, 
+        width:40, 
+        alignItems:'center', 
+        justifyContent:'center',
+        borderRadius:40,
+        position:'absolute',
+        right:5,
+    },
+    deleteImageBtn:{
+        backgroundColor: Colors.ERROR_RED, 
         height:40, 
         width:40, 
         alignItems:'center', 

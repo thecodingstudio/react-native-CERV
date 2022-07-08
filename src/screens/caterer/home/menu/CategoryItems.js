@@ -151,15 +151,16 @@ const styles = StyleSheet.create({
     },
     dishDetailContainer:{
         flex:3,
-        justifyContent:'space-evenly',
+        justifyContent:'space-between',
         marginLeft: 10
     },
     dishName:{
         fontWeight:'bold',
-        fontSize: 18
+        fontSize: 24
     },
     description:{
-        color: Colors.GREY
+        color: Colors.GREY,
+        fontSize:16,
     },
     modal:{
         backgroundColor: Colors.WHITE,

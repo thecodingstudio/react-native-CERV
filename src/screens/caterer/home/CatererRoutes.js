@@ -9,6 +9,7 @@ import { Colors } from '../../../CommonConfig';
 import MenuScreen from './menu/MenuScreen';
 import CategoryItems from './menu/CategoryItems';
 import DishDetailScreen from './menu/DishDetailScreen';
+import AddEditCategory from './menu/AddEditCategory';
 
 //Order Screens
 import OrdersScreen from './orders/OrdersScreen';
@@ -64,6 +65,23 @@ const MenuStackScreen = () => {
                 component={DishDetailScreen}
                 options={ ({route}) => ({
                     headerTitle: route.params.mode === 'view' ? 'Product Details' : route.params.mode === 'edit' ? 'Edit Product' : 'Add Product',
+                    headerStyle: {
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                    },
+                })}
+            />
+            <MenuStack.Screen 
+                name='AddEditCategory'
+                component={AddEditCategory}
+                options={ ({route}) => ({
+                    headerTitle: route.params.mode === 'edit' ? 'Edit Category' : 'Add Category',
                     headerStyle: {
                         shadowColor: "#000",
                         shadowOffset: {
@@ -202,7 +220,7 @@ const CatererTab = createBottomTabNavigator()
 const CatererRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail']
+        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail','AddEditCategory']
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
     }

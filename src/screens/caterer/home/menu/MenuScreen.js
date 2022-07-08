@@ -41,7 +41,9 @@ const MenuScreen = ({navigation}) => {
                 </View>
                 {/* Buttons */}
                 <View style={{flex:1, justifyContent:'space-evenly', height:'100%'}}>
-                    <TouchableOpacity style={styles.actionBtn}>
+                    <TouchableOpacity style={styles.actionBtn} onPress={() => {
+                        navigation.navigate('AddEditCategory',{ mode: 'edit', selectedCategory: item })
+                    }}>
                         <Ionicons name='pencil' color={Colors.GREEN} size={20}/>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.actionBtn}>
@@ -71,7 +73,9 @@ const MenuScreen = ({navigation}) => {
                 renderItem={renderCategoryItem}
                 ItemSeparatorComponent={() => <View style={styles.separator}/>}
             />
-            <TouchableOpacity style={styles.addBtn}>
+            <TouchableOpacity style={styles.addBtn} onPress={() => {
+                navigation.navigate('AddEditCategory', { mode:'add' })
+            }}>
                 <Ionicons name='add' color={Colors.WHITE} size={60}/>
             </TouchableOpacity>
         </View>
@@ -130,10 +134,17 @@ const styles = StyleSheet.create({
         width:70,
         height:70,
         borderRadius: 40,
-        // alignSelf:'flex-end',
         position:'absolute',
         zIndex: 10, 
         bottom: 20,
-        right: 20
+        right: 20,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+        elevation: 5,
     }
 })
