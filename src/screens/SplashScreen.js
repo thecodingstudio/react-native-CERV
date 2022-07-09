@@ -10,7 +10,6 @@ const SplashScreen = (props) => {
 
     useEffect( () => {
         messaging().getToken().then( async(token) => { 
-            // console.log("\n\nDevice Token: ",typeof(token))
             await AsyncStorage.setItem('deviceToken', token)
          });
     },[])
@@ -23,17 +22,21 @@ const SplashScreen = (props) => {
 
         const isLogin = await AsyncStorage.getItem('isLogin');
         const role = await AsyncStorage.getItem('role');
-        console.log(isLogin);
         if(isLogin === "1") {
             if(role === "0"){
                 props.navigation.dispatch(CommonActions.reset({
                     index:0,
                     routes: [{name:'CatererHome'}]
                 }))
-            } else {
+            } else if(role === "1") {
                 props.navigation.dispatch(CommonActions.reset({
                     index:0,
                     routes: [{name:'Home'}]
+                }))
+            } else {
+                props.navigation.dispatch(CommonActions.reset({
+                    index:0,
+                    routes: [{name:'Auth'}]
                 }))
             }
         } else {

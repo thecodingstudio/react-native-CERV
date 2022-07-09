@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, ScrollView, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Colors } from '../../../../CommonConfig';
-import { getPostLogin } from '../../../../helpers/ApiHelpers';
+import { getPostLogin, postPostLogin } from '../../../../helpers/ApiHelpers';
 import moment from 'moment';
+import Toast from 'react-native-simple-toast';
 
 const OrdersScreen = () => {
 
@@ -13,11 +14,11 @@ const OrdersScreen = () => {
 
     useEffect( () => {
         getOrders()
-    },[state,loading])
+    },[state])
 
     const getOrders = async() => {
+        setLoading(true)
         const response = await getPostLogin(`/caterer/getOrders/${state}`)
-        // console.log(`\n\n${state}          \n`,response);
         if (response.success) {
             setLength(response.data.length)
             setOrders(response.data.orders)
@@ -34,6 +35,34 @@ const OrdersScreen = () => {
         dateObj.setHours(dateObj.getHours() - 5)
         dateObj.setMinutes(dateObj.getMinutes() - 30)
         return `${moment(dateObj).format('DD/MM/YYYY')} at ${moment(dateObj).format('hh:mm A')}`
+    }
+
+    const acceptHandler = async( accOrder ) => {
+        // console.log(accOrder);
+        setLoading(true)
+        const response = await postPostLogin(`/caterer/accept-order/${accOrder.id}`)
+        // console.log(response);
+        if(response.success){
+            Toast.show('Order accepted!')
+            getOrders()
+        } else {
+            Toast.show('Something went wrong!')
+            getOrders()
+        }
+    }
+
+    const rejectHandler = async( rejOrder ) => {
+        // console.log(rejOrder);
+        setLoading(true)
+        const response = await postPostLogin(`/caterer/reject-order/${rejOrder.id}`)
+        // console.log(response);
+        if(response.success){
+            Toast.show('Order rejected!')
+            getOrders()
+        } else {
+            Toast.show('Something went wrong!')
+            getOrders()
+        }
     }
 
     return (
@@ -77,10 +106,11 @@ const OrdersScreen = () => {
                                             </View>
                                             <View style={{height:0 , width:'100%', borderWidth:0.25, borderColor: Colors.LIGHTER_GREY, marginVertical: 10}} />
                                             {order.orderItems.map( item => {
+                                                // console.log(item);
                                                 return(
                                                     <View key={item.id} style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-                                                        <Text style={{flex:5}}>{item.item.title}</Text>
-                                                        <Text style={{flex:1}}>$ {item.itemTotal}</Text>
+                                                        <Text style={{flex:5}}>{item.item?.title}</Text>
+                                                        <Text style={{flex:1}}>$ {item?.itemTotal}</Text>
                                                     </View>
                                                 )
                                             } )}
@@ -90,10 +120,10 @@ const OrdersScreen = () => {
                                                 { 
                                                     order.status === 0 && 
                                                     <>
-                                                        <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.GREEN}]} activeOpacity={0.6}>
+                                                        <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.GREEN}]} activeOpacity={0.6} onPress={() => acceptHandler(order)}>
                                                             <Text style={styles.orderButtonText}>ACCEPT ORDER</Text>
                                                         </TouchableOpacity>
-                                                        <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ERROR_RED}]} activeOpacity={0.6}>
+                                                        <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ERROR_RED}]} activeOpacity={0.6} onPress={() => rejectHandler(order)}>
                                                             <Text style={styles.orderButtonText}>REJECT ORDER</Text>
                                                         </TouchableOpacity>
                                                     </>
@@ -141,8 +171,8 @@ const OrdersScreen = () => {
                                             {order.orderItems.map( item => {
                                                 return(
                                                     <View key={item.id} style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-                                                        <Text style={{flex:5}}>{item.item.title}</Text>
-                                                        <Text style={{flex:1}}>$ {item.itemTotal}</Text>
+                                                        <Text style={{flex:5}}>{item.item?.title}</Text>
+                                                        <Text style={{flex:1}}>$ {item?.itemTotal}</Text>
                                                     </View>
                                                 )
                                             } )}
@@ -204,6 +234,7 @@ const styles = StyleSheet.create({
         padding:10,
         backgroundColor: Colors.WHITE,
         marginHorizontal:10,
+        marginBottom:10,
         borderRadius:15,
         borderColor: Colors.LIGHTER_GREY,
         borderWidth:0.5

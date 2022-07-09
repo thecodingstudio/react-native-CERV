@@ -1,23 +1,27 @@
-import { ActivityIndicator, FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View, Modal, Dimensions } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { getPostLogin } from '../../../../helpers/ApiHelpers'
+import { getPostLogin, deletePostLogin } from '../../../../helpers/ApiHelpers'
 import { Colors } from '../../../../CommonConfig'
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Toast from 'react-native-simple-toast'
 
 const MenuScreen = ({navigation}) => {
+
     const [ loading, setLoading ] = useState(true)
     const [ categories, setCategories ] = useState([])
+    const [ categoryToDelete, setCategoryToDelete ] = useState({})
+    const [ showDeleteModal, setShowDeleteModal ] = useState(false)
 
     useEffect(() => {
         const refresh = navigation.addListener('focus', () => {
-            setLoading(true)
             getCategories()
         })
-
+        
         return refresh
     },[navigation])
-
+    
     const getCategories = async() => {
+        setLoading(true)
         const categoriesResponse = await getPostLogin('/caterer/categories')
         // console.log(categoriesResponse);
         if(categoriesResponse.success) {
@@ -26,6 +30,20 @@ const MenuScreen = ({navigation}) => {
         } else {
             console.log(categoriesResponse);
             setLoading(false)
+        }
+    }
+
+    const deleteHandler = async() => {
+        setLoading(true)
+        const response = await deletePostLogin(`/caterer/delete-category/${categoryToDelete.id}`)
+        if(response.success) {
+            Toast.show('Category deleted successfully!')
+            getCategories()
+            setShowDeleteModal(false)
+        } else {
+            Toast.show('Something went wrong!')
+            getCategories()
+            setShowDeleteModal(false)
         }
     }
 
@@ -46,7 +64,10 @@ const MenuScreen = ({navigation}) => {
                     }}>
                         <Ionicons name='pencil' color={Colors.GREEN} size={20}/>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.actionBtn}>
+                    <TouchableOpacity style={styles.actionBtn} onPress={() => {
+                        setCategoryToDelete(item)
+                        setShowDeleteModal(true)
+                    }} >
                         <Ionicons name='trash' color={Colors.ERROR_RED} size={20}/>
                     </TouchableOpacity>
                 </View>
@@ -67,6 +88,28 @@ const MenuScreen = ({navigation}) => {
     return (
         <View style={styles.container}>
             <StatusBar barStyle='dark-content' backgroundColor={Colors.WHITE}/>
+            <Modal
+                visible={showDeleteModal}
+                animationType={'fade'}
+                transparent={true}
+            >
+                <View style={{flex:1, justifyContent:'center', alignItems:'center', backgroundColor: 'rgba(0,0,0,0.5)'}}>
+                    <StatusBar backgroundColor={'rgba(0,0,0,0.5)'}/>
+                    <View style={styles.modal}>
+                        <View style={{paddingVertical:50}}>
+                            <Text style={styles.text}>Are you sure you want to delete this item ?</Text>
+                        </View>
+                        <View style={styles.btnContainer}>
+                            <TouchableOpacity activeOpacity={0.4} style={[styles.modalBtn,{ borderRightColor: Colors.GREY, borderRightWidth:0.25 }]} onPress={() => {setShowDeleteModal(false)}}>
+                                <Text style={[styles.label,{color: Colors.GREY}]}>CANCEL</Text>
+                            </TouchableOpacity >
+                            <TouchableOpacity activeOpacity={0.4} style={[styles.modalBtn,{ borderLeftColor: Colors.GREY, borderLeftWidth:0.25 }]} onPress={deleteHandler}>
+                                <Text style={[styles.label,{color: Colors.ORANGE}]}>OKAY</Text>
+                            </TouchableOpacity >
+                        </View>
+                    </View>
+                </View>
+            </Modal>
             <FlatList 
                 data={categories}
                 keyExtractor={item => item.id}
@@ -146,5 +189,34 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 3.84,
         elevation: 5,
+    },
+    modal:{
+        backgroundColor: Colors.WHITE,
+        width: Dimensions.get('screen').width*0.8,
+        borderRadius: 10,
+        paddingTop:10,
+        paddingHorizontal:10,
+        alignItems:'center'
+    },
+    label:{
+        fontWeight:'bold',
+        fontSize: 18
+    },
+    text:{
+        fontSize: 24,
+        textAlign:'center',
+    },
+    btnContainer:{
+        flexDirection:'row', 
+        alignItems:'center',
+        borderTopColor: Colors.GREY,
+        borderTopWidth: 0.5,
+        width:'100%',
+        paddingVertical:20
+    },
+    modalBtn:{
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center'
     }
 })

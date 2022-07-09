@@ -24,7 +24,7 @@ const EditDetailScreen = props => {
             height: 100,
             cropping: true,
           }).then(image => {
-            setSelectedImage(image.path)
+            setSelectedImage(image)
             setModalVisible(!modalVisible)
           });
     }
@@ -35,7 +35,7 @@ const EditDetailScreen = props => {
             height: 400,
             cropping: true
           }).then(image => {
-            setSelectedImage(image.path)
+            setSelectedImage(image)
             setModalVisible(!modalVisible)
           });
     }
@@ -63,7 +63,7 @@ const EditDetailScreen = props => {
             <KeyboardAwareScrollView>
                     {/* PROFILE PICTURE */}
                     <View style={styles.ppContainer}>
-                        {selectedImage ? <Image source={{ uri: selectedImage}} style={{height:180,width:180}}/> : <Image source={{uri: user.image}} style={styles.ppImage}/>}
+                        {selectedImage ? <Image source={{ uri: selectedImage.path}} style={{height:180,width:180}}/> : <Image source={{uri: user.image}} style={styles.ppImage}/>}
                     </View>
                     <View style={{height:50,alignItems:'center'}}>
                         <TouchableOpacity  onPress={() => {setModalVisible(true)}} style={styles.ppEdit}>
@@ -100,8 +100,8 @@ const EditDetailScreen = props => {
 
                     <Formik
                         initialValues={{
-                            name:'',
-                            email:''
+                            name: user.name,
+                            email:user.email
                         }}
                         onSubmit={ (values) => onPressSave(values) }
                         validationSchema={ yup.object().shape({
