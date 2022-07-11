@@ -50,10 +50,10 @@ const ChatScreen = props => {
             content: chat,
             chatId: chatObj.id
         }
+        setChat('')
         const response = await postPostLogin('/message', params)
         // console.log(response.data.data)
         socket.emit("new message", response.data.data)
-        setChat('')
         socket.on("message sent", () => { getMessages() })
         // console.log(response.data.data);
         setMessages([...messages, response.data.data])
@@ -69,14 +69,14 @@ const ChatScreen = props => {
                 :
                 <View>
                     <ScrollView showsVerticalScrollIndicator={false} ref={messageScroll} onContentSizeChange={() => { messageScroll.current.scrollToEnd({animated: false}) }}>
-                    {messages.map(item => {
+                    {messages.map((item, index) => {
                         // console.log("Message: \n",item)
                         return (
                             <>
-                                <View key={item.id} style={{ alignSelf: item.senderId === user.id ? 'flex-end' : 'flex-start', paddingHorizontal:10, paddingVertical:5, marginVertical:2 ,borderRadius:5, maxWidth:'60%' , backgroundColor: item.senderId !== user.id ? Colors.LIGHTER_GREY : Colors.ORANGE }}>
-                                    <Text style={{color: item.senderId === user.id ? Colors.WHITE : Colors.BLACK, fontSize:18}} >{item.content}</Text>
+                                <View key={index} style={{ alignSelf: item?.senderId === user.id ? 'flex-end' : 'flex-start', paddingHorizontal:10, paddingVertical:5, marginVertical:5 ,borderRadius:5, maxWidth:'60%' , backgroundColor: item?.senderId !== user.id ? Colors.LIGHTER_GREY : Colors.ORANGE }}>
+                                    <Text style={{color: item?.senderId === user.id ? Colors.WHITE : Colors.BLACK, fontSize:18}} >{item?.content}</Text>
                                 </View>
-                                <Text style={{alignSelf: item.senderId === user.id ? 'flex-end' : 'flex-start', color: Colors.LIGHTER_GREY, fontSize:12}}>{moment(item.createdAt).format('Do MMM yy, hh:mm A')}</Text>
+                                <Text style={{alignSelf: item?.senderId === user.id ? 'flex-end' : 'flex-start', color: Colors.LIGHTER_GREY, fontSize:12}}>{moment(item.createdAt).format('Do MMM yy, hh:mm A')}</Text>
                             </>
                         )
                     })}

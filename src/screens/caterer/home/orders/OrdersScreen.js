@@ -25,6 +25,7 @@ const OrdersScreen = () => {
             setLoading(false)
         } else {
             console.log(response);
+            setLoading(false)
             // }
         }
     }
@@ -100,7 +101,7 @@ const OrdersScreen = () => {
                                                 <Image source={{uri: order.user.image}} style={{height: '100%', aspectRatio:1}}/>
                                                 <View style={{height:'100%', justifyContent:'space-evenly', marginLeft: 10}}>
                                                     <Text style={{fontWeight:'bold', fontSize:18}}>{order.user.name}</Text>
-                                                    <Text>{order.address.address}</Text>
+                                                    <Text>{order.address}</Text>
                                                     <Text>{moment(order.date).format('DD/MM/YYYY')}</Text>
                                                 </View>
                                             </View>
@@ -163,7 +164,7 @@ const OrdersScreen = () => {
                                                 <Image source={{uri: order.user.image}} style={{height: '100%', aspectRatio:1}}/>
                                                 <View style={{height:'100%', justifyContent:'space-evenly', marginLeft: 10}}>
                                                     <Text style={{fontWeight:'bold', fontSize:18}}>{order.user.name}</Text>
-                                                    <Text>{order.address.address}</Text>
+                                                    <Text>{order.address}</Text>
                                                     <Text>{moment(order.date).format('DD/MM/YYYY')}</Text>
                                                 </View>
                                             </View>

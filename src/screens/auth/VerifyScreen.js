@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image, Alert, ActivityIndicator } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,7 +10,9 @@ import{ Colors, Images }from '../../CommonConfig';
 import { postFormDataRequest, postPreLogin } from '../../helpers/ApiHelpers';
 import { useSelector } from 'react-redux';
 
-const VerifyScreen = props => {
+const VerifyScreen = ({navigation, route}) => {
+
+    const [ loading, setLoading ] = useState(false)
 
     // Random Name generator
     const makeid = (length) => {
@@ -33,14 +35,16 @@ const VerifyScreen = props => {
     // userFormData.append("image", { uri: user.image.path, type: user.image.mime, name: makeid(10) })
     // console.log(userFormData)
 
-    const countryCode = props.route.params.countryCode;
-    const phoneNumber = props.route.params.phoneNumber;
-    const data = props.route.params.params
+    const countryCode = route.params.countryCode;
+    const phoneNumber = route.params.phoneNumber;
+    const data = route.params.params
     // console.log(data)
 
     const [ otpValue, setOTPValue ] = useState('');
 
     const pressHandler = async(otpValue) => {
+        // navigation.navigate('StoreRegister')
+        setLoading(true)
         const verifyOTP = {
             otpValue: otpValue,
             country_code: countryCode,
@@ -92,37 +96,51 @@ const VerifyScreen = props => {
                         console.log(error)
                     }
                     if(resData.user.role === 0) {
-                        props.navigation.dispatch(
+                        navigation.dispatch(
                             CommonActions.reset({
                                 index:0,
                                 routes: [{name: 'CatererHome'}]
                             })
                         )
+                        setLoading(false)
                     } else {
-                        props.navigation.dispatch(
+                        navigation.dispatch(
                             CommonActions.reset({
                                 index:0,
                                 routes: [{name: 'Home'}]
                             })
                         )
+                        setLoading(false)
                     }
                 } else {
                     if (resData.error === 'User does not exist!') {
                         Toast.show(" User does not exist! ");
+                        setLoading(false)
                     } else if (resData.error === 'Invalid Password!') {
                         Toast.show("Incorrect Password")
+                        setLoading(false)
                     }
                 }
 
             } else {
                 console.log(registerResponse)
+                setLoading(false)
             }
         } else {
             if( resData.error ==="Invalid OTP entered!"){
                 errorMsg = "Invalid OTP entered!"
             }
             Alert.alert("Error",errorMsg,[{text:"Okay"}])
+            setLoading(false)
         }
+    }
+
+    if(loading) {
+        return(
+            <View style={styles.loader}>
+                <ActivityIndicator size={65} color={Colors.ORANGE}/>
+            </View>
+        )
     }
 
     return (
@@ -131,7 +149,7 @@ const VerifyScreen = props => {
             {/* HEADER */}
             <View style={styles.header}>
                 <View style={{flex:0.9}}>
-                    <TouchableOpacity onPress={() => props.navigation.goBack()} style={{marginVertical:10, marginLeft:10}}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={{marginVertical:10, marginLeft:10}}>
                             <Ionicon name="arrow-back-outline" size={35} color={Colors.WHITE}/>
                     </TouchableOpacity>
                     <Text style={styles.headerLabel} numberOfLines={1}>Verification Code</Text>
@@ -158,7 +176,7 @@ const VerifyScreen = props => {
                         {/* Resend Code */}
                         <View style={{flex:0.5, flexDirection:'row', justifyContent:'center'}}>
                             <Text style={styles.resend_code}>Didn't Get the Code? </Text>
-                            <TouchableOpacity onPress={() => {props.navigation.navigate('NumberVerificationScreen')}} >
+                            <TouchableOpacity onPress={() => {navigation.navigate('NumberVerificationScreen')}} >
                                 <Text style={styles.resend}>Resend Code</Text>
                             </TouchableOpacity>
                         </View>
@@ -177,6 +195,11 @@ const VerifyScreen = props => {
 };
 
 const styles = StyleSheet.create({
+    loader:{
+        alignItems:'center',
+        justifyContent:'center',
+        flex:1
+    },
     screen:{
         flex:1,
         backgroundColor:Colors.WHITE
@@ -262,7 +285,7 @@ export default VerifyScreen;
         // <View style={styles.container} >
         //     <StatusBar backgroundColor='#009387' barStyle='light-content'/>
         //     <View style={styles.header} >
-        //         <TouchableOpacity onPress={() => props.navigation.goBack()} >
+        //         <TouchableOpacity onPress={() => navigation.goBack()} >
         //             <View style={{marginVertical:10}} >
         //                 <Ionicon name="arrow-back-outline" size={35} color={Colors.WHITE}/>
         //             </View>

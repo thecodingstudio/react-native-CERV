@@ -11,7 +11,7 @@ import { Colors } from '../../../../CommonConfig'
 
 const EditAddress = props => {
 
-    const addressObj = props.route.params.addressObj
+    const addressObj = props.route.params.item
     // console.log("ADDRESS SENT TO SCREEN:            ",addressObj);
 
     const [ radio, setRadio ] = useState( addressObj.address_type );

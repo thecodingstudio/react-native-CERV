@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, LogBox } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, LogBox, ActivityIndicator } from 'react-native';
 
 import { getPostLogin } from '../../../helpers/ApiHelpers'
 // import Messages from '../../../model/messages';
 import io from 'socket.io-client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
+import { Colors } from '../../../CommonConfig';
 
 LogBox.ignoreAllLogs()
 
@@ -13,6 +14,7 @@ let socket;
 
 const MessagesScreen = props => {
 
+    const [ loading, setLoading ] = useState(true)
     const [ socketConnected, setSocketConnected ] = useState(false)
     const [ user, setUser ] = useState({})
 
@@ -34,18 +36,29 @@ const MessagesScreen = props => {
     const [allChats, setAllChats] = useState([])
 
     const getAllChats = async() => {
+        setLoading(true)
         const response = await getPostLogin('/chat/getChats')
         // console.log(response.data.chats)
         if(response.success) {
             setAllChats(response.data.chats)
+            setLoading(false)
         } else {
             console.log(response);
+            setLoading(false)
         }
     }
 
     const navigateHandler = (chatObj) => {
         console.log(chatObj);
-        props.navigation.navigate('Chat',{ chatObj })
+        props.navigation.navigate('Chat',{ chatObj, title: chatObj.chat_name })
+    }
+
+    if(loading){
+        return(
+            <View style={styles.loader}>
+                <ActivityIndicator size={65} color={Colors.ORANGE}/>
+            </View>
+        )
     }
 
     return (
@@ -75,6 +88,12 @@ const MessagesScreen = props => {
 };
 
 const styles = StyleSheet.create({
+    loader:{
+        flex:1,
+        backgroundColor: Colors.WHITE,
+        justifyContent:'center',
+        alignItems:'center'
+    },
     container:{
         flex:1,
         paddingHorizontal:20,

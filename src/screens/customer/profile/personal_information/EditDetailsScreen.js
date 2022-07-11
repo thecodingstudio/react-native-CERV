@@ -42,20 +42,38 @@ const EditDetailScreen = props => {
     
     const onPressSave = async(values) => {
         setIsLoading(true)
-        const data = {
-            name: values.name,
-            email: values.email
+
+        const updateData = new FormData()
+        updateData.append('name',values.name)
+        updateData.append('email', values.email)
+        if(selectedImage){
+            updateData.append('image',{ uri: selectedImage.path, type: selectedImage.mime, name: selectedImage.path })
         }
-        // console.log(data);
-        const response = await putPostLogin('/edit-profile', data)
-        if(!response.success) {
-            console.log(("Put Request Error"));
-        } else {
-            AsyncStorage.setItem('userInfo', JSON.stringify(response.data.data))
+
+        console.log(updateData._parts);
+
+        const res = await fetch('https://cerv-api.herokuapp.com/edit-profile',{
+            method: "PUT",
+            headers:{
+                "Content-Type" : "multipart/form-data",
+                "Authorization" : "Bearer " + ( await AsyncStorage.getItem('token') )
+            },
+            body: updateData
+        })
+
+        const response = await res.json()
+        console.log(response);
+        // const response = await putPostLogin('/edit-profile', data)
+        if(response.status === 1) {
+            await AsyncStorage.setItem('userInfo', JSON.stringify(response.data))
             Toast.show('Profile updated successfully!')
-            props.navigation.goBack();
+            props.navigation.pop(2);
+            setIsLoading(false)
+        } else {
+            Toast.show('Something went wrong!')
+            props.navigation.pop(2);
+            setIsLoading(false)
         }
-        setIsLoading(false)
     }
 
     return (

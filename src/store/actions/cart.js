@@ -23,8 +23,8 @@ export const setOrderType = ( orderType ) => {
   return { type : ORDER_TYPE, orderType: orderType };
 }
 
-export const applyDiscount = (discountCode) => {
-  return { type: ADD_DISCOUNT, code: discountCode };
+export const applyDiscount = (discountCodeObj) => {
+  return { type: ADD_DISCOUNT, code: discountCodeObj };
 }
 
 export const removeDiscount = () => {

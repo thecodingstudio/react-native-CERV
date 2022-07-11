@@ -19,12 +19,16 @@ const ProfileScreen = props => {
     const [user, setUser] = useState({})
 
     useEffect( () => {
-        getProfile()
-        setIsLoading(false)
-    },[])
+        const unsubscribe = props.navigation.addListener('focus', () => {
+            getProfile()
+        });
+        return unsubscribe;
+    },[props.navigation])
     
     const getProfile = async() => {
+        setIsLoading(true)
         setUser(JSON.parse(await AsyncStorage.getItem("userInfo")))   
+        setIsLoading(false)
     }
 
     if( isLoading ) {

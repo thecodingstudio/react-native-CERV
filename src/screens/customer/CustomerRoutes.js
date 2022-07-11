@@ -284,7 +284,7 @@ const ChatStackScreen = ({ navigation }) => {
         <ChatStack.Screen 
             name="Chat" 
             component={ChatScreen}
-            options={ ({route}) => ({ title: route.params.userName }) }
+            options={ ({route}) => ({ headerTitle: route.params.title}) }
         />
     </ChatStack.Navigator>)
 };

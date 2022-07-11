@@ -32,7 +32,7 @@ const SignInScreen = props => {
             role: role,
             device_token: JSON.stringify(AsyncStorage.getItem('deviceToken'))
         };
-        // console.log("LOGIN SCREEN:   ",typeof(data.device_token));
+        console.log("Login Data: ",(data));
         const response = await postPreLogin('/users/login', data);
         const resData = response.data;
         console.log(response)
@@ -112,8 +112,10 @@ const SignInScreen = props => {
                                             <FontAwesome name="envelope" color={Colors.ORANGE} size={20}/>
                                             <TextInput
                                                 value={values.email}
+                                                autoCapitalize='none'
                                                 onBlur={() => setFieldTouched('email')}
                                                 onChangeText={handleChange('email')}
+                                                keyboardType={'email-address'}
                                                 placeholder="Email"
                                                 style={styles.textInput}
                                             />
@@ -149,7 +151,7 @@ const SignInScreen = props => {
                                         <Text style={styles.forgotPassword} > Forgot Password ? </Text>
                                     </TouchableOpacity>
 
-                                    <TouchableOpacity onPress={handleSubmit} disabled={!isValid}>
+                                    <TouchableOpacity onPress={handleSubmit} disabled={!isValid || isLoading}>
                                         <View style={styles.button}>
                                             <View style={styles.signIn}>
                                                 {isLoading ? <ActivityIndicator size="small" color={Colors.WHITE} /> :<Text style={[styles.textSign,{color:'#fff'}]} >Login</Text>}
@@ -237,7 +239,8 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     textInput:{
-        marginHorizontal: 10
+        marginHorizontal: 10,
+        flex:0.9,
     },
     errorMsg:{ 
         fontSize: 11, 

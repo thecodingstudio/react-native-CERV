@@ -223,15 +223,14 @@ const DetailScreen = props => {
                                             <Text>$ {item.price.toFixed(2)}</Text>
                                             {itemObj ?
                                                 <View style={styles.dishCartButton}>
-                                                    <TouchableOpacity onPress={() => { dispatch(cartActions.removeFromCart(itemObj)) }} ><Ionicon name="remove-outline" size={20} color={Colors.ERROR_RED} /></TouchableOpacity>
-                                                    <Text>{itemObj?.qty}</Text>
-                                                    <TouchableOpacity onPress={() => { dispatch(cartActions.addToCart(item)) }}><Ionicon name="add-outline" size={20} color={Colors.GREEN} /></TouchableOpacity>
+                                                    <TouchableOpacity onPress={() => { dispatch(cartActions.removeFromCart(itemObj)) }} ><Ionicon name="remove-outline" size={25} color={Colors.ERROR_RED} /></TouchableOpacity>
+                                                    <Text style={{marginHorizontal:5}}>{itemObj?.qty}</Text>
+                                                    <TouchableOpacity onPress={() => { dispatch(cartActions.addToCart(item)) }}><Ionicon name="add-outline" size={25} color={Colors.GREEN} /></TouchableOpacity>
                                                 </View>
                                                 :
                                                 <TouchableOpacity onPress={() => openHandler(item, catererId)} style={styles.dishCartButton} >
-                                                    <Ionicon name="cart-outline" size={20} color={Colors.ORANGE} />
-                                                    <Text>Add</Text>
-                                                    <Text>{itemObj}</Text>
+                                                    <Ionicon name="cart-outline" size={25} color={Colors.ORANGE} />
+                                                    <Text style={{marginLeft:5}}>Add</Text>
                                                 </TouchableOpacity>}
                                         </View>
                                     </View>
@@ -493,7 +492,7 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderWidth: 1,
         paddingHorizontal: 10,
-        height: 30,
+        height: 40,
         borderRadius: 10
     },
     footerContainer: {

@@ -61,26 +61,39 @@ const OrderReceiptScreen = props => {
     const serviceCharge = 1.00
     const subTotal = (cartItems.length ? cartItems.reduce( (a,c) => a + c.qty*c.price, serviceCharge ) : 0) + deliveryFee ;
     const discountApplied = useSelector(state => (state.Cart.discount ? state.Cart.discount : null ))
-    let discountAmount;
-    switch(discountApplied){
-        case 'PAYZP234':
-            discountAmount = subTotal * 0.4;
-            break;
-        case '60GUJFOOD':
-            discountAmount = 25;
-            break;
-        case '15OFF':
-            discountAmount = 15;
-            break;
-        case 'OLA25OFF':
-            discountAmount = subTotal * 0.25;
-            break;
-        case 'TK10OFF':
-            discountAmount = subTotal * 0.10;
-            break;
-        default:
-            discountAmount = 0;
+    
+    const applyDiscount = (discountObj) => {
+
+        if(!discountObj) return 0;
+
+        const isPercent = discountObj.is_percent
+        if(isPercent) {
+            return subTotal * (discountObj.value/100)
+        } else {
+            return discountObj.value
+        }
     }
+    let discountAmount = applyDiscount(discountApplied ? discountApplied : null );
+
+    // switch(discountApplied){
+    //     case 'PAYZP234':
+    //         discountAmount = subTotal * 0.4;
+    //         break;
+    //     case '60GUJFOOD':
+    //         discountAmount = 25;
+    //         break;
+    //     case '15OFF':
+    //         discountAmount = 15;
+    //         break;
+    //     case 'OLA25OFF':
+    //         discountAmount = subTotal * 0.25;
+    //         break;
+    //     case 'TK10OFF':
+    //         discountAmount = subTotal * 0.10;
+    //         break;
+    //     default:
+    //         discountAmount = 0;
+    // }
     const updatedSubTotal = subTotal - discountAmount
     const total = updatedSubTotal + 5.10;
 
@@ -99,34 +112,34 @@ const OrderReceiptScreen = props => {
             instructions: instructions,
             activeCard: selectedCard
         }
-        const params = {
-            card_id: selectedCard.id,
-            amount: total.toFixed(2)
-        }
-        // console.log(params)
-        setPaymentLoader(true)
-        const getPaymentIntentResponse = await postPostLogin('/checkout', params)
-        console.log(getPaymentIntentResponse.data)
-        setPaymentLoader(false)
-        const { error } = await initPaymentSheet({
-            customerId: getPaymentIntentResponse.data.data.customerId,
-            paymentIntentClientSecret: getPaymentIntentResponse.data.data.client_secret,
-            customerEphemeralKeySecret: getPaymentIntentResponse.data.data.ephemeralKey
-        })
-        console.log("Init Successful!");
+        // const params = {
+        //     card_id: selectedCard.id,
+        //     amount: total.toFixed(2)
+        // }
+        // // console.log(params)
+        // setPaymentLoader(true)
+        // const getPaymentIntentResponse = await postPostLogin('/checkout', params)
+        // console.log(getPaymentIntentResponse.data)
+        // setPaymentLoader(false)
+        // const { error } = await initPaymentSheet({
+        //     customerId: getPaymentIntentResponse.data.data.customerId,
+        //     paymentIntentClientSecret: getPaymentIntentResponse.data.data.client_secret,
+        //     customerEphemeralKeySecret: getPaymentIntentResponse.data.data.ephemeralKey
+        // })
+        // console.log("Init Successful!");
 
-        setTimeout(async() => {
-            try {
-                const { error } = await presentPaymentSheet()
-            } catch (e) {
-                console.log(e)
-            }
-        }, 1000)
+        // setTimeout(async() => {
+        //     try {
+        //         const { error } = await presentPaymentSheet()
+        //     } catch (e) {
+        //         console.log(e)
+        //     }
+        // }, 1000)
         // console.log(error);
         // await presentPaymentSheet()
         // console.log("Present Error");
-        // dispatch(orderActions.placeOrder(data));
-        // refRBSheet.current.open()
+        dispatch(orderActions.placeOrder(data));
+        refRBSheet.current.open()
         
     }
 
@@ -159,9 +172,9 @@ const OrderReceiptScreen = props => {
                             <Text style={{...styles.label, color: Colors.ORANGE}}>CHANGE</Text>
                         </TouchableOpacity>
                     </View>
-                    { selectedAddress.address ? <View style={styles.addressIconAlign}>
+                    { selectedAddress?.address ? <View style={styles.addressIconAlign}>
                         <View style={styles.iconContainer}>
-                            <Ionicon name={selectedAddress.icon}color={Colors.ORANGE} size={25}/>
+                            <Ionicon name={selectedAddress?.icon}color={Colors.ORANGE} size={25}/>
                         </View>
                         <Text style={styles.addressText} numberOfLines={2}>{selectedAddress.address}</Text>
                     </View>
@@ -207,14 +220,14 @@ const OrderReceiptScreen = props => {
 
                             {discountApplied ? 
                             <View style={styles.deliveryFee}>
-                                <Text style={styles.discountTitle}>Code <Text style={{fontWeight:'bold'}}>{discountApplied}</Text> applied</Text>
+                                <Text style={styles.discountTitle}>Code <Text style={{fontWeight:'bold'}}>{discountApplied.code}</Text> applied</Text>
                                 <View style={{flex:1}}>
                                     <Text style={styles.discountAmount}>- ${discountAmount.toFixed(2)}</Text>
                                     <TouchableOpacity onPress={ () => { dispatch(cartActions.removeDiscount()) }}><Text style={styles.remove}>Remove</Text></TouchableOpacity>
                                 </View>
                             </View>   
                             :
-                            <TouchableOpacity style={styles.couponCodeContainer} onPress={ () => { props.navigation.navigate('Discount') } } >
+                            <TouchableOpacity style={styles.couponCodeContainer} onPress={ () => { props.navigation.navigate('Discount', {catererId}) } } >
                                 <Text style={{flex:3,fontWeight:'bold'}}>Apply Coupon Code</Text>
                                 <Text style={{...styles.label, color: Colors.ORANGE, flex:1}}>CHECK</Text>
                             </TouchableOpacity>}
@@ -280,7 +293,7 @@ const OrderReceiptScreen = props => {
                         </View>
                     </View>
                     <TouchableOpacity style={styles.makePayment} onPress={ orderPlaceHandler } activeOpacity={0.7} disabled={((cartItems.length===0) || (!selectedCard ) || (!selectedAddress) || paymentLoader )? true : false}>
-                        <Text style={{...styles.label, color: Colors.WHITE}}>{selectedCard.id ? "Confirm Order" : "Make Payment"}</Text>
+                        <Text style={{...styles.label, color: Colors.WHITE}}>{selectedCard ? "Confirm Order" : "Make Payment"}</Text>
                     </TouchableOpacity>
 
                     

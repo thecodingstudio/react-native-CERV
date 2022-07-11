@@ -7,6 +7,8 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import Caterer from '../../../model/caterer'
 import { Colors, Images } from '../../../CommonConfig'
 import moment from 'moment';
+import { postPostLogin } from '../../../helpers/ApiHelpers';
+import SimpleToast from 'react-native-simple-toast';
 
 const OrderDetailScreen = props => {
 
@@ -30,6 +32,20 @@ const OrderDetailScreen = props => {
         stepIndicatorCurrentColor: Colors.ORANGE,
         currentStepStrokeWidth: 0,
         currentStepLabelColor: Colors.ORANGE
+    }
+
+    const onPressChat = async() => {
+        const data = {
+            catererId: selectedOrder.caterer.id
+        }
+
+        const response = await postPostLogin('/chat/getChat', data)
+        console.log(response.data.chat)
+        if(response.success){
+            props.navigation.navigate('ChatScreen',{ screen: 'Chat', initial: false, params: {chatObj: response.data.chat, title: response.data.chat.chat_name} })
+        } else {
+            SimpleToast.show('Something went wrong!')
+        }
     }
 
     return (
@@ -104,7 +120,7 @@ const OrderDetailScreen = props => {
                             <Text style={styles.label}>DELIVERY PERSON</Text>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 10 }}>John Martyn</Text>
                         </View>
-                        <TouchableOpacity style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 10, backgroundColor: Colors.ORANGE, borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
+                        <TouchableOpacity onPress={onPressChat} style={{ flex: 1, paddingHorizontal: 10, paddingVertical: 10, backgroundColor: Colors.ORANGE, borderRadius: 5, alignItems: 'center', justifyContent: 'center' }}>
                             <Text style={{ fontWeight: 'bold', color: Colors.WHITE, fontSize: 17 }}>Chat</Text>
                         </TouchableOpacity>
                     </View>
@@ -168,9 +184,9 @@ const OrderDetailScreen = props => {
                     </View>
                     <View style={{paddingHorizontal:15, alignItems:'center', flexDirection:'row', justifyContent:'flex-start'}}>
                         <View style={{padding:10, borderRadius:10, borderWidth:0.5, borderColor: Colors.GREY, marginVertical:10}}>
-                            <Ionicon name={selectedOrder.address.icon} color={Colors.ORANGE} size={25}/>
+                            <Ionicon name={selectedOrder.address_icon} color={Colors.ORANGE} size={25}/>
                         </View>
-                        <Text style={{fontSize:20, marginLeft:10,flex:0.75}} ellipsizeMode={'tail'} numberOfLines={2}>{selectedOrder.address.address}</Text>
+                        <Text style={{fontSize:20, marginLeft:10,flex:0.75}} ellipsizeMode={'tail'} numberOfLines={2}>{selectedOrder.address}</Text>
                     </View>
                 </View>
             </ScrollView>

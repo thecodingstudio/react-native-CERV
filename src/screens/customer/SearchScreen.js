@@ -15,11 +15,11 @@ const SearchScreen = props => {
     const [dishes, setDishes] = useState([])
     const [restaurants, setRestaurants] = useState([])
 
-    // useEffect(() => {
-    //     if (searchQuery.length !== 0) {
-    //         loadResults()
-    //     }
-    // }, [type])
+    useEffect(() => {
+        if (searchQuery.length !== 0) {
+            loadResults()
+        }
+    }, [type])
 
     const loadResults = async () => {
         setLoading(true)
@@ -72,18 +72,19 @@ const SearchScreen = props => {
                     style={{
                         fontWeight: 'bold',
                         fontSize: 25,
-                        width: '80%'
+                        width: '80%',
+                        paddingHorizontal:10
                     }}
                 />
                 <View style={{ alignItems: 'center', justifyContent: 'flex-start', flexDirection: 'row' }}>
                     {/* <Text style={{fontSize:20, fontWeight:'bold', marginLeft:10}}>{searchQuery}</Text> */}
                     {searchQuery.length === 0 ? null : <TouchableOpacity onPress={() => { setSearchQuery('') }}><Ionicon name="close" size={Dimensions.get('screen').width * 0.1} color={Colors.GREY} /></TouchableOpacity>}
-                    <TouchableOpacity disabled={searchQuery.length === 0 ? true : false} onPress={loadResults} ><Ionicon name="search-outline" size={Dimensions.get('screen').width * 0.1} color={Colors.BLACK} /></TouchableOpacity>
+                    <TouchableOpacity disabled={searchQuery.length === 0 ? true : false} onPress={loadResults} ><Ionicon name="search-outline" size={25} color={Colors.BLACK} /></TouchableOpacity>
                 </View>
             </View>
 
             <View style={styles.bodyContainer}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: Colors.WHITE, paddingBottom: 10, flex: 1 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', backgroundColor: Colors.WHITE, paddingBottom: 10 }}>
                     <TouchableOpacity
                         onPress={() => { setType(1) }}
                         style={{ ...styles.typeContainer, backgroundColor: type === 1 ? Colors.ORANGE : null, borderColor: type === 1 ? Colors.ORANGE : Colors.GREY }}
@@ -110,7 +111,6 @@ const SearchScreen = props => {
                         :
                         searchQuery.length === 0 ?
                             <View style={{ paddingVertical: 25, alignSelf: 'center', flexDirection: 'row', alignItems: 'center' }}>
-                                <Ionicon name="search-outline" size={25} color={Colors.LIGHTER_GREY} />
                                 <Text style={{ color: Colors.LIGHTER_GREY, fontWeight: 'bold', fontSize: 25 }}>  Please search something</Text>
                             </View>
                             :
@@ -196,7 +196,7 @@ const SearchScreen = props => {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        backgroundColor: Colors.BACKGROUND_GREY
+        backgroundColor: Colors.WHITE
     },
     searchBarContainer: {
         flex: 1,
@@ -205,13 +205,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         flexDirection: 'row',
         backgroundColor: Colors.WHITE,
-        paddingVertical: 5
-
+        borderColor: Colors.LIGHTER_GREY,
+        borderWidth:0.5,
+        borderRadius: 50,
+        margin:10
     },
     bodyContainer: {
         flex: 12,
         paddingHorizontal: 5,
-
     },
     topCategories: {
         fontWeight: '900',
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
     },
     searchResultContainer: {
         alignSelf: 'center',
-        width: '100%'
+        width: '100%',
     },
     searchResultTouchable: {
         flexDirection: 'row',
@@ -254,7 +255,15 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginVertical: 5,
         backgroundColor: Colors.WHITE,
-        borderRadius: 10
+        borderRadius: 10,
+        elevation:5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
     },
     catererName: {
         color: Colors.ORANGE,

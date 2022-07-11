@@ -240,7 +240,7 @@ const EditCoupons = ({ navigation, route }) => {
                             </View>
 
                             <TouchableOpacity style={styles.saveBtn} disabled={!isValid} onPress={handleSubmit}>
-                                <Text style={styles.saveBtnTxt}>{isEditMode ? 'Save' : 'Add Coupn'}</Text>
+                                <Text style={styles.saveBtnTxt}>{isEditMode ? 'Save' : 'Add Coupon'}</Text>
                             </TouchableOpacity>
                         </View>
                     </KeyboardAwareScrollView>

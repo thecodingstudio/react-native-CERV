@@ -37,9 +37,9 @@ const HomeScreen = props => {
             await AsyncStorage.getItem('activeAddress')
             .then( addressObj => {
                 setActiveAddress(JSON.parse(addressObj))
-                console.log("Use Effect:   ",activeAddress);
             })
             .then(() => {
+                console.log("Use Effect:   ",activeAddress);
                 loadHomeScreen()
             })
             .catch( (err) => {
@@ -151,9 +151,9 @@ const HomeScreen = props => {
 
                 <View style={styles.nearBy}>
                     <Text style={styles.label}>Nearby Caterers</Text>
-                    <TouchableOpacity>
+                    {/* <TouchableOpacity>
                         <Ionicon name='funnel-outline' size={25} color={Colors.BLACK}/>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
 
                 {

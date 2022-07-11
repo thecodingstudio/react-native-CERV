@@ -6,7 +6,7 @@ import messaging from '@react-native-firebase/messaging';
 
 import { Colors, Images } from '../CommonConfig'
 
-const SplashScreen = (props) => {
+const SplashScreen = ({navigation}) => {
 
     useEffect( () => {
         messaging().getToken().then( async(token) => { 
@@ -24,23 +24,23 @@ const SplashScreen = (props) => {
         const role = await AsyncStorage.getItem('role');
         if(isLogin === "1") {
             if(role === "0"){
-                props.navigation.dispatch(CommonActions.reset({
+                navigation.dispatch(CommonActions.reset({
                     index:0,
                     routes: [{name:'CatererHome'}]
                 }))
             } else if(role === "1") {
-                props.navigation.dispatch(CommonActions.reset({
+                navigation.dispatch(CommonActions.reset({
                     index:0,
                     routes: [{name:'Home'}]
                 }))
             } else {
-                props.navigation.dispatch(CommonActions.reset({
+                navigation.dispatch(CommonActions.reset({
                     index:0,
                     routes: [{name:'Auth'}]
                 }))
             }
         } else {
-            props.navigation.dispatch(CommonActions.reset({
+            navigation.dispatch(CommonActions.reset({
                 index:0,
                 routes: [{name:'Auth'}]
             }))
