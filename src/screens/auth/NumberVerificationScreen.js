@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image,TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Image,TextInput, Alert, ActivityIndicator } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch } from 'react-redux';
@@ -15,6 +15,7 @@ const NumberVerificationScreen = props => {
 
     const params = props.route.params.data
     // console.log(data)
+    const [loading, setLoading] = useState(false)
     const [show, setShow] = useState(false);
     const [countryCode, setCountryCode] = useState('+91');
     const [phoneNumber, setPhoneNumber ] = useState('');
@@ -73,8 +74,12 @@ const NumberVerificationScreen = props => {
                             />
                         </View>
 
-                        <TouchableOpacity style={styles.sendCode} disabled={ phoneNumber.length === 10 ? false : true } onPress={() => pressHandler(countryCode, phoneNumber)}>
-                            <Text style={styles.sendCodeText}>Send Code</Text>
+                        <TouchableOpacity style={styles.sendCode} disabled={ phoneNumber.length === 10 ? false : true || loading } onPress={() => pressHandler(countryCode, phoneNumber)}>
+                            { loading ?
+                                <ActivityIndicator size={20} color={Colors.WHITE}/>
+                                :
+                                <Text style={styles.sendCodeText}>Send Code</Text>
+                            }
                         </TouchableOpacity>
                     </View>
                 </View>

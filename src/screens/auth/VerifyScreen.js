@@ -51,8 +51,8 @@ const VerifyScreen = ({navigation, route}) => {
             phone_number: phoneNumber
         }
         const response = await postPreLogin('/users/verifyOTP', verifyOTP);
-        const resData = response.data;
-        let errorMsg = 'Something went wrong!';
+        const resData = response.data
+        const errorMsg = 'Something went wrong!'
         if (response.success) {
             const user = new FormData();
             user.append('image',{ uri: data.selectedImage.path, type: data.selectedImage.mime, name: makeid(10) })
@@ -75,7 +75,10 @@ const VerifyScreen = ({navigation, route}) => {
             const registerResponse = await res.json()
             // console.log(registerResponse)
             if( registerResponse.status === 1 ) {
-                //SUCCESS
+                if(data.role === 0) {
+                    navigation.navigate('StoreRegister', { catererId: registerResponse.user.id })
+                }
+                
                 const loginData = {
                     email: data.email,
                     password: data.password,
@@ -95,15 +98,7 @@ const VerifyScreen = ({navigation, route}) => {
                     } catch (error) {
                         console.log(error)
                     }
-                    if(resData.user.role === 0) {
-                        navigation.dispatch(
-                            CommonActions.reset({
-                                index:0,
-                                routes: [{name: 'CatererHome'}]
-                            })
-                        )
-                        setLoading(false)
-                    } else {
+                    if(resData.user.role === 1) {
                         navigation.dispatch(
                             CommonActions.reset({
                                 index:0,
@@ -111,7 +106,7 @@ const VerifyScreen = ({navigation, route}) => {
                             })
                         )
                         setLoading(false)
-                    }
+                    } 
                 } else {
                     if (resData.error === 'User does not exist!') {
                         Toast.show(" User does not exist! ");
@@ -135,13 +130,13 @@ const VerifyScreen = ({navigation, route}) => {
         }
     }
 
-    if(loading) {
-        return(
-            <View style={styles.loader}>
-                <ActivityIndicator size={65} color={Colors.ORANGE}/>
-            </View>
-        )
-    }
+    // if(loading) {
+    //     return(
+    //         <View style={styles.loader}>
+    //            
+    //         </View>
+    //     )
+    // }
 
     return (
         <View style={styles.screen}>
@@ -184,7 +179,11 @@ const VerifyScreen = ({navigation, route}) => {
 
                     <View style={{flex:0.5}}>
                         <TouchableOpacity activeOpacity={0.7} style={styles.verifyNow} onPress={() => pressHandler(otpValue)}>
-                            <Text style={styles.verifyNowText}>Verify Now</Text>
+                            {loading ? 
+                                <ActivityIndicator size={20} color={Colors.WHITE}/>
+                                :
+                                <Text style={styles.verifyNowText}>Verify Now</Text>
+                            }
                         </TouchableOpacity>
                     </View>
 
@@ -277,176 +276,3 @@ const styles = StyleSheet.create({
 });
 
 export default VerifyScreen;
-
-// <>
-        // <SafeAreaView style={{flex:0,backgroundColor:Colors.ORANGE}}/>
-        // <SafeAreaView style={{flex:1,backgroundColor:Colors.WHITE}}>
-        // <KeyboardAwareScrollView>
-        // <View style={styles.container} >
-        //     <StatusBar backgroundColor='#009387' barStyle='light-content'/>
-        //     <View style={styles.header} >
-        //         <TouchableOpacity onPress={() => navigation.goBack()} >
-        //             <View style={{marginVertical:10}} >
-        //                 <Ionicon name="arrow-back-outline" size={35} color={Colors.WHITE}/>
-        //             </View>
-        //         </TouchableOpacity>
-        //         <Text style={styles.text_header} >Verification Code</Text>
-        //         <Text style={styles.headerText}>We have sent an SMS to</Text>
-        //         <Text style={styles.headerText}>+91-972*****89. Please enter the</Text>
-        //         <Text style={styles.headerText}>code you receive below.</Text>
-
-        //     </View>
-        //     <Animatable.View style={styles.footer} animation="fadeInUpBig">
-                
-        //         {/* OTP Entering */}
-        //         <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
-        //             <TextInput 
-        //                 autoFocus={true}
-        //                 ref={pin1ref}
-        //                 style={styles.cell}
-        //                 maxLength={1}
-        //                 keyboardType='numeric'
-        //                 placeholder="-"
-        //                 placeholderTextColor={Colors.WHITE}
-        //                 onKeyPress={({nativeEvent}) => {
-        //                     nativeEvent.key === 'Backspace' ? null : pin2ref.current.focus();
-        //                 }}
-        //             />
-        //             <TextInput 
-        //                 ref={pin2ref}
-        //                 style={styles.cell}
-        //                 maxLength={1}
-        //                 keyboardType='numeric'
-        //                 placeholder="-"
-        //                 placeholderTextColor={Colors.WHITE}
-        //                 onKeyPress={({nativeEvent}) => {
-        //                     nativeEvent.key === 'Backspace' ? pin1ref.current.focus() : pin3ref.current.focus();
-        //                 }}
-        //             />
-        //             <TextInput 
-        //                 ref={pin3ref}
-        //                 style={styles.cell}
-        //                 maxLength={1}
-        //                 keyboardType='numeric'
-        //                 placeholder="-"
-        //                 placeholderTextColor={Colors.WHITE}
-        //                 onKeyPress={({nativeEvent}) => {
-        //                     nativeEvent.key === 'Backspace' ? pin2ref.current.focus() : pin4ref.current.focus();
-        //                 }}
-        //             />
-        //             <TextInput 
-        //                 ref={pin4ref}
-        //                 style={styles.cell}
-        //                 maxLength={1}
-        //                 keyboardType='numeric'
-        //                 placeholder="-"
-        //                 placeholderTextColor={Colors.WHITE}
-        //                 onKeyPress={({nativeEvent}) => {
-        //                     nativeEvent.key === 'Backspace' ? pin3ref.current.focus() : pin4ref.current.blur();
-        //                 }}
-        //             />
-        //         </View>
-                
-                
-
-        //         {/* LOGIN */}
-        //     </Animatable.View>
-        // </View>
-        // </KeyboardAwareScrollView>
-        // </SafeAreaView>
-        // </>
-
-        // container:{
-        //     flex:1,
-        //     backgroundColor: Colors.ORANGE,
-        // },
-        // header:{
-        //     flex:1,
-        //     justifyContent:'flex-end',
-        //     paddingBottom:50,
-        //     paddingHorizontal:20
-        // },
-        // footer:{
-        //     flex:3,
-        //     backgroundColor:'#fff',
-        //     borderTopLeftRadius:30,
-        //     borderTopRightRadius:30,
-        //     paddingHorizontal:20,
-        //     paddingVertical:30
-        // },
-        // text_header:{
-        //     color:'#fff',
-        //     fontWeight:'bold',
-        //     fontSize:30
-        // },
-        // text_footer:{
-        //     color:'#05375a',
-        //     fontSize:18,
-        //     fontWeight:'bold',
-        //     marginTop:50
-        // },
-        // action:{
-        //     flexDirection:'row',
-        //     marginTop:15,
-        //     borderBottomWidth:1,
-        //     borderBottomColor:Colors.GREY,
-        //     paddingBottom: 10
-        // },
-        // textInput:{
-        //    flex:1,
-        //    paddingLeft:10,
-        //    color:'#05375a',
-        //    marginLeft:5
-        // },
-        // button:{
-        //     alignItems:'center',
-        //     marginTop: 50,
-        // },
-        // signIn:{
-        //     width:'100%',
-        //     height:50,
-        //     justifyContent:'center',
-        //     alignItems:'center',
-        //     borderRadius:10,
-        //     backgroundColor: Colors.ORANGE
-        // },
-        // textSign:{
-        //     fontSize:18,
-        //     fontWeight:'bold'
-        // },
-        // headerText:{
-        //     color:Colors.WHITE,
-        //     fontSize:15
-        // },
-        // forgotPassword:{
-        //     textAlign:'right',
-        //     marginTop: 15,
-        //     fontSize:15
-        // },
-        // footerTitle:{
-        //     fontWeight:'bold',
-        //     fontSize:30,
-        //     marginTop:10
-        // },
-        // footerText:{
-        //     fontSize:18,
-        //     marginTop:5,
-        //     color: Colors.GREY
-        // },
-        // list:{
-        //     borderRightColor: Colors.GREY,
-        //     borderRightWidth: 1,
-        //     width:'15%',
-        //     height:35
-        // },
-        // cell:{
-        //     borderRadius:10,
-        //     textAlign:'center',
-        //     backgroundColor: Colors.ORANGE,
-        //     width:'15%',
-        //     height:55,
-        //     color:Colors.WHITE,
-        //     fontWeight:'bold',
-        //     fontSize:30
-        // },
-        

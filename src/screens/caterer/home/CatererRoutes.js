@@ -13,6 +13,7 @@ import AddEditCategory from './menu/AddEditCategory';
 
 //Order Screens
 import OrdersScreen from './orders/OrdersScreen';
+import OrderDetailScreen from './orders/OrderDetailScreen';
 
 //Chat Screens
 import ChatScreen from './chat/ChatScreen';
@@ -22,6 +23,7 @@ import ProfileScreen from './profile/ProfileScreen';
 import SavedDiscountCodes from './profile/Discount Codes/SavedDiscountCodes';
 import EditCoupons from './profile/Discount Codes/EditCoupons';
 import ChangePassword from './profile/ChangePassword';
+import EditInformation from './profile/EditInformation';
 
 const MenuStack = createStackNavigator()
 const OrderStack = createStackNavigator()
@@ -111,6 +113,23 @@ const OrderStackScreen = () => {
                 component={OrdersScreen}
                 options={{
                     headerTitle: 'Home'
+                }}
+            />
+            <OrderStack.Screen 
+                name='OrderDetail'
+                component={OrderDetailScreen}
+                options={{
+                    headerTitle: 'Order Details',
+                    headerStyle: {
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                    },
                 }}
             />
         </OrderStack.Navigator>
@@ -212,6 +231,23 @@ const ProfileStackScreen = () => {
                     },
                 }}
             />
+            <ProfileStack.Screen 
+                name='EditInformation'
+                component={EditInformation}
+                options={ ({route}) => ({
+                    headerTitle: route.params.mode === 'edit' ? 'Edit Information' : 'Personal Information',
+                    headerStyle: {
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                    },
+                })}
+            />
         </ProfileStack.Navigator>
     )
 }
@@ -220,7 +256,7 @@ const CatererTab = createBottomTabNavigator()
 const CatererRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail','AddEditCategory']
+        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail','AddEditCategory','OrderDetail','EditInformation']
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
     }

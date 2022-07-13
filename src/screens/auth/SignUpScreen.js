@@ -160,6 +160,7 @@ const SignUpScreen = props => {
                                                 onChangeText={handleChange('email')}
                                                 placeholder="Email"
                                                 style={styles.textInput}
+                                                autoCapitalize='none'
                                             />
                                         </View>
                                         {touched.email && !errors.email && <Feather name="check-circle" color="green" size={20} />}

@@ -1,9 +1,11 @@
-import { StyleSheet, Image, View } from 'react-native'
+import { StyleSheet, Image, View, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Colors } from '../../../../CommonConfig'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ProfileOption from '../../../../components/profileOption'
 import { CommonActions } from '@react-navigation/native' 
+import { getPostLogin } from '../../../../helpers/ApiHelpers'
+import SimpleToast from 'react-native-simple-toast'
 
 const ProfileScreen = ({navigation}) => {
 
@@ -11,12 +13,39 @@ const ProfileScreen = ({navigation}) => {
     const [ user, setUser ] = useState({})
 
     useEffect( () => {
-        getProfile()
-        setLoading(false)
-    },[])
+        const refresh = navigation.addListener('focus', () => {
+            getProfile()
+        })
+        return refresh
+    },[navigation])
 
     const getProfile = async() => {
-        setUser( JSON.parse(await AsyncStorage.getItem('userInfo')) )
+        setLoading(true)
+        const response = await getPostLogin('/caterer/getProfile')
+        // console.log(response);
+        if(response.success) {
+            setUser(response.data.data)
+            setLoading(false)
+        } else {
+            SimpleToast.show('Something went wrong!\n Logging out!')
+            await AsyncStorage.clear()
+            await AsyncStorage.setItem('isLogin', "0")
+            navigation.dispatch(
+                CommonActions.reset({
+                    index:0,
+                    routes:[{name:'Auth'}]
+                })
+            )
+            setLoading(false)
+        }
+    }
+
+    if(loading){
+        return(
+            <View style={styles.loader}>
+                <ActivityIndicator size={65} color={Colors.ORANGE}/>
+            </View>
+        )
     }
 
     return (
@@ -35,6 +64,7 @@ const ProfileScreen = ({navigation}) => {
                 leftIcon = "person-outline"
                 rightIcon = "chevron-forward-outline"
                 onPress={() => {
+                    navigation.navigate('EditInformation',{ user, mode: 'view' })
                 }}
             />
 
@@ -90,6 +120,12 @@ const ProfileScreen = ({navigation}) => {
 export default ProfileScreen
 
 const styles = StyleSheet.create({
+    loader:{
+        flex:1,
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor: Colors.WHITE
+    },
     screen:{
         flex:1,
         alignItems:'center',
