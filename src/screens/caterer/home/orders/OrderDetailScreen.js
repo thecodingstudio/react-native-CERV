@@ -3,14 +3,15 @@ import React, { useState } from 'react'
 import { Colors, Images } from '../../../../CommonConfig'
 import moment from 'moment'
 import SimpleToast from 'react-native-simple-toast'
-import { postPostLogin, putPostLogin } from '../../../../helpers/ApiHelpers'
+import { getPostLogin, postPostLogin, putPostLogin } from '../../../../helpers/ApiHelpers'
 import { Rating } from 'react-native-ratings'
+import axios from 'axios'
 
 const OrderDetailScreen = ({ navigation, route }) => {
 
     const { order, mode } = route.params
 
-    console.log(order);
+    // console.log(order.feedback.rating, order.feedback.review);
 
     const [loading, setLoading] = useState(false)
 
@@ -95,6 +96,28 @@ const OrderDetailScreen = ({ navigation, route }) => {
             navigation.goBack()
             setLoading(false)
         }
+    }
+
+    const download = (data) => {
+        // const url = URL.createObjectURL(data)
+        // const a = document.createElement('a')
+        // a.download = `invoice${order.id}.pdf`
+        // a.href = url
+        // a.target = '_self'
+
+        // a.click()
+
+        // setTimeout( () => {
+        //     a.remove()
+        //     URL.revokeObjectURL(url)
+        // }, 100)
+    }
+
+    const invoiceHandler = async() => {
+        setLoading(true)
+        const response = await axios.get(`https://cerv-api.herokuapp.com/caterer/get-invoice/${order.id}`,{ responseType: 'blob' })
+        download(response)
+        setLoading(false)
     }
 
     const statusText = (orderObj) => {
@@ -209,12 +232,12 @@ const OrderDetailScreen = ({ navigation, route }) => {
                         <Rating 
                             style={{alignSelf:'flex-start'}}
                             readonly
-                            startingValue={2}
+                            startingValue={order.feedback.rating}
                             imageSize={20}
                             ratingCount={5}
                             ratingColor={Colors.STAR_YELLOW}
                         />
-                        <Text style={styles.review} numberOfLines={4}>reviews from customer</Text>
+                        <Text style={styles.review}>{order.feedback.review}</Text>
                     </View>
                 } 
 
@@ -250,6 +273,12 @@ const OrderDetailScreen = ({ navigation, route }) => {
                     order.status === 3 && 
                     <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} activeOpacity={0.6} onPress={onPressComplete}>
                         <Text style={styles.orderButtonText}>COMPLETE ORDER</Text>
+                    </TouchableOpacity>
+                }
+                { 
+                    order.status === 4 && 
+                    <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} activeOpacity={0.6} onPress={invoiceHandler}>
+                        <Text style={styles.orderButtonText}>VIEW INVOICE</Text>
                     </TouchableOpacity>
                 }
             </View>

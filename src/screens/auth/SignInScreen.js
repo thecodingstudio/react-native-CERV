@@ -30,7 +30,7 @@ const SignInScreen = props => {
             email: values.email,
             password: values.password,
             role: role,
-            device_token: JSON.stringify(AsyncStorage.getItem('deviceToken'))
+            device_token: JSON.stringify(await AsyncStorage.getItem('deviceToken'))
         };
         console.log("Login Data: ",(data));
         const response = await postPreLogin('/users/login', data);

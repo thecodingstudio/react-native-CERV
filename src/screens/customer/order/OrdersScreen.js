@@ -40,7 +40,6 @@ const OrdersScreen = props => {
         } else {
             console.log(response);
             setLoading(false)
-            // }
         }
     }
 
@@ -50,7 +49,7 @@ const OrdersScreen = props => {
             orderId: orderToDelete.id
         }
         const response = await postPostLogin('/cancelOrder', data)
-        // console.log(response);
+        console.log(response);
         if (response.success) {
             Toast.show('Order cancelled successfully')
             getOrders()
@@ -157,6 +156,7 @@ const OrdersScreen = props => {
                                 //Current Orders
                                 <ScrollView showsVerticalScrollIndicator={false}>
                                     {orders.map(order => {
+                                        // console.log(order);
                                         // console.log(order.orderItems[0]);
                                         return (
                                             <TouchableOpacity onPress={() => { props.navigation.navigate('OrderDetail', { orderObj: order }) }} key={order.id} style={{ padding: 10, marginVertical: 5, backgroundColor: Colors.WHITE, borderRadius: 10, borderColor: Colors.GREY, borderWidth: 0.5 }}>
@@ -175,7 +175,7 @@ const OrdersScreen = props => {
                                                         return (
                                                             <View key={item.id} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                                                 <Text style={{ flex: 5, fontWeight: 'bold' }}>{item.item.title}</Text>
-                                                                <Text style={{ flex: 1 }}>$ {item.item.price.toFixed(2)}</Text>
+                                                                <Text style={{ flex: 1 }}>$ {item.itemTotal.toFixed(2)}</Text>
                                                             </View>
                                                         )
                                                     })}
@@ -192,7 +192,7 @@ const OrdersScreen = props => {
                                                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                                                         <View>
                                                             <Text style={styles.label}>AMOUNT</Text>
-                                                            <Text style={styles.detail}>$ {order.netAmount.toFixed(2)}</Text>
+                                                            <Text style={styles.detail}>$ {order.amount.toFixed(2)}</Text>
                                                         </View>
                                                         {order.status < 2 ?
                                                             <TouchableOpacity onPress={() => { 

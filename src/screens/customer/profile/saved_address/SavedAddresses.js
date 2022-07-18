@@ -158,6 +158,28 @@ const styles = StyleSheet.create({
         color: Colors.WHITE,
         fontSize:18
     },
+    addressItem:{
+        justifyContent:'space-between',
+        alignItems:'center',
+        height:90,
+        width:'100%',
+        // backgroundColor: Colors.STAR_YELLOW,
+        flexDirection:'row',
+        borderBottomColor: Colors.GREY,
+        borderBottomWidth: 0.75,
+        marginBottom: 10
+    },
+    addressTag:{
+        fontWeight:'bold',
+        fontSize:20,
+        flex:1,
+        textAlignVertical:'center'
+    },
+    address:{
+        flex:1.5,
+        fontSize:16,
+        color: Colors.GREY,
+    }
 })
 
 export default SavedAddresses;

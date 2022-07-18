@@ -14,12 +14,13 @@ import CreditCardDisplay from '../../../components/CreditCardDisplay';
 import { postPostLogin } from '../../../helpers/ApiHelpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from 'react-native';
+import SimpleToast from 'react-native-simple-toast';
 
 const OrderReceiptScreen = props => {
 
     const dispatch = useDispatch()
 
-    const { initPaymentSheet, presentPaymentSheet } = useStripe()
+    const { initPaymentSheet, presentPaymentSheet, retrievePaymentIntent } = useStripe()
 
     const [ selectedAddress, setSelectedAddress ] = useState({})
     const [ selectedCard, setSelectedCard ] = useState({})
@@ -56,8 +57,10 @@ const OrderReceiptScreen = props => {
         return updatedCartItems.sort( (a,b) => a.id > b.id ? 1 : -1);
     })
 
+    const deliveryDateTime = useSelector( state => state.Order.deliveryDateTime )
+
     const orderType = useSelector( state => state.Cart.orderType )
-    const deliveryFee = orderType === 'Delivery' ? 2.5 : 0
+    const deliveryFee = orderType === 'Delivery' ? 5 : 0
     const serviceCharge = 1.00
     const subTotal = (cartItems.length ? cartItems.reduce( (a,c) => a + c.qty*c.price, serviceCharge ) : 0) + deliveryFee ;
     const discountApplied = useSelector(state => (state.Cart.discount ? state.Cart.discount : null ))
@@ -75,6 +78,9 @@ const OrderReceiptScreen = props => {
     }
     let discountAmount = applyDiscount(discountApplied ? discountApplied : null );
 
+    if ( discountAmount > subTotal ) {
+        dispatch(cartActions.removeDiscount())
+    }
     // switch(discountApplied){
     //     case 'PAYZP234':
     //         discountAmount = subTotal * 0.4;
@@ -101,46 +107,77 @@ const OrderReceiptScreen = props => {
     const refRBSheet = useRef();
     const [paymentLoader, setPaymentLoader] = useState(false)
     const [instructions, setInstructions] = useState('')
-    const orderPlaceHandler = async() => {
-        const data = {
-            catererId : catererId,
-            address : selectedAddress,
-            orderType : orderType,
-            discountAmount: discountAmount,
-            totalAmount : total,
-            items: cartItems,
-            instructions: instructions,
-            activeCard: selectedCard
-        }
-        // const params = {
-        //     card_id: selectedCard.id,
-        //     amount: total.toFixed(2)
-        // }
-        // // console.log(params)
-        // setPaymentLoader(true)
-        // const getPaymentIntentResponse = await postPostLogin('/checkout', params)
-        // console.log(getPaymentIntentResponse.data)
-        // setPaymentLoader(false)
-        // const { error } = await initPaymentSheet({
-        //     customerId: getPaymentIntentResponse.data.data.customerId,
-        //     paymentIntentClientSecret: getPaymentIntentResponse.data.data.client_secret,
-        //     customerEphemeralKeySecret: getPaymentIntentResponse.data.data.ephemeralKey
-        // })
-        // console.log("Init Successful!");
 
-        // setTimeout(async() => {
-        //     try {
-        //         const { error } = await presentPaymentSheet()
-        //     } catch (e) {
-        //         console.log(e)
-        //     }
-        // }, 1000)
-        // console.log(error);
-        // await presentPaymentSheet()
-        // console.log("Present Error");
-        dispatch(orderActions.placeOrder(data));
-        refRBSheet.current.open()
+    const orderList = cartItems.map( item => { return {id: item.id, price: item.price, qty: item.qty} } )
+
+    const placeOrderHandler = async() => {
+        setPaymentLoader(true)
+        const data = {
+            totalAmount : total.toFixed(2),
+            items: orderList,
+            catererId : catererId,
+            addressId : selectedAddress.id,
+            discount: discountAmount,
+            orderType : orderType,
+            instructions: instructions,
+            dateTime: deliveryDateTime
+        }
         
+        const response = await postPostLogin('/postOrder', data)
+        // console.log(response);
+        if(response.success){
+            refRBSheet.current.open()
+            setPaymentLoader(false)
+        } else {
+            SimpleToast.show('Something went wrong!')
+            setPaymentLoader(false)
+        }
+    }
+
+    const stripeHandler = async() => {
+        
+
+        const params = {
+            card_id: selectedCard.id,
+            amount: parseFloat(total.toFixed(2))
+        }
+        // console.log(params)
+
+        setPaymentLoader(true)
+        const getPaymentIntentResponse = await postPostLogin('/checkout', params)
+
+        // console.log(getPaymentIntentResponse);
+
+        const client_secret = getPaymentIntentResponse.data.data.client_secret
+
+        // console.log(getPaymentIntentResponse.data)
+        setPaymentLoader(false)
+
+        const { error } = await initPaymentSheet({
+            customerId: getPaymentIntentResponse.data.data.customerId,
+            paymentIntentClientSecret: client_secret,
+            customerEphemeralKeySecret: getPaymentIntentResponse.data.data.ephemeralKey,
+            merchantDisplayName: 'CERV',
+            testEnv: true,
+            allowsDelayedPaymentMethods: true
+        })
+
+        if(!error) {
+            const presentResponse = await presentPaymentSheet({
+                client_secret,
+                confirmPayment: false
+            }) 
+            
+            const { error, paymentIntent } = await retrievePaymentIntent(client_secret)
+            if(error){
+                console.log(error);
+            } else if ( paymentIntent.status === 'Succeeded' ) {
+                console.log("Payment Success!");
+                placeOrderHandler()
+            } else {
+                console.log("Something went wrong during payment!");
+            }
+        }        
     }
 
     const rbButtonHandler = () => {
@@ -292,8 +329,12 @@ const OrderReceiptScreen = props => {
                             />
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.makePayment} onPress={ orderPlaceHandler } activeOpacity={0.7} disabled={((cartItems.length===0) || (!selectedCard ) || (!selectedAddress) || paymentLoader )? true : false}>
-                        <Text style={{...styles.label, color: Colors.WHITE}}>{selectedCard ? "Confirm Order" : "Make Payment"}</Text>
+                    <TouchableOpacity style={styles.makePayment} onPress={ stripeHandler } activeOpacity={0.7} disabled={((cartItems.length===0) || (!selectedCard ) || (!selectedAddress) || paymentLoader )? true : false}>
+                        { paymentLoader ? 
+                            <ActivityIndicator color={Colors.WHITE} size={'small'}/>
+                            :
+                            <Text style={{...styles.label, color: Colors.WHITE}}>{selectedCard ? "Confirm Order" : "Make Payment"}</Text>
+                        }
                     </TouchableOpacity>
 
                     
@@ -566,120 +607,3 @@ const styles = StyleSheet.create({
 });
 
 export default OrderReceiptScreen;
-
-// screen:{
-    //     flex:1,
-    // },
-    
-
-// const [ selectedAddress, setSelectedAddress ] = useState({})
-
-    // useEffect( async() => {
-    //     setSelectedAddress( JSON.parse( await AsyncStorage.getItem('activeAddress') ) )
-    //     console.log(selectedAddress);
-    // },[])
-
-    // const dispatch = useDispatch();
-    
-    // // const selectedAddress = useSelector( state => state.Address.activeAddress? state.Address.activeAddress : null);
-    
-    
-    // //Payment Logic
-    // const activePID = useSelector(state => state.Payment.activeMethodID)
-    // const cardList = useSelector( state => state.Payment.paymentMethods )
-    // // console.log(activePID);
-    // const activeCard = cardList?.find( item => item.id === activePID )
-    // // console.log(activeCard);
-
-    // //Order Place Handler
-
-    
-    
-
-    // // RB 
-    
-
-    // return (
-        
-    //         <View style={styles.screen}>
-    //             <ScrollView showsVerticalScrollIndicator={false}>
-    //             <View style={styles.body}>    
-    //                 {/* Address Container */}
-                    
-
-    //                 <View style={styles.billDetailsContainer} >
-    //                     <Text style={styles.label}>Bill Details</Text>
-    //                     { cartItems.map( item => {
-    //                         return(
-    //                             <View key={item.id} style={styles.itemContainer}> 
-    //                                 <View style={styles.textButtonContainer}>
-    //                                     <Text style={{flex:2}}>{item.title}</Text>
-    //                                     <View style={styles.addRemoveContainer}>
-    //                                         <TouchableOpacity onPress={() =>{ dispatch(cartActions.removeFromCart(item)) }} ><Ionicon name="remove-outline" size={20} color={ Colors.ERROR_RED }/></TouchableOpacity>
-    //                                         <Text>{item.qty}</Text>
-    //                                         <TouchableOpacity onPress={() =>{ dispatch(cartActions.addToCart(item)) }}><Ionicon name="add-outline" size={20} color={ Colors.GREEN }/></TouchableOpacity>
-    //                                     </View>
-    //                                 </View>
-    //                                 <View style={{flex:1}}>
-    //                                     <Text>$ {item.itemTotal.toFixed(2)}</Text>
-    //                                 </View>
-    //                             </View>
-    //                         )
-    //                     } ) }
-
-    //                     { cartItems.length !== 0 ?
-    //                     <View>
-    //                         <View style={styles.serviceChargeContainer}>
-    //                             <Text style={styles.transactionTitle}>Service Charges</Text>
-    //                             <Text style={{flex:1}}>$ 1.00</Text>
-    //                         </View>
-    //                         <View style={styles.deliveryFee}>
-    //                             <Text style={styles.transactionTitle}>Delivery Fee</Text>
-    //                             <Text style={{flex:1}}>$ {deliveryFee.toFixed(2)}</Text>
-    //                         </View>
-
-
-    //                         {discountApplied ? 
-    //                         <View style={styles.deliveryFee}>
-    //                             <Text style={styles.discountTitle}>Code <Text style={{fontWeight:'bold'}}>{discountApplied}</Text> applied</Text>
-    //                             <View style={{flex:1}}>
-    //                                 <Text style={styles.discountAmount}>- ${discountAmount.toFixed(2)}</Text>
-    //                                 <TouchableOpacity onPress={ () => { dispatch(cartActions.removeDiscount()) }}><Text style={styles.remove}>Remove</Text></TouchableOpacity>
-    //                             </View>
-    //                         </View>   
-    //                         :
-    //                         <TouchableOpacity style={styles.couponCodeContainer} onPress={ () => { props.navigation.navigate('Discount') } } >
-    //                             <Text style={{flex:3,fontWeight:'bold'}}>Apply Coupon Code</Text>
-    //                             <Text style={{...styles.label, color: Colors.ORANGE, flex:1}}>CHECK</Text>
-    //                         </TouchableOpacity>}
-
-
-    //                         <View style={styles.subTotal}>
-    //                             <Text style={styles.transactionTitle}>Sub Total</Text>
-    //                             <Text style={{flex:1}}>$ {updatedSubTotal.toFixed(2)}</Text>
-    //                         </View>
-    //                         <View style={styles.tax}>
-    //                             <Text style={styles.transactionTitle}>Tax</Text>
-    //                             <Text style={{flex:1}}>$ 5.10</Text>
-    //                         </View>
-    //                         <View style={styles.total}>
-    //                             <Text style={styles.totalTitle}>Total</Text>
-    //                             <Text style={{flex:1, fontWeight:'bold', fontSize:18}}>$ {total.toFixed(2)}</Text>
-    //                         </View> 
-    //                     </View>
-    //                     :
-    //                     <View style={styles.backDropContainer}>
-    //                         <Text style={{...styles.backDropText, fontSize:25}}>CART EMPTY</Text>
-    //                         <Text style={{...styles.backDropText, fontSize:15}}>Add some dishes now!</Text>
-    //                     </View>}
-
-    //                 </View>
-    //                 <Image source={Images.PAPER_TEAR} style={{width:'100%', marginBottom:25, height:25, transform:[{rotate:'180deg'}]}}/>
-                    
-    //             </View>
-
-                
-    //             </ScrollView>
-    //         </View>
-    //     </StripeProvider>
-    // )

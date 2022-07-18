@@ -94,8 +94,7 @@ const OrderDetailScreen = props => {
                             (
                                 <View style={{ marginVertical: 10 }}>
                                     <Text style={{ fontWeight: 'bold', fontSize: 12, letterSpacing: -0.5, color: Colors.GREY }}>Delivery fee based on how far the customer location is</Text>
-                                    <Text>*   5Km distance charge $2.50</Text>
-                                    <Text>*   10Km distance charge $5.00</Text>
+                                    <Text>*   Delivery charge $5.00</Text>
                                 </View>
                             )
                             :
@@ -106,7 +105,7 @@ const OrderDetailScreen = props => {
                         <Text style={styles.detail}>{moment(selectedOrder.createdAt).format('DD MMM YYYY')} at {moment(selectedOrder.createdAt).format('hh:mm A')}</Text>
 
                         <Text style={styles.label}>AMOUNT</Text>
-                        <Text style={styles.detail}>$ {selectedOrder.netAmount.toFixed(2)}</Text>
+                        <Text style={styles.detail}>$ {selectedOrder.amount.toFixed(2)}</Text>
                     </View>
 
                     <View style={{ borderBottomColor: Colors.GREY, borderBottomWidth: 0.5, paddingBottom: 10 }}>
@@ -143,7 +142,7 @@ const OrderDetailScreen = props => {
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5 }}>
                             <Text style={{ flex: 4 }}>Delivery Charge</Text>
-                            <Text style={{ flex: 1 }}>$ {selectedOrder.order_type === 'Delivery' ? '2.50' : '0.00'}</Text>
+                            <Text style={{ flex: 1 }}>$ {selectedOrder.order_type === 'Delivery' ? '5.00' : '0.00'}</Text>
                         </View>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, borderTopColor: Colors.GREY, borderTopWidth: 0.5, paddingVertical: 10 }}>
@@ -153,7 +152,7 @@ const OrderDetailScreen = props => {
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, borderTopColor: Colors.GREY, borderTopWidth: 0.5, paddingVertical: 10 }}>
                             <Text style={{ flex: 4 }}>Sub Total</Text>
-                            <Text style={{ flex: 1 }}>$ {(selectedOrder.netAmount - 5.10).toFixed(2)}</Text>
+                            <Text style={{ flex: 1 }}>$ {(selectedOrder.amount - 5.10).toFixed(2)}</Text>
                         </View>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 5, borderTopColor: Colors.GREY, borderTopWidth: 0.5, paddingVertical: 10 }}>
@@ -163,7 +162,7 @@ const OrderDetailScreen = props => {
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', borderTopColor: Colors.GREY, borderTopWidth: 0.5, paddingVertical: 10 }}>
                             <Text style={{ flex: 4 }}>Total</Text>
-                            <Text style={{ flex: 1 }}>$ {(selectedOrder.netAmount).toFixed(2)}</Text>
+                            <Text style={{ flex: 1 }}>$ {(selectedOrder.amount).toFixed(2)}</Text>
                         </View>
                     </View>
 

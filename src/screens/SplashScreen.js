@@ -10,6 +10,7 @@ const SplashScreen = ({navigation}) => {
 
     useEffect( () => {
         messaging().getToken().then( async(token) => { 
+            console.log(token)
             await AsyncStorage.setItem('deviceToken', token)
          });
     },[])
