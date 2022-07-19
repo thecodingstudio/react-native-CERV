@@ -107,7 +107,7 @@ const ProfileScreen = ({navigation}) => {
                     navigation.dispatch(
                         CommonActions.reset({
                             index:0,
-                            routes:[{name:'Auth'}]
+                            routes:[{name:'Splash'}]
                         })
                     )
                 }}

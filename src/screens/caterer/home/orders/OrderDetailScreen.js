@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { Colors, Images } from '../../../../CommonConfig'
 import moment from 'moment'
@@ -6,10 +6,12 @@ import SimpleToast from 'react-native-simple-toast'
 import { getPostLogin, postPostLogin, putPostLogin } from '../../../../helpers/ApiHelpers'
 import { Rating } from 'react-native-ratings'
 import axios from 'axios'
+import { RNFetchBlob } from 'rn-fetch-blob';
 
 const OrderDetailScreen = ({ navigation, route }) => {
 
     const { order, mode } = route.params
+    const { config, fs } = RNFetchBlob
 
     // console.log(order.feedback.rating, order.feedback.review);
 
@@ -98,26 +100,21 @@ const OrderDetailScreen = ({ navigation, route }) => {
         }
     }
 
-    const download = (data) => {
-        // const url = URL.createObjectURL(data)
-        // const a = document.createElement('a')
-        // a.download = `invoice${order.id}.pdf`
-        // a.href = url
-        // a.target = '_self'
-
-        // a.click()
-
-        // setTimeout( () => {
-        //     a.remove()
-        //     URL.revokeObjectURL(url)
-        // }, 100)
+    const actualDownload = async() => {
+        const { dirs } = RNFetchBlob.fs
     }
 
     const invoiceHandler = async() => {
-        setLoading(true)
-        const response = await axios.get(`https://cerv-api.herokuapp.com/caterer/get-invoice/${order.id}`,{ responseType: 'blob' })
-        download(response)
-        setLoading(false)
+        try {
+            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE)
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                actualDownload();
+              } else {
+                Alert.alert('Permission Denied!', 'You need to give storage permission to download the file');
+              }
+        } catch (error) {
+            console.warn(error)
+        }
     }
 
     const statusText = (orderObj) => {

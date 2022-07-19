@@ -109,7 +109,7 @@ const DetailScreen = props => {
     })
 
     const order = useSelector(state => state.Cart.orderType)
-    const deliveryFee = (order === 'Delivery') ? 2.5 : 0
+    const deliveryFee = (order === 'Delivery') ? 5 : 0
     const serviceCharge = 1.00
     const subTotal = (cartItems.length ? cartItems.reduce((a, c) => a + c.qty * c.price, serviceCharge) : 0) + deliveryFee;
     const total = cartItems.length ? subTotal + 5.10 : 0;

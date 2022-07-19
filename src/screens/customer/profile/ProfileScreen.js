@@ -109,7 +109,7 @@ const ProfileScreen = props => {
                     props.navigation.dispatch(
                         CommonActions.reset({
                             index:0,
-                            routes:[{name:'Auth'}]
+                            routes:[{name:'Splash'}]
                         })
                     )
                 }}

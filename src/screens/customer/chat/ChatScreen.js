@@ -1,7 +1,5 @@
 import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { View, Text, StyleSheet, LogBox, TextInput, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
-import { GiftedChat, Bubble, Send } from 'react-native-gifted-chat';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { io } from 'socket.io-client';
 

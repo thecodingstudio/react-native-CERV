@@ -17,6 +17,7 @@ import OrderDetailScreen from './orders/OrderDetailScreen';
 
 //Chat Screens
 import ChatScreen from './chat/ChatScreen';
+import MessagesScreen from './chat/MessagesScreen';
 
 //Profile Screens
 import ProfileScreen from './profile/ProfileScreen';
@@ -139,14 +140,31 @@ const OrderStackScreen = () => {
 const ChatStackScreen = () => {
     return(
         <ChatStack.Navigator
-            initialRouteName='ChatScreen'
+            initialRouteName='MessagesScreen'
             screenOptions={{
-                headerTitleAlign:'center'
+                headerTitleAlign:'center',
+                headerStyle: {
+                    shadowColor: "#000",
+                    shadowOffset: {
+                        width: 0,
+                        height: 2,
+                    },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                },
             }}
         >
             <ChatStack.Screen 
                 name='ChatScreen'
                 component={ChatScreen}
+                options={ ({route}) => ({ 
+                    headerTitle: route.params.title
+                }) }
+            />
+            <ChatStack.Screen 
+                name='MessagesScreen'
+                component={MessagesScreen}
                 options={{
                     headerTitle: 'Chat'
                 }}
@@ -256,7 +274,7 @@ const CatererTab = createBottomTabNavigator()
 const CatererRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail','AddEditCategory','OrderDetail','EditInformation']
+        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail','AddEditCategory','OrderDetail','EditInformation','ChatScreen']
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
     }
