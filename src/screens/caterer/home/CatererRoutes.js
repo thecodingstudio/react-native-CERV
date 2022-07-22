@@ -24,7 +24,7 @@ import ProfileScreen from './profile/ProfileScreen';
 import SavedDiscountCodes from './profile/Discount Codes/SavedDiscountCodes';
 import EditCoupons from './profile/Discount Codes/EditCoupons';
 import ChangePassword from './profile/ChangePassword';
-import EditInformation from './profile/EditInformation';
+import PersonalInformation from './profile/PersonalInformation';
 
 const MenuStack = createStackNavigator()
 const OrderStack = createStackNavigator()
@@ -250,10 +250,10 @@ const ProfileStackScreen = () => {
                 }}
             />
             <ProfileStack.Screen 
-                name='EditInformation'
-                component={EditInformation}
-                options={ ({route}) => ({
-                    headerTitle: route.params.mode === 'edit' ? 'Edit Information' : 'Personal Information',
+                name='PersonalInformation'
+                component={PersonalInformation}
+                options={{
+                    headerTitle: 'Personal Information',
                     headerStyle: {
                         shadowColor: "#000",
                         shadowOffset: {
@@ -264,7 +264,7 @@ const ProfileStackScreen = () => {
                         shadowRadius: 3.84,
                         elevation: 5,
                     },
-                })}
+                }}
             />
         </ProfileStack.Navigator>
     )
@@ -274,7 +274,7 @@ const CatererTab = createBottomTabNavigator()
 const CatererRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail','AddEditCategory','OrderDetail','EditInformation','ChatScreen']
+        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail','AddEditCategory','OrderDetail','PersonalInformation','EditInformation','ChatScreen']
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
     }

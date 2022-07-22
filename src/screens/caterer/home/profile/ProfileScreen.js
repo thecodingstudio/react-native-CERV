@@ -64,7 +64,7 @@ const ProfileScreen = ({navigation}) => {
                 leftIcon = "person-outline"
                 rightIcon = "chevron-forward-outline"
                 onPress={() => {
-                    navigation.navigate('EditInformation',{ user, mode: 'view' })
+                    navigation.navigate('PersonalInformation',{ user })
                 }}
             />
 

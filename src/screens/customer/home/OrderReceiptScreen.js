@@ -160,15 +160,23 @@ const OrderReceiptScreen = props => {
             merchantDisplayName: 'CERV',
             testEnv: true,
             allowsDelayedPaymentMethods: true
+            // customerId: "cus_M3snPrCRjEoj6o",
+            // paymentIntentClientSecret: "pi_3LNbz7SJ7crToGEY1rVz4s3O_secret_j4pTsd0bfYNn5zurFhJmV4bCn",
+            // customerEphemeralKeySecret: "ek_test_YWNjdF8xS1ltOUFTSjdjclRvR0VZLEpQdWVrZkRnR0g3dGFOV1laNzEyOFJVcDBZWkhUY20_00xAMfhz79",
+            // merchantDisplayName: 'CERV',
+            // testEnv: true,
+            // allowsDelayedPaymentMethods: true
         })
 
         if(!error) {
             const presentResponse = await presentPaymentSheet({
                 client_secret,
+                // client_secret:"pi_3LNbz7SJ7crToGEY1rVz4s3O_secret_j4pTsd0bfYNn5zurFhJmV4bCn",
                 confirmPayment: false
             }) 
             
             const { error, paymentIntent } = await retrievePaymentIntent(client_secret)
+            // console.log(paymentIntent);
             if(error){
                 console.log(error);
             } else if ( paymentIntent.status === 'Succeeded' ) {
