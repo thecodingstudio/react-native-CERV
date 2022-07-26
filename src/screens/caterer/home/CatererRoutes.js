@@ -25,6 +25,7 @@ import SavedDiscountCodes from './profile/Discount Codes/SavedDiscountCodes';
 import EditCoupons from './profile/Discount Codes/EditCoupons';
 import ChangePassword from './profile/ChangePassword';
 import PersonalInformation from './profile/PersonalInformation';
+import EditInformation from './profile/EditInformation';
 
 const MenuStack = createStackNavigator()
 const OrderStack = createStackNavigator()
@@ -266,6 +267,23 @@ const ProfileStackScreen = () => {
                     },
                 }}
             />
+            <ProfileStack.Screen 
+                name='EditInfo'
+                component={EditInformation}
+                options={{
+                    headerTitle: 'Edit Information',
+                    headerStyle: {
+                        shadowColor: "#000",
+                        shadowOffset: {
+                            width: 0,
+                            height: 2,
+                        },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 3.84,
+                        elevation: 5,
+                    },
+                }}
+            />
         </ProfileStack.Navigator>
     )
 }
@@ -274,7 +292,7 @@ const CatererTab = createBottomTabNavigator()
 const CatererRoutes = () => {
     const getTabBarVisibility = (route) => {
         const routeName = getFocusedRouteNameFromRoute(route);
-        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail','AddEditCategory','OrderDetail','PersonalInformation','EditInformation','ChatScreen']
+        const hideOnScreens = ['CategoryItems','SavedDiscountCodes','EditCoupon','ChangePassword','DishDetail','AddEditCategory','OrderDetail','PersonalInformation','EditInfo','ChatScreen']
         if(hideOnScreens.indexOf(routeName) > -1) return false;
         return true;
     }

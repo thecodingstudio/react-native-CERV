@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, StyleSheet, Text, View, TextInput, ScrollView } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, Text, View, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { Colors } from '../../../../CommonConfig';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -23,7 +23,7 @@ const PersonalInformation = ({ navigation, route }) => {
 
     return (
         <View style={styles.screen}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:50}}>
                 <View style={styles.personalContainer}>
                     <View style={styles.ppContainer}>
                         <Image source={{ uri: user.image }} style={{ flex: 1 }} />
@@ -85,11 +85,76 @@ const PersonalInformation = ({ navigation, route }) => {
                     </View>
 
                     <Text style={styles.label}>Business License Photo</Text>
-                    <Image source={{uri: user.store.license_image}} style={{width:'100%', height:250, marginVertical:15, borderRadius:15}} resizeMode='stretch'/>
+                    <Image source={{ uri: user.store.license_image }} style={{ width: '100%', height: 250, marginVertical: 15, borderRadius: 10 }} resizeMode='stretch' />
+
+                    <Text style={styles.label}>Address</Text>
+                    <View style={styles.textField}>
+                        <TextInput
+                            value={user.store.address}
+                            autoCapitalize='none'
+                            editable={false}
+                            style={styles.textInput}
+                        />
+                    </View>
+
+                    <Text style={styles.label}>Bio</Text>
+                    <View style={styles.textField}>
+                        <TextInput
+                            value={user.store.bio}
+                            autoCapitalize='none'
+                            editable={false}
+                            style={styles.textInput}
+                        />
+                    </View>
 
                 </View>
 
+                <View style={styles.personalContainer}>
+                    <Text style={styles.header}>Food Category</Text>
+                    <View style={styles.textField}>
+                        <TextInput
+                            value={user.store.category}
+                            autoCapitalize='none'
+                            editable={false}
+                            style={styles.textInput}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.personalContainer}>
+                    <Text style={styles.header}>Driver Info</Text>
+
+                    <Text style={styles.label}>Driver Name</Text>
+                    <View style={styles.textField}>
+                        <TextInput
+                            value={user.driver.name}
+                            autoCapitalize='none'
+                            editable={false}
+                            style={styles.textInput}
+                        />
+                    </View>
+
+                    <Text style={styles.label}>Driver License Number</Text>
+                    <View style={styles.textField}>
+                        <TextInput
+                            value={user.driver.license_number}
+                            autoCapitalize='none'
+                            editable={false}
+                            style={styles.textInput}
+                        />
+                    </View>
+                    
+                    <Text style={styles.label}>Driver License Photo</Text>
+                    <Image source={{ uri: user.driver.image }} style={{ width: '100%', height: 250, marginVertical: 15, borderRadius: 10 }} resizeMode='stretch' />
+                </View>
             </ScrollView>
+            <View style={{position:'absolute', bottom:0, zIndex:1, width:'100%', padding:10, backgroundColor: Colors.BACKGROUND_GREY}}>
+                <TouchableOpacity style={styles.btn} activeOpacity={0.6} onPress={() => {
+                    navigation.navigate('EditInfo',{ user })
+                }}>
+                    <Text style={styles.btnText}>Edit Information</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }
@@ -144,4 +209,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.BLACK
     },
+    btn:{
+        padding:15,
+        backgroundColor: Colors.ORANGE,
+        borderRadius: 5,
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    btnText:{
+        fontWeight:'bold',
+        color: Colors.WHITE,
+        fontSize:20
+    }
 })

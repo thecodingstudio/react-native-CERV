@@ -23,6 +23,7 @@ const OrdersScreen = ({navigation, route}) => {
         getOrders()
     },[state])
 
+
     const getOrders = async() => {
         setLoading(true)
         const response = await getPostLogin(`/caterer/getOrders/${state}`)

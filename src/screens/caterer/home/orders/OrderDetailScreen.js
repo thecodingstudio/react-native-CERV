@@ -5,17 +5,15 @@ import moment from 'moment'
 import SimpleToast from 'react-native-simple-toast'
 import { getPostLogin, postPostLogin, putPostLogin } from '../../../../helpers/ApiHelpers'
 import { Rating } from 'react-native-ratings'
-import axios from 'axios'
-import { RNFetchBlob } from 'rn-fetch-blob';
 
 const OrderDetailScreen = ({ navigation, route }) => {
 
     const { order, mode } = route.params
-    const { config, fs } = RNFetchBlob
-
-    // console.log(order.feedback.rating, order.feedback.review);
 
     const [loading, setLoading] = useState(false)
+    const [invoiceLoading, setInvoiceLoading] = useState(false)
+
+    const [pdfData, setPdfData] = useState(null)
 
     const isCurrentMode = mode === 'current' ? true : false
     const isPastMode = mode === 'past' ? true : false
@@ -100,21 +98,12 @@ const OrderDetailScreen = ({ navigation, route }) => {
         }
     }
 
-    const actualDownload = async() => {
-        const { dirs } = RNFetchBlob.fs
-    }
-
     const invoiceHandler = async() => {
-        try {
-            const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE)
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                actualDownload();
-              } else {
-                Alert.alert('Permission Denied!', 'You need to give storage permission to download the file');
-              }
-        } catch (error) {
-            console.warn(error)
-        }
+        setInvoiceLoading(true)
+        const response = await getPostLogin(`/caterer/get-invoice/${order.id}`)
+        console.log(response);
+        setPdfData(response.data)
+        setInvoiceLoading(false)
     }
 
     const statusText = (orderObj) => {
@@ -220,7 +209,6 @@ const OrderDetailScreen = ({ navigation, route }) => {
 
                 </View>}
 
-                {isCurrentMode && <Image source={Images.PAPER_TEAR} style={{width:'100%', marginBottom:25, height:25, transform:[{rotate:'180deg'}]}}/>}
 
                 {isPastMode && order.is_reviewed === true && 
                     <View style={styles.orderItemsContainer}>
@@ -233,10 +221,13 @@ const OrderDetailScreen = ({ navigation, route }) => {
                             imageSize={20}
                             ratingCount={5}
                             ratingColor={Colors.STAR_YELLOW}
-                        />
+                            />
                         <Text style={styles.review}>{order.feedback.review}</Text>
                     </View>
                 } 
+                
+                <Image source={Images.PAPER_TEAR} style={{width:'100%', marginBottom:25, height:35, transform:[{rotate:'180deg'}]}}/>
+                
 
             </ScrollView>
 
@@ -247,35 +238,44 @@ const OrderDetailScreen = ({ navigation, route }) => {
                     order.status === 0 && 
                     <>
                         <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.GREEN}]} activeOpacity={0.6} onPress={onPressAccept}>
-                            <Text style={styles.orderButtonText}>ACCEPT ORDER</Text>
+                            <Text style={styles.orderButtonText}>Accept Order</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ERROR_RED}]} activeOpacity={0.6} onPress={onPressReject}>
-                            <Text style={styles.orderButtonText}>REJECT ORDER</Text>
+                            <Text style={styles.orderButtonText}>Reject Order</Text>
                         </TouchableOpacity>
                     </>
                 }
                 { 
                     order.status === 1 && 
                     <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} activeOpacity={0.6} onPress={onPressPrepare}>
-                        <Text style={styles.orderButtonText}>START PREPARING</Text>
+                        <Text style={styles.orderButtonText}>Start Preparing</Text>
                     </TouchableOpacity>
                 }
                 { 
                     order.status === 2 && 
                     <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} activeOpacity={0.6} onPress={onPressDispatch}>
-                        <Text style={styles.orderButtonText}>DISPATCH ORDER</Text>
+                        <Text style={styles.orderButtonText}>Dispatch Order</Text>
                     </TouchableOpacity>
                 }
                 { 
                     order.status === 3 && 
                     <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} activeOpacity={0.6} onPress={onPressComplete}>
-                        <Text style={styles.orderButtonText}>COMPLETE ORDER</Text>
+                        <Text style={styles.orderButtonText}>Complete Order</Text>
                     </TouchableOpacity>
                 }
                 { 
                     order.status === 4 && 
-                    <TouchableOpacity style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} activeOpacity={0.6} onPress={invoiceHandler}>
-                        <Text style={styles.orderButtonText}>VIEW INVOICE</Text>
+                    <TouchableOpacity 
+                        style={[styles.orderButton,{backgroundColor: Colors.ORANGE}]} 
+                        activeOpacity={0.6} 
+                        onPress={invoiceHandler}
+                        // disabled={invoiceLoading}
+                    >
+                        { invoiceLoading ?
+                            <ActivityIndicator color={Colors.WHITE} size={25}/>
+                            :
+                            <Text style={styles.orderButtonText}>View Invoice</Text>
+                        }
                     </TouchableOpacity>
                 }
             </View>
@@ -314,7 +314,6 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: Colors.WHITE,
         padding: 10,
-        marginBottom: 5
     },
     label: {
         fontWeight: 'bold',
@@ -362,7 +361,7 @@ const styles = StyleSheet.create({
     },
     orderButtonText:{
         fontWeight:'bold',
-        fontSize: 15,
+        fontSize: 20,
         color: Colors.WHITE
     },
     statusText:{
