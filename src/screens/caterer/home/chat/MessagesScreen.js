@@ -103,7 +103,9 @@ const styles = StyleSheet.create({
     },
     card:{
         width:'100%',
-        height:80
+        height:80,
+        borderBottomColor: Colors.LIGHTER_GREY,
+        borderBottomWidth:0.5
     },
     userInfo:{
         flexDirection:'row',

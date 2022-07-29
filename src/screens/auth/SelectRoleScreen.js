@@ -34,7 +34,6 @@ const SelectRoleScreen = props => {
             {/* Header (Title) */}
             <View style={{flex:1,width:'100%', padding:10}}>
                 <Text style={{fontWeight:'bold',fontSize:40}}>Select your Role</Text>
-                <Text style={{color:Colors.GREY,marginVertical:7,fontWeight:'bold', fontSize:25}}>How do you want to use <Text style={{color:Colors.ORANGE}}>CERV ?</Text></Text>
             </View>
 
             {/* Body (Options) */}

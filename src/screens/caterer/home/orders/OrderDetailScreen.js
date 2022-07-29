@@ -1,10 +1,12 @@
-import { ActivityIndicator, StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, PermissionsAndroid, Alert, Platform } from 'react-native'
 import React, { useState } from 'react'
 import { Colors, Images } from '../../../../CommonConfig'
 import moment from 'moment'
 import SimpleToast from 'react-native-simple-toast'
 import { getPostLogin, postPostLogin, putPostLogin } from '../../../../helpers/ApiHelpers'
 import { Rating } from 'react-native-ratings'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import RNFetchBlob from 'react-native-fetch-blob'
 
 const OrderDetailScreen = ({ navigation, route }) => {
 
@@ -100,9 +102,19 @@ const OrderDetailScreen = ({ navigation, route }) => {
 
     const invoiceHandler = async() => {
         setInvoiceLoading(true)
-        const response = await getPostLogin(`/caterer/get-invoice/${order.id}`)
-        console.log(response);
-        setPdfData(response.data)
+        RNFetchBlob
+        .config({
+            addAndroidDownloads:{
+                useDownloadManager : true,
+                notification: true
+            }
+        })
+        .fetch('GET',`https://cerv-api.herokuapp.com/caterer/get-invoice/${order.id}`,{
+            Authorization : 'Bearer ' + (await AsyncStorage.getItem('token'))
+        })
+        .then((res) => {
+            res.path()
+        })
         setInvoiceLoading(false)
     }
 

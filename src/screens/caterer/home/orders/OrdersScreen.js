@@ -14,6 +14,7 @@ const OrdersScreen = ({navigation, route}) => {
 
     useEffect( () => {
         const refresh = navigation.addListener('focus',() => {
+            setState('1')
             getOrders()
         })
         return refresh
