@@ -21,6 +21,7 @@ const NumberVerificationScreen = props => {
     const [phoneNumber, setPhoneNumber ] = useState('');
 
     const pressHandler = async(countryCode, phoneNumber) => {
+        setLoading(true)
         const OTPData = {
             country_code: countryCode,
             phone_number: phoneNumber,
@@ -31,8 +32,10 @@ const NumberVerificationScreen = props => {
         let errorMsg = 'Something went wrong!';
         if (response.success) {
             props.navigation.navigate('VerifyScreen',{countryCode: countryCode, phoneNumber: phoneNumber, params})
+            setLoading(false)
         } else {
             Alert.alert("Error",errorMsg,[{text:"Okay"}])
+            setLoading(false)
         }
         // props.navigation.navigate('VerifyScreen',{countryCode: countryCode, phoneNumber: phoneNumber, params})
     }

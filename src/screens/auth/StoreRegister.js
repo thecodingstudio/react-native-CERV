@@ -138,8 +138,8 @@ const StoreRegister = ({ navigation, route }) => {
                 initialValues={{
                     license_num: '',
                     address: '',
-                    latitude: 21.000,
-                    longitude: 72.000,
+                    latitude: 21.1475640,
+                    longitude: 72.7916070,
                     bio: '',
                     order_type: 0,
                     category: ''

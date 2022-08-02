@@ -55,7 +55,9 @@ const VerifyScreen = ({navigation, route}) => {
         const errorMsg = 'Something went wrong!'
         if (response.success) {
             const user = new FormData();
-            user.append('image',{ uri: data.selectedImage.path, type: data.selectedImage.mime, name: makeid(10) })
+            if(data.selectedImage){
+                user.append('image',{ uri: data.selectedImage.path, type: data.selectedImage.mime, name: makeid(10) })
+            }
             user.append('email', data.email)
             user.append('password', data.password)
             user.append('role', data.role)

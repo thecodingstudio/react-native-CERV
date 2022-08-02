@@ -17,11 +17,7 @@ const SignUpScreen = props => {
     const [modalVisible, setModalVisible] = useState(false);
 
     const takeFromCamera = () => {
-        ImagePicker.openCamera({
-            width: 100,
-            height: 100,
-            cropping: true,
-        }).then(image => {
+        ImagePicker.openCamera({}).then(image => {
             // dispatch(registerActions.addImage(image))
             setSelectedImage(image)
             setModalVisible(!modalVisible)
@@ -29,11 +25,7 @@ const SignUpScreen = props => {
     }
 
     const pickFromGallery = () => {
-        ImagePicker.openPicker({
-            width: 100,
-            height: 100,
-            cropping: true
-        }).then(image => {
+        ImagePicker.openPicker({}).then(image => {
             // dispatch(registerActions.addImage(image))
             setSelectedImage(image)
             setModalVisible(!modalVisible)
