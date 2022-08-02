@@ -24,7 +24,6 @@ const AddEditCategory = ({navigation, route}) => {
         ImagePicker.openCamera({
             cropping: true,
         }).then(image => {
-            // dispatch(registerActions.addImage(image))
             setSelectedImage(image)
             setModalVisible(!modalVisible)
         });
@@ -34,7 +33,6 @@ const AddEditCategory = ({navigation, route}) => {
         ImagePicker.openPicker({
             cropping: true
         }).then(image => {
-            // dispatch(registerActions.addImage(image))
             setSelectedImage(image)
             setModalVisible(!modalVisible)
         });

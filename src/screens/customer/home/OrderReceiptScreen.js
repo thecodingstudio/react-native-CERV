@@ -66,9 +66,7 @@ const OrderReceiptScreen = props => {
     const discountApplied = useSelector(state => (state.Cart.discount ? state.Cart.discount : null ))
     
     const applyDiscount = (discountObj) => {
-
         if(!discountObj) return 0;
-
         const isPercent = discountObj.is_percent
         if(isPercent) {
             return subTotal * (discountObj.value/100)
